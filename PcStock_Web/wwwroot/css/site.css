@@ -1,0 +1,270 @@
+﻿/* الألوان المستوحاة من شعار كوزيدار وتصميمك */
+:root {
+    --cosider-blue: #1e56d0; /* الأزرق الرئيسي للخلفيات */
+    --cosider-dark-blue: #1542a3; /* أزرق أغمق للقائمة */
+    --active-white: #ffffff; /* اللون الأبيض للعنصر النشط */
+    --text-muted: #d1dcf3; /* نص خافت للأيقونات غير النشطة */
+    --bg-light: #f8faff; /* خلفية المحتوى خفيفة جداً */
+}
+
+/* تنسيق حاوية التطبيق بالكامل */
+.app-wrapper {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* --- تصميم الشريط الجانبي (Sidebar) --- */
+.sidebar-cosider {
+    width: 280px;
+    background-color: var(--cosider-blue);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    transition: all 0.3s;
+}
+
+.brand-section {
+    padding: 20px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 20px;
+}
+
+.brand-title {
+    font-weight: 800;
+    font-size: 1.3rem;
+    display: block;
+}
+
+.brand-subtitle {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+/* عناصر القائمة - تصميم الزوايا المنحنية */
+.nav-list {
+    list-style: none;
+    padding: 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 5px;
+    border-radius: 12px; /* انحناء كما في الصورة */
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+    .nav-item i {
+        margin-right: 15px;
+        font-size: 1.1rem;
+        width: 25px;
+    }
+
+    /* العنصر النشط (Tableau de Bord) */
+    .nav-item.active {
+        background-color: var(--active-white);
+        color: var(--cosider-blue);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+/* --- تصميم محتوى لوحة التحكم (Cards) --- */
+.main-content {
+    flex: 1;
+    background-color: var(--bg-light);
+    overflow-y: auto;
+}
+
+.header-banner {
+    background-color: var(--cosider-blue);
+    color: white;
+    padding: 30px;
+    border-radius: 0 0 20px 20px;
+    margin-bottom: -50px; /* تداخل البطاقات مع الهيدر */
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 5px solid; /* حافة ملونة لكل بطاقة */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+    .stat-card.blue {
+        border-left-color: #007bff;
+    }
+
+    .stat-card.green {
+        border-left-color: #28a745;
+    }
+
+    .stat-card.orange {
+        border-left-color: #fd7e14;
+    }
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #888;
+    font-weight: bold;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #333;
+    margin-top: 5px;
+}
+
+.stat-icon {
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
+    font-size: 1.8rem;
+    opacity: 0.1;
+}
+
+/* الحالة الطبيعية (مفتوح) */
+.sidebar-cosider {
+    width: 280px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* الحالة عندما يكون مغلقاً */
+.sidebar-cosider.collapsed {
+    width: 80px; /* عرض صغير يكفي للأيقونات فقط */
+}
+
+/* إخفاء النصوص عند الإغلاق وإظهار الأيقونات فقط */
+.sidebar-cosider.collapsed .brand-text,
+.sidebar-cosider.collapsed .nav-item span,
+.sidebar-cosider.collapsed .brand-subtitle {
+    display: none;
+}
+
+.sidebar-cosider.collapsed .nav-item {
+    justify-content: center;
+    padding: 12px 0;
+}
+
+.sidebar-cosider.collapsed .nav-item i {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+/* تنسيق القائمة الفرعية */
+.submenu-list {
+    list-style: none;
+    padding-left: 35px; /* إزاحة جهة اليمين لتظهر تحت الأيقونة الرئيسية */
+    margin: 5px 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.2); /* الخط العمودي الخفيف */
+    margin-left: 25px;
+    display: none; /* مخفية افتراضياً */
+} 
+
+/* العنصر الفرعي */
+.submenu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+/* تعليق: تصميم العنصر عند اختياره */
+.submenu-item.active {
+    background-color: white !important; /* اللون الأبيض المشرق */
+    color: #1e56d0 !important; /* لون كوزيدار الأزرق للنص */
+    font-weight: bold;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 10px; /* الانحناء المطلوب في صورتك */
+}
+
+.submenu-item i {
+    margin-right: 12px;
+    font-size: 0.9rem;
+}
+/* تعليق: هذا الكود يضمن أن النص لا يختفي عند مرور الماوس */
+
+/* 1. تنسيق العنصر عند مرور الماوس (Hover) */
+.nav-item:hover, .submenu-item:hover {
+    background-color: rgba(255, 255, 255, 0.9) !important; /* خلفية بيضاء شبه كاملة */
+    color: #1e56d0 !important; /* لون النص يصبح أزرق غامق ليظهر فوق الأبيض */
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+    /* 2. التأكد من أن الأيقونة تغير لونها أيضاً */
+    .nav-item:hover i, .submenu-item:hover i {
+        color: #1e56d0 !important;
+    }
+
+/* 3. تنسيق العنصر المختار حالياً (Active) */
+.nav-item.active, .submenu-item.active {
+    background-color: #ffffff !important; /* أبيض ناصع كما في الصورة */
+    color: #1e56d0 !important; /* نص أزرق غامق */
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* ظل خفيف لإبرازه */
+}
+
+/* تعليق: كلاس لفتح القائمة فوراً عند تحميل الصفحة */
+.submenu-list.show {
+    display: block !important;
+}
+
+/* تدوير السهم إذا كانت القائمة مفتوحة افتراضياً */
+.arrow-icon.rotate {
+    transform: rotate(180deg);
+}
+
+/* تمييز الأب (STOCKS) عندما تكون القائمة مفتوحة */
+.parent-active {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px 10px 0 0;
+}
+
+/* تنسيق رؤوس الجداول */
+#stockTable thead th {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #495057;
+    background-color: #f8f9fa;
+    border-top: none;
+    white-space: nowrap;
+}
+
+/* تنسيق الخلايا */
+#stockTable tbody td {
+    font-size: 0.85rem;
+    padding: 12px 8px;
+    border-bottom: 1px solid #edf2f9;
+}
+
+/* لون الروابط (REF) */
+.text-primary {
+    color: #1e56d0 !important;
+}
+
+/* زر الطباعة المنسق */
+.btn-primary {
+    background-color: #1e56d0;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+}

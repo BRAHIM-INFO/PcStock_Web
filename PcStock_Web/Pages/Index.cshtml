@@ -1,0 +1,36 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Tableau de Bord";
+}
+
+<div class="header-banner">
+    <h3>COSIDER TP - Tableau de Bord</h3>
+    <p class="small opacity-75">Suivi en temps réel de l'état du stock (Unité: DA)</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card blue">
+        <div class="stat-label">STOCK TOTAL</div>
+        <div class="stat-value">992 292 409,53 DA</div>
+        <i class="fas fa-cube stat-icon"></i>
+    </div>
+
+    <div class="stat-card green">
+        <div class="stat-label text-success">ACHATS</div>
+        <div class="stat-value">1 246 385 180,80 DA</div>
+        <i class="fas fa-shopping-basket stat-icon"></i>
+    </div>
+
+    <div class="stat-card orange">
+        <div class="stat-label text-warning">CESS. FOURNIE</div>
+        <div class="stat-value">891 435 731,02 DA</div>
+        <i class="fas fa-truck-loading stat-icon"></i>
+    </div>
+
+    <div class="stat-card" style="border-left-color: #dc3545;">
+        <div class="stat-label text-danger">CONSOS</div>
+        <div class="stat-value">207 898 686,25 DA</div>
+        <i class="fas fa-clipboard-list stat-icon"></i>
+    </div>
+</div>

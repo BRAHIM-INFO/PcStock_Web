@@ -1,0 +1,90 @@
+﻿@page
+@model PcStock_Web.Pages.Stocks.ListModel
+@{
+    ViewData["Title"] = "LISTE DES STOCKS";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 shadow-sm border-bottom">
+    <h4 class="fw-bold mb-0">LISTE DES STOCKS</h4>
+    <button class="btn btn-primary shadow-sm">
+        <i class="fas fa-print me-2"></i>Imprimer
+    </button>
+</div>
+
+<div class="container-fluid">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="text-primary fw-bold mb-4">DataTables Example</h5>
+
+            <div class="table-responsive">
+                <table id="stockTable" class="table table-hover align-middle border">
+                    <thead class="bg-light text-secondary small text-uppercase">
+                        <tr>
+                            <th>REF</th>
+                            <th>CODE_INT</th>
+                            <th>INTITULE</th>
+                            <th>INTITULE2</th>
+                            <th>INTITULE3</th>
+                            <th>FAMILLE</th>
+                            <th>QTE</th>
+                            <th>PAMP</th>
+                            <th>MONTANT</th>
+                            <th>STOCK_INI</th>
+                            <th>CASIER</th>
+                            <th>DATE_MAJ</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        <tr>
+                            <td><a href="#" class="text-primary text-decoration-none">000004203691</a></td>
+                            <td>13A05</td>
+                            <td>FILTRE A HUILE 7623537</td>
+                            <td>CHARGEUR S/PNEUS LIEBHERR L566</td>
+                            <td>LIEBHERR</td>
+                            <td>321291</td>
+                            <td>0</td>
+                            <td>18 737,40</td>
+                            <td class="fw-bold">0,00</td>
+                            <td>0</td>
+                            <td></td>
+                            <td>01-01-1970</td>
+                        </tr>
+                        <tr>
+                            <td><a href="#" class="text-primary text-decoration-none">000007028951</a></td>
+                            <td>13F03</td>
+                            <td>FILTRE A AIR</td>
+                            <td>LIEBHERR</td>
+                            <td></td>
+                            <td>321291</td>
+                            <td>9</td>
+                            <td>12 010,35</td>
+                            <td class="fw-bold">108 093,15</td>
+                            <td>0</td>
+                            <td></td>
+                            <td>01-01-1970</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#stockTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json" // تعريب الواجهة للفرنسية كما في صورتك
+                },
+                "pageLength": 10,
+                "ordering": true,
+                "responsive": true
+            });
+        });
+    </script>
+}

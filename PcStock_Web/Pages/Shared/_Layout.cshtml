@@ -1,0 +1,178 @@
+﻿<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PcStock_Web</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="bg-light">
+
+    <div class="app-wrapper">
+        <aside class="sidebar-cosider" id="sidebar">
+
+            <div class="brand-section d-flex align-items-center justify-content-between">
+                <div class="brand-text">
+                    <span class="brand-title">COSIDER TP</span>
+                    <span class="brand-subtitle">DCM MSILA | PC Stock-Web</span>
+                </div>
+                <button type="button" id="sidebarToggle" class="btn text-white p-0 border-0">
+                    <i class="fas fa-bars" id="toggleIcon"></i>
+                </button>
+            </div>
+
+            <nav class="nav-list">
+                <a asp-page="/Index" class="nav-item active">
+                    <i class="fas fa-th-large"></i>
+                    <span class="menu-text">TABLEAU DE BORD</span>
+                </a>
+                @{
+                    // 1. تحديد الصفحة الحالية برمجياً من المسار (URL)
+                    var activePage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+
+                    // 2. التحقق: هل نحن في أي صفحة تبدأ بكلمة Stocks؟
+                    bool isStockSection = activePage.StartsWith("/Stocks");
+                }
+
+                <div class="nav-group">
+                    <div class="nav-item has-submenu @(isStockSection ? "parent-active" : "")" id="stockMenuToggle">
+                        <i class="fas fa-boxes"></i>
+                        <span class="menu-text">STOCKS</span>
+                        <i class="fas fa-chevron-down ms-auto arrow-icon @(isStockSection ? "rotate" : "")"></i>
+                    </div>
+
+                    <ul class="submenu-list @(isStockSection ? "show" : "")" id="stockSubmenu">
+                        <li>
+                            <a asp-page="/Stocks/List"
+                               class="submenu-item @(activePage == "/Stocks/List" ? "active" : "")">
+                                <i class="fas fa-list-ul"></i>
+                                <span class="menu-text">Liste des Articles</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Stocks/Mouvements"
+                               class="submenu-item @(activePage == "/Stocks/Mouvements" ? "active" : "")">
+                                <i class="fas fa-wave-square"></i>
+                                <span class="menu-text">Mouvements Article</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+             @*    <div class="nav-group">
+                    <div class="nav-item has-submenu" id="stockMenuToggle">
+                        <i class="fas fa-boxes"></i>
+                        <span class="menu-text">STOCKS</span>
+                        <i class="fas fa-chevron-down ms-auto arrow-icon"></i>
+                    </div>
+
+                    @{
+                        // تعليق: الحصول على مسار الصفحة الحالية
+                        var currentPage = ViewContext.RouteData.Values["page"]?.ToString();
+                    }
+
+                    <ul class="submenu-list @(currentPage != null && currentPage.StartsWith("/Stocks") ? "show" : "")" id="stockSubmenu">
+                        <li>
+                            <a asp-page="/Stocks/List" class="submenu-item">
+                                <i class="fas fa-list-ul"></i>
+                                <span class="menu-text">Liste des Articles</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Stocks/Mouvements"
+                               class="submenu-item @(currentPage == "/Stocks/Mouvements" ? "active" : "")">
+                                <i class="fas fa-wave-square"></i>
+                                <span class="menu-text">Mouvements Article</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div> *@
+
+                <div class="nav-group">
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="menu-text">ACHATS</span>
+                        <i class="fas fa-chevron-right ms-auto arrow-icon"></i>
+                    </a>
+                </div>
+
+                <a href="#" class="nav-item">
+                    <i class="fas fa-arrow-up-right-from-square"></i>
+                    <span class="menu-text">CESSION FOURNIE</span>
+                </a>
+
+                <a href="#" class="nav-item">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span class="menu-text">CONSOMMATIONS</span>
+                </a>
+
+                <a href="#" class="nav-item">
+                    <i class="fas fa-gas-pump"></i>
+                    <span class="menu-text">GESTION DE CARBURANT</span>
+                </a>
+
+                <a href="#" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span class="menu-text">CONFIGURATIONS</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer mt-auto">
+                <div class="user-box d-flex align-items-center">
+                    <div class="user-avatar">CT</div>
+                    <div class="user-info ms-2">
+                        <span class="u-name">Admin COSIDER</span>
+                        <span class="u-unit">Unité: DCM MSILA</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content w-100">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.getElementById('sidebarToggle').addEventListener('click', function () {
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('toggleIcon');
+
+            // إضافة أو إزالة كلاس الانهيار (collapsed)
+            sidebar.classList.toggle('collapsed');
+
+            // تغيير شكل الأيقونة للتفاعل مع المستخدم
+            if (sidebar.classList.contains('collapsed')) {
+                icon.classList.replace('fa-bars', 'fa-chevron-right');
+            } else {
+                icon.classList.replace('fa-chevron-right', 'fa-bars');
+            }
+        });
+    </script>
+    <script>
+                // كود فتح وإغلاق قائمة STOCKS
+        document.getElementById('stockMenuToggle').addEventListener('click', function() {
+            const submenu = document.getElementById('stockSubmenu');
+            const arrow = this.querySelector('.arrow-icon');
+
+            submenu.classList.toggle('show');
+
+            // تدوير السهم عند الفتح
+            if (submenu.classList.contains('show')) {
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        });
+    </script>
+        
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
