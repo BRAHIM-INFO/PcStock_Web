@@ -14,58 +14,85 @@
 <div class="container-fluid">
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <h5 class="text-primary fw-bold mb-4">DataTables Example</h5>
+            <h5 class="text-primary fw-bold mb-4">Liste Des Articles</h5>
+             
+            <div class="d-flex justify-content-between align-items-center mb-3">
+               <div class="d-flex align-items-center">
+                   <span class="me-2 fw-bold">Afficher</span>
+                   <select class="form-select form-select-sm w-auto" 
+                           onchange="location.href='?PageSize=' + this.value + '&CurrentPage=1'">
+                       <option value="10" selected="@(Model.PageSize == 10)">10</option>
+                       <option value="20" selected="@(Model.PageSize == 20)">20</option>
+                       <option value="50" selected="@(Model.PageSize == 50)">50</option>
+                   </select>
+                   <span class="ms-2 fw-bold">entrées</span>
+               </div>
+            </div>
 
             <div class="table-responsive">
-                <table id="stockTable" class="table table-hover align-middle border">
-                    <thead class="bg-light text-secondary small text-uppercase">
-                        <tr>
-                            <th>REF</th>
-                            <th>CODE_INT</th>
-                            <th>INTITULE</th>
-                            <th>INTITULE2</th>
-                            <th>INTITULE3</th>
-                            <th>FAMILLE</th>
-                            <th>QTE</th>
-                            <th>PAMP</th>
-                            <th>MONTANT</th>
-                            <th>STOCK_INI</th>
-                            <th>CASIER</th>
-                            <th>DATE_MAJ</th>
+                <table class="table table-sm table-hover border shadow-sm" id="stockTable">
+                    <thead class="bg-light shadow-sm">
+                        <tr class="text-uppercase small fw-bold">
+                            <th>REF <i class="fas fa-sort"></i></th>
+                            <th>CODE_INT <i class="fas fa-sort"></i></th>
+                            <th>INTITULE <i class="fas fa-sort"></i></th>
+                            <th>FAMILLE <i class="fas fa-sort"></i></th>
+                            <th class="text-center">QTE <i class="fas fa-sort"></i></th>
+                            <th class="text-end">PAMP <i class="fas fa-sort"></i></th>
+                            <th>DATE_MAJ <i class="fas fa-sort"></i></th>
                         </tr>
+                       @*  <tr class="filter-row bg-white">
+                            <th><input type="text" class="form-control form-control-sm border-0 bg-light" onkeyup="filter(0, this.value)"></th>
+                            <th><input type="text" class="form-control form-control-sm border-0 bg-light" onkeyup="filter(1, this.value)"></th>
+                            <th><input type="text" class="form-control form-control-sm border-0 bg-light" onkeyup="filter(2, this.value)"></th>
+                            <th><input type="text" class="form-control form-control-sm border-0 bg-light" onkeyup="filter(5, this.value)"></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr> *@
                     </thead>
-                    <tbody class="small">
-                        <tr>
-                            <td><a href="#" class="text-primary text-decoration-none">000004203691</a></td>
-                            <td>13A05</td>
-                            <td>FILTRE A HUILE 7623537</td>
-                            <td>CHARGEUR S/PNEUS LIEBHERR L566</td>
-                            <td>LIEBHERR</td>
-                            <td>321291</td>
-                            <td>0</td>
-                            <td>18 737,40</td>
-                            <td class="fw-bold">0,00</td>
-                            <td>0</td>
-                            <td></td>
-                            <td>01-01-1970</td>
-                        </tr>
-                        <tr>
-                            <td><a href="#" class="text-primary text-decoration-none">000007028951</a></td>
-                            <td>13F03</td>
-                            <td>FILTRE A AIR</td>
-                            <td>LIEBHERR</td>
-                            <td></td>
-                            <td>321291</td>
-                            <td>9</td>
-                            <td>12 010,35</td>
-                            <td class="fw-bold">108 093,15</td>
-                            <td>0</td>
-                            <td></td>
-                            <td>01-01-1970</td>
-                        </tr>
+                    <tbody>
+                        @foreach (var item in Model.Inventory)
+                        {
+                            <tr>
+                                <td class="fw-bold">@item.REF</td>
+                                <td>@item.CODE_INT</td>
+                                <td>@item.INTITULE</td>
+                                <td>@item.FAMILLE</td>
+                                <td class="text-center @(item.QTE <= 0 ? "text-danger" : "")">@item.QTE</td>
+                                <td class="text-end">@item.PAMP.ToString("N2")</td>
+                                <td class="small">@item.DATE_MAJ?.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
-            </div>
+            </div> 
+
+            <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-2">
+               <div class="text-secondary small">
+                   Affichage de @(((Model.CurrentPage - 1) * Model.PageSize) + 1) à 
+                   @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalItems) sur @Model.TotalItems
+               </div>
+               
+               <nav>
+                   <ul class="pagination pagination-sm mb-0">
+                       <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                           <a class="page-link" asp-route-CurrentPage="@(Model.CurrentPage - 1)" asp-route-PageSize="@Model.PageSize">Précédent</a>
+                       </li>
+              
+                       @for (int i = 1; i <= Math.Min(Model.TotalPages, 5); i++)
+                       {
+                           <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                               <a class="page-link" asp-route-CurrentPage="@i" asp-route-PageSize="@Model.PageSize">@i</a>
+                           </li>
+                       }
+              
+                       <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                           <a class="page-link" asp-route-CurrentPage="@(Model.CurrentPage + 1)" asp-route-PageSize="@Model.PageSize">Suivant</a>
+                       </li>
+                   </ul>
+               </nav>
+            </div> 
         </div>
     </div>
 </div>
