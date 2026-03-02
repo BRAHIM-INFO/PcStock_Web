@@ -145,7 +145,7 @@
 
 /* الحالة عندما يكون مغلقاً */
 .sidebar-cosider.collapsed {
-    width: 80px; /* عرض صغير يكفي للأيقونات فقط */
+    width: 80px;  عرض صغير يكفي للأيقونات فقط 
 }
 
 /* إخفاء النصوص عند الإغلاق وإظهار الأيقونات فقط */
@@ -168,11 +168,11 @@
 /* تنسيق القائمة الفرعية */
 .submenu-list {
     list-style: none;
-    padding-left: 35px; /* إزاحة جهة اليمين لتظهر تحت الأيقونة الرئيسية */
+    padding-left: 35px;  إزاحة جهة اليمين لتظهر تحت الأيقونة الرئيسية 
     margin: 5px 0;
-    border-left: 1px solid rgba(255, 255, 255, 0.2); /* الخط العمودي الخفيف */
+    border-left: 1px solid rgba(255, 255, 255, 0.2);  الخط العمودي الخفيف 
     margin-left: 25px;
-    display: none; /* مخفية افتراضياً */
+    display: none;  مخفية افتراضياً 
 } 
 
 /* العنصر الفرعي */
@@ -268,3 +268,184 @@
     padding: 8px 20px;
     border-radius: 8px;
 }
+
+/* تصميم البانر العلوي الأزرق */
+.dashboard-header-bg {
+    background-color: #1e56d0; /* أزرق كوزيدار */
+    height: 160px;
+    color: white;
+    padding-top: 20px;
+    border-radius: 15px;
+    margin: 15px;
+}
+
+.header-icon-box {
+    background: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+/* تنسيق البطاقات الإحصائية */
+.stats-container {
+    margin-top: -50px; /* جعل البطاقات تتداخل مع اللون الأزرق */
+}
+
+.stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    min-height: 110px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    position: relative;
+    overflow: hidden;
+    border-left: 5px solid transparent;
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.stat-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #333;
+}
+
+.stat-bg-icon {
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
+    font-size: 2rem;
+    opacity: 0.05; /* أيقونة خلفية باهتة جداً كما في الصورة */
+}
+
+/* ألوان الحواف والنصوص الخاصة بكل بطاقة */
+.border-blue {
+    border-left-color: #007bff;
+}
+
+.blue-text {
+    color: #007bff;
+}
+
+.border-green {
+    border-left-color: #28a745;
+}
+
+.green-text {
+    color: #28a745;
+}
+
+.border-orange {
+    border-left-color: #fd7e14;
+}
+
+.orange-text {
+    color: #fd7e14;
+}
+
+.border-red {
+    border-left-color: #dc3545;
+}
+
+.red-text {
+    color: #dc3545;
+}
+
+.border-cyan {
+    border-left-color: #17a2b8;
+}
+
+.cyan-text {
+    color: #17a2b8;
+}
+/* تمييز عنصر الشراء النشط باللون الأبيض المنحني */
+.submenu-item.active {
+    background-color: #ffffff !important;
+    color: #1e56d0 !important; /* أزرق كوزيدار */
+    font-weight: 700;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* المسافة البادئة للقوائم المنسدلة لتبدو هرمية */
+.submenu-list {
+    padding-left: 20px;
+    border-left: 1px solid rgba(255,255,255,0.15);
+    margin-left: 25px;
+} 
+
+/*.sidebar-cosider {
+    width: var(--sidebar-width);
+    transition: width var(--transition-speed) ease;
+    overflow-x: hidden;*/ /* يمنع ظهور شريط التمرير الأفقي عند التصغير */
+    /*display: flex;
+    flex-direction: column;
+}*/
+
+    /* حالة التصغير (Collapsed) */
+    /*.sidebar-cosider.collapsed {
+        width: var(--sidebar-collapsed-width);
+    }*/
+
+/* تنسيق الأيقونات: حجم أصغر وموحد */
+/*.icon-wrapper {
+    min-width: 45px;*/ /* عرض ثابت يمنع التداخل */
+    /*display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.1rem;*/ /* حجم أيقونة أنيق وأقل حجماً */
+    /*flex-shrink: 0;
+}*/
+
+/* إخفاء النصوص بسلاسة عند التصغير */
+/*.sidebar-cosider.collapsed .link-text,
+.sidebar-cosider.collapsed .brand-content,
+.sidebar-cosider.collapsed .user-details,
+.sidebar-cosider.collapsed .arrow {
+    display: none;
+}*/
+
+/* تصميم الزر النشط في حالة التصغير */
+/*.sidebar-cosider.collapsed .nav-link.active {
+    background-color: white;
+    color: #1e56d0;
+    border-radius: 12px;
+    margin: 5px 15px;*/ /* يترك مسافة جمالية حول الأيقونة */
+/*}*/
+
+/* تنسيق الفوتر (المستخدم) */
+/*.sidebar-footer {
+    padding: 15px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}*/

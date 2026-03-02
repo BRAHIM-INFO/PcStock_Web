@@ -13,123 +13,156 @@
 <body class="bg-light">
 
     <div class="app-wrapper">
-        <aside class="sidebar-cosider" id="sidebar">
 
-            <div class="brand-section d-flex align-items-center justify-content-between">
-                <div class="brand-text">
-                    <span class="brand-title">COSIDER TP</span>
-                    <span class="brand-subtitle">DCM MSILA | PC Stock-Web</span>
-                </div>
-                <button type="button" id="sidebarToggle" class="btn text-white p-0 border-0">
-                    <i class="fas fa-bars" id="toggleIcon"></i>
-                </button>
+      <aside class="sidebar-cosider" id="sidebar"> 
+        <div class="brand-section d-flex align-items-center justify-content-between">
+            <div class="brand-text">
+                <span class="brand-title">COSIDER TP</span>
+                <span class="brand-subtitle">DCM MSILA | PC Stock-Web</span>
             </div>
+            <button type="button" id="sidebarToggle" class="btn text-white p-0 border-0">
+                <i class="fas fa-bars" id="toggleIcon"></i>
+            </button>
+        </div>
 
-            <nav class="nav-list">
-                <a asp-page="/Index" class="nav-item active">
-                    <i class="fas fa-th-large"></i>
-                    <span class="menu-text">TABLEAU DE BORD</span>
-                </a>
-                @{
-                    // 1. تحديد الصفحة الحالية برمجياً من المسار (URL)
-                    var activePage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+        <nav class="nav-list">
+            <a asp-page="/Index" class="nav-item active">
+                <i class="fas fa-th-large"></i>
+                <span class="menu-text">TABLEAU DE BORD</span>
+            </a>
+            @{
+                // 1. تحديد الصفحة الحالية برمجياً من المسار (URL)
+                var activePage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
 
-                    // 2. التحقق: هل نحن في أي صفحة تبدأ بكلمة Stocks؟
-                    bool isStockSection = activePage.StartsWith("/Stocks");
-                }
+                // 2. التحقق: هل نحن في أي صفحة تبدأ بكلمة Stocks؟
+                bool isStockSection = activePage.StartsWith("/Stocks");
+            }
 
-                <div class="nav-group">
-                    <div class="nav-item has-submenu @(isStockSection ? "parent-active" : "")" id="stockMenuToggle">
-                        <i class="fas fa-boxes"></i>
-                        <span class="menu-text">STOCKS</span>
-                        <i class="fas fa-chevron-down ms-auto arrow-icon @(isStockSection ? "rotate" : "")"></i>
-                    </div>
-
-                    <ul class="submenu-list @(isStockSection ? "show" : "")" id="stockSubmenu">
-                        <li>
-                            <a asp-page="/Stocks/List"
-                               class="submenu-item @(activePage == "/Stocks/List" ? "active" : "")">
-                                <i class="fas fa-list-ul"></i>
-                                <span class="menu-text">Liste des Articles</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-page="/Stocks/Mouvements"
-                               class="submenu-item @(activePage == "/Stocks/Mouvements" ? "active" : "")">
-                                <i class="fas fa-wave-square"></i>
-                                <span class="menu-text">Mouvements Article</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-             @*    <div class="nav-group">
-                    <div class="nav-item has-submenu" id="stockMenuToggle">
-                        <i class="fas fa-boxes"></i>
-                        <span class="menu-text">STOCKS</span>
-                        <i class="fas fa-chevron-down ms-auto arrow-icon"></i>
-                    </div>
-
-                    @{
-                        // تعليق: الحصول على مسار الصفحة الحالية
-                        var currentPage = ViewContext.RouteData.Values["page"]?.ToString();
-                    }
-
-                    <ul class="submenu-list @(currentPage != null && currentPage.StartsWith("/Stocks") ? "show" : "")" id="stockSubmenu">
-                        <li>
-                            <a asp-page="/Stocks/List" class="submenu-item">
-                                <i class="fas fa-list-ul"></i>
-                                <span class="menu-text">Liste des Articles</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-page="/Stocks/Mouvements"
-                               class="submenu-item @(currentPage == "/Stocks/Mouvements" ? "active" : "")">
-                                <i class="fas fa-wave-square"></i>
-                                <span class="menu-text">Mouvements Article</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div> *@
-
-                <div class="nav-group">
-                    <a href="#" class="nav-item">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="menu-text">ACHATS</span>
-                        <i class="fas fa-chevron-right ms-auto arrow-icon"></i>
-                    </a>
+            <div class="nav-group">
+                <div class="nav-item has-submenu @(isStockSection ? "parent-active" : "")" id="stockMenuToggle">
+                    <i class="fas fa-boxes"></i>
+                    <span class="menu-text">STOCKS</span>
+                    <i class="fas fa-chevron-down ms-auto arrow-icon @(isStockSection ? "rotate" : "")"></i>
                 </div>
 
-                <a href="#" class="nav-item">
-                    <i class="fas fa-arrow-up-right-from-square"></i>
-                    <span class="menu-text">CESSION FOURNIE</span>
-                </a>
+                <ul class="submenu-list @(isStockSection ? "show" : "")" id="stockSubmenu">
+                    <li>
+                        <a asp-page="/Stocks/List"
+                           class="submenu-item @(activePage == "/Stocks/List" ? "active" : "")">
+                            <i class="fas fa-list-ul"></i>
+                            <span class="menu-text">Liste des Articles</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/Stocks/Mouvements"
+                           class="submenu-item @(activePage == "/Stocks/Mouvements" ? "active" : "")">
+                            <i class="fas fa-wave-square"></i>
+                            <span class="menu-text">Mouvements Article</span>
+                        </a>
+                    </li>
 
-                <a href="#" class="nav-item">
-                    <i class="fas fa-clipboard-list"></i>
-                    <span class="menu-text">CONSOMMATIONS</span>
-                </a>
+                    <li>
+                        <a asp-page="/Stocks/Arrivage"
+                           class="submenu-item @(activePage == "/Stocks/Arrivage" ? "active" : "")">
+                            <i class="fas fa-truck"></i>
+                            <span class="menu-text">Arrivage Journalier</span>
+                        </a>
+                    </li>
+                </ul>
+            </div> 
+           
+            @{
+                var currentUrl = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+                isStockSection = currentUrl.StartsWith("/Stocks");
+                // تعليق: فحص ما إذا كنا داخل قسم المشتريات
+                bool isAchatSection = currentUrl.StartsWith("/Achats");
+            }
 
-                <a href="#" class="nav-item">
-                    <i class="fas fa-gas-pump"></i>
-                    <span class="menu-text">GESTION DE CARBURANT</span>
-                </a>
+            <div class="nav-group mt-2">
+                <div class="nav-item has-submenu @(isAchatSection ? "parent-active" : "")" id="achatMenuToggle">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="menu-text">ACHATS</span>
+                    <i class="fas fa-chevron-down ms-auto arrow-icon @(isAchatSection ? "rotate" : "")"></i>
+                </div>
 
-                <a href="#" class="nav-item">
-                    <i class="fas fa-cog"></i>
-                    <span class="menu-text">CONFIGURATIONS</span>
-                </a>
-            </nav>
+                <ul class="submenu-list @(isAchatSection ? "show" : "")" id="achatSubmenu">
+                    <li>
+                        <a asp-page="/Achats/BEM" class="submenu-item @(currentUrl == "/Achats/BEM" ? "active" : "")">
+                            <i class="far fa-file-alt"></i>
+                            <span class="menu-text">BON ENTREE MAGASIN</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/Achats/Reste" class="submenu-item @(currentUrl == "/Achats/Reste" ? "active" : "")">
+                            <i class="fas fa-box-open"></i>
+                            <span class="menu-text">RESTE EN STOCKS</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/Achats/ParBEM" class="submenu-item @(currentUrl == "/Achats/ParBEM" ? "active" : "")">
+                            <i class="fas fa-list-ol"></i>
+                            <span class="menu-text">ACHATS PAR BEM</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/Achats/ParFacture" class="submenu-item @(currentUrl == "/Achats/ParFacture" ? "active" : "")">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span class="menu-text">ACHATS PAR FACTURE</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/Achats/ParFournisseur" class="submenu-item @(currentUrl == "/Achats/ParFournisseur" ? "active" : "")">
+                            <i class="fas fa-user-tag"></i>
+                            <span class="menu-text">ACHAT PAR FOURNISSEUR</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/Achats/Synthese" class="submenu-item @(currentUrl == "/Achats/Synthese" ? "active" : "")">
+                            <i class="fas fa-chart-pie"></i>
+                            <span class="menu-text">SYNTHSE DES ACHATS</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-page="/Achats/Recap" class="submenu-item @(currentUrl == "/Achats/Recap" ? "active" : "")">
+                            <i class="fas fa-poll"></i>
+                            <span class="menu-text">RECAP DES ACHATS</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <a href="#" class="nav-item">
+                <i class="fas fa-arrow-up-right-from-square"></i>
+                <span class="menu-text">CESSION FOURNIE</span>
+            </a>
 
-            <div class="sidebar-footer mt-auto">
-                <div class="user-box d-flex align-items-center">
-                    <div class="user-avatar">CT</div>
-                    <div class="user-info ms-2">
-                        <span class="u-name">Admin COSIDER</span>
-                        <span class="u-unit">Unité: DCM MSILA</span>
-                    </div>
+            <a href="#" class="nav-item">
+                <i class="fas fa-clipboard-list"></i>
+                <span class="menu-text">CONSOMMATIONS</span>
+            </a>
+
+            <a href="#" class="nav-item">
+                <i class="fas fa-gas-pump"></i>
+                <span class="menu-text">GESTION DE CARBURANT</span>
+            </a>
+             
+
+            <a href="#" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span class="menu-text">CONFIGURATIONS</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer mt-auto">
+            <div class="user-box d-flex align-items-center">
+                <div class="user-avatar">CT</div>
+                <div class="user-info ms-2">
+                    <span class="u-name">Admin COSIDER</span>
+                    <span class="u-unit">Unité: DCM MSILA</span>
                 </div>
             </div>
-        </aside>
+        </div>
+    </aside> 
+        
 
         <main class="main-content w-100">
             @RenderBody()
@@ -171,7 +204,17 @@
             }
         });
     </script>
-        
+
+    <script>
+                 // كود فتح وإغلاق قائمة ACHATS
+        document.getElementById('achatMenuToggle').addEventListener('click', function() {
+            const submenu = document.getElementById('achatSubmenu');
+            const arrow = this.querySelector('.arrow-icon');
+
+            submenu.classList.toggle('show');
+            arrow.classList.toggle('rotate');
+        });
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
