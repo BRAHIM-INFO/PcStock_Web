@@ -498,3 +498,41 @@ thead tr.filters th::after, thead tr.filters th::before {
     padding: 5px !important;
     background-color: #fcfcfc !important;
 }
+/* تصميم زر التعديل في الجدول */
+.btn-edit {
+    background-color: #2563eb;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+    .btn-edit:hover {
+        background-color: #1e40af;
+        transform: rotate(15deg) scale(1.1);
+    }
+
+/* تنسيق التبويبات في المودال */
+#editArticleModal .nav-pills .nav-link {
+    background-color: transparent;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    margin: 0 5px;
+    border-radius: 12px;
+}
+
+    #editArticleModal .nav-pills .nav-link.active {
+        background-color: #2563eb;
+        color: white;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+/* شكل حقول الإدخال */
+.modal-body input:focus {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    border-color: #2563eb;
+}

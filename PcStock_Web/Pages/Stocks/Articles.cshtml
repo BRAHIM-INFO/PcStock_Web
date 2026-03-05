@@ -57,6 +57,168 @@
     </div>
 </div>
 
+<!-- Modal de Modification -->
+<div class="modal fade" id="editArticleModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <!-- Header -->
+            <div class="modal-header bg-primary text-white border-0" style="border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title fw-bold" id="editModalLabel">
+                    <i class="fas fa-edit me-2"></i> Modification de l'Article : <span id="displayRef" class="badge bg-white text-primary"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="editForm">
+                <div class="modal-body p-4 bg-light">
+                    <!-- Nav Tabs -->
+                    <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active px-4" id="tab-info-tab" data-bs-toggle="pill" data-bs-target="#tab-info" type="button" role="tab"><i class="fas fa-info-circle me-2"></i>Identification</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link px-4" id="tab-stock-tab" data-bs-toggle="pill" data-bs-target="#tab-stock" type="button" role="tab"><i class="fas fa-boxes me-2"></i>Stock & Prix</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link px-4" id="tab-stats-tab" data-bs-toggle="pill" data-bs-target="#tab-stats" type="button" role="tab"><i class="fas fa-chart-line me-2"></i>Statistiques</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="pills-tabContent">
+                        <!-- Tab 1: Identification -->
+                        <div class="tab-pane fade show active" id="tab-info" role="tabpanel">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted">Référence (Non modifiable)</label>
+                                    <input type="text" id="editREF" name="REF" class="form-control bg-white fw-bold" readonly>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label small fw-bold text-muted">Intitulé Principal</label>
+                                    <input type="text" id="editINTITULE" name="INTITULE" class="form-control border-primary shadow-sm">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Intitulé 2</label>
+                                    <input type="text" id="editINTITULE2" name="INTITULE2" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Intitulé 3</label>
+                                    <input type="text" id="editINTITULE3" name="INTITULE3" class="form-control">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted">Famille</label>
+                                    <input type="text" id="editFAMILLE" name="FAMILLE" class="form-control">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted">Lieu de Stockage</label>
+                                    <input type="text" id="editLIEU_STO" name="LIEU_STO" class="form-control">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted">Casier</label>
+                                    <input type="text" id="editCASIER" name="CASIER" class="form-control border-warning shadow-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: Stock & Prix -->
+                        <div class="tab-pane fade" id="tab-stock" role="tabpanel">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <div class="p-3 bg-white rounded shadow-sm border-start border-4 border-success">
+                                        <label class="small fw-bold text-success">Quantité Actuelle</label>
+                                        <input type="number" id="editQTE" name="QTE" class="form-control form-control-lg border-0 bg-transparent fw-bold" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="p-3 bg-white rounded shadow-sm border-start border-4 border-primary">
+                                        <label class="small fw-bold text-primary">PAMP</label>
+                                        <input type="number" id="editPAMP" name="PAMP" class="form-control form-control-lg border-0 bg-transparent fw-bold" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small fw-bold text-muted">Prix Achat</label>
+                                    <input type="number" id="editPRIX_ACH" name="PRIX_ACH" class="form-control" step="0.01">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small fw-bold text-muted">Valeur Initiale</label>
+                                    <input type="number" id="editVALEUR_INI" name="VALEUR_INI" class="form-control" step="0.01">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small fw-bold text-muted">Stock Initial</label>
+                                    <input type="number" id="editSTOCK_INI" name="STOCK_INI" class="form-control" step="0.01">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small fw-bold text-danger">Stock Max</label>
+                                    <input type="number" id="editSTOCK_MAX" name="STOCK_MAX" class="form-control border-danger shadow-sm" step="0.01">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small fw-bold text-warning">Stock Sécurité</label>
+                                    <input type="number" id="editSTOCK_SEC" name="STOCK_SEC" class="form-control border-warning shadow-sm" step="0.01">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small fw-bold text-muted">Dernière MAJ</label>
+                                    <input type="date" id="editDATE_MAJ" name="DATE_MAJ" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 3: Statistiques (Read-only cards) -->
+                        <div class="tab-pane fade" id="tab-stats" role="tabpanel">
+                            <div class="row g-2 text-center">
+                                <div class="col-md-4">
+                                    <div class="card border-0 bg-white p-3 shadow-sm rounded-4">
+                                        <span class="text-muted small">Total Entrées / Sorties</span>
+                                        <div class="d-flex justify-content-around mt-2">
+                                            <div><h5 id="statENTREES" class="text-success fw-bold mb-0">0</h5><small>Entrées</small></div>
+                                            <div class="vr"></div>
+                                            <div><h5 id="statSORTIES" class="text-danger fw-bold mb-0">0</h5><small>Sorties</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card border-0 bg-white p-3 shadow-sm rounded-4">
+                                        <span class="text-muted small">Quantités (Val.) E/S</span>
+                                        <div class="d-flex justify-content-around mt-2">
+                                            <div><h5 id="statQTE_ENT" class="text-info fw-bold mb-0">0</h5><small>Qte Ent</small></div>
+                                            <div class="vr"></div>
+                                            <div><h5 id="statQTE_SOR" class="text-warning fw-bold mb-0">0</h5><small>Qte Sor</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card border-0 bg-primary text-white p-3 shadow-sm rounded-4">
+                                        <span class="small opacity-75">Valeur Résiduelle (TEMPVAL)</span>
+                                        <h4 id="statTEMPVAL" class="fw-bold mt-2">0.00 DA</h4>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    <div class="bg-light p-2 border-bottom border-primary"><small>Achat HT:</small> <b id="statACHAT_HT">0</b></div>
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    <div class="bg-light p-2 border-bottom border-success"><small>Conso HT:</small> <b id="statCONSO_HT">0</b></div>
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    <div class="bg-light p-2 border-bottom border-info"><small>Cession HT:</small> <b id="statCESS_HT">0</b></div>
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    <div class="bg-light p-2 border-bottom border-warning"><small>Reinté. HT:</small> <b id="statCESSR_HT">0</b></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer border-0 p-4">
+                    <button type="button" class="btn btn-outline-secondary px-4 rounded-pill shadow-sm" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-success px-5 rounded-pill shadow">
+                        <i class="fas fa-save me-2"></i> Enregistrer les modifications
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -95,6 +257,19 @@
                         data: null,
                         render: function() { return '<button class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>'; }
                     }
+                    // === هنا تضع الكود الجديد لزر التعديل ===
+                    // {
+                    //     data: null,
+                    //     className: 'text-center',
+                    //     render: function(data) {
+                    //         // نقوم بتحويل الكائن بالكامل إلى نص مشفر لإرساله للدالة
+                    //         let dataStr = encodeURIComponent(JSON.stringify(data));
+                    //         return `<button type="button" class="btn btn-edit" onclick="openEditModal('${dataStr}')">
+                    //                     <i class="fas fa-edit"></i>
+                    //                 </button>`;
+                    //     }
+                    // }
+                    // // =======================================
                 ],
                 initComplete: function () {
                     var api = this.api();
@@ -114,7 +289,20 @@
                     });
                 }
             });
-        }); 
+        });
+           // لا تنسَ وضع دالة openEditModal خارج الـ $(document).ready لتكون عامة (Global)
+        function openEditModal(encodedData) {
+            const data = JSON.parse(decodeURIComponent(encodedData));
+            console.log("Données reçues:", data); // للتأكد من وصول البيانات في الـ Console
+
+            // هنا تضع الكود الذي يملأ الحقول في الـ Modal (الذي أعطيتك إياه في الرد السابق)
+            $('#displayRef').text(data.ref);
+            $('#editREF').val(data.ref);
+            $('#editINTITULE').val(data.intitule);
+            // ... وهكذا لبقية الحقول ...
+
+            $('#editArticleModal').modal('show');
+        }
     </script>
 }
  

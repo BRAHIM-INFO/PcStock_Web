@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Hosting; // ضروري للوصول لمجلد الص
 namespace PcStock_Web.Pages.Settings
 {
     public class SettingsModel : PageModel
-    {  
+    { 
         private readonly ConfigService _configService;
-        public SettingsModel(ConfigService configService) { _configService = configService; }
+       
 
         [BindProperty]
         public string DbPath { get; set; }
@@ -20,7 +20,13 @@ namespace PcStock_Web.Pages.Settings
         [BindProperty]
         public IFormFile? LogoFile { get; set; } // لاستقبال ملف الصورة
 
-        
+        public SettingsModel(ConfigService configService, IWebHostEnvironment environment)
+        {
+            _configService = configService;
+            _environment = environment; // 3. التعيين (هذا ما كان ينقصك)
+        }
+
+
         public async Task<IActionResult> OnPostAsync()
         {
             if (!string.IsNullOrEmpty(DbPath))
