@@ -3,6 +3,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- SweetAlert2 CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <title>@ViewData["Title"] - PcStock_Web</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -46,13 +50,13 @@
                 </div>
 
                 <ul class="submenu-list @(isStockSection ? "show" : "")" id="stockSubmenu">
-                    <li>
-                        <a asp-page="/Stocks/List"
-                           class="submenu-item @(activePage == "/Stocks/List" ? "active" : "")">
-                            <i class="fas fa-list-ul"></i>
-                            <span class="menu-text">Liste des Articles</span>
-                        </a>
-                    </li>
+                        <li>
+                            <a asp-page="/Stocks/Articles"
+                               class="submenu-item @(ViewContext.RouteData.Values["page"]?.ToString() == "/Stocks/Articles" ? "active" : "")">
+                                <i class="fas fa-list-ul"></i>
+                                <span class="menu-text">Liste des Articles</span>
+                            </a>
+                        </li>
                     <li>
                         <a asp-page="/Stocks/Mouvements"
                            class="submenu-item @(activePage == "/Stocks/Mouvements" ? "active" : "")">
@@ -86,8 +90,8 @@
                 </div>
 
                 <ul class="submenu-list @(isAchatSection ? "show" : "")" id="achatSubmenu">
-                    <li>
-                        <a asp-page="/Achats/BEM" class="submenu-item @(currentUrl == "/Achats/BEM" ? "active" : "")">
+                    <li> 
+                        <a asp-page="/Achats/NouvBonEntre" class="submenu-item @(currentUrl == "/Achats/NouvBonEntre" ? "active" : "")">
                             <i class="far fa-file-alt"></i>
                             <span class="menu-text">BON ENTREE MAGASIN</span>
                         </a>
@@ -144,12 +148,11 @@
                 <i class="fas fa-gas-pump"></i>
                 <span class="menu-text">GESTION DE CARBURANT</span>
             </a>
-             
-
-            <a href="#" class="nav-item">
-                <i class="fas fa-cog"></i>
-                <span class="menu-text">CONFIGURATIONS</span>
-            </a>
+                <a asp-page="/Settings/Settings"
+                   class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Settings") == true ? "active bg-white text-primary rounded" : "text-white") d-flex align-items-center py-3 px-4 mb-2">
+                    <i class="fas fa-cog me-3"></i>
+                    <span class="fw-semibold">CONFIGURATIONS</span>
+                </a>
         </nav>
 
         <div class="sidebar-footer mt-auto">

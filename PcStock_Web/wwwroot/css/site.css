@@ -436,4 +436,65 @@
     padding: 0.25rem 0.5rem;
 }
 
+/* الألوان والخطوط */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f1f5f9;
+}
 
+.text-blue-custom {
+    color: #1d4ed8;
+}
+
+/* تعديلات الكروت */
+.card {
+    transition: transform 0.2s ease;
+}
+
+/* تنسيق حقل الإدخال */
+.input-group-text {
+    border-radius: 10px 0 0 10px;
+}
+
+.form-control {
+    border-radius: 10px;
+}
+
+#btnBrowse {
+    border-radius: 0 10px 10px 0;
+}
+
+/* صورة الشعار */
+.logo-preview-container img {
+    object-fit: cover;
+    background: #f8fafc;
+}
+
+/* أيقونات مخصصة */
+.icon-box {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* تنسيق حقول البحث في الرأس */
+.filters input {
+    width: 100%;
+    padding: 4px 8px;
+    box-sizing: border-box;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+/* منع الترتيب (Sorting) عند الضغط داخل حقل البحث */
+thead tr.filters th::after, thead tr.filters th::before {
+    display: none !important;
+}
+
+.filters th {
+    padding: 5px !important;
+    background-color: #fcfcfc !important;
+}

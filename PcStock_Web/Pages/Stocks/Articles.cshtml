@@ -1,0 +1,120 @@
+﻿@page
+@model PcStock_Web.Pages.Stocks.ArticlesModel
+
+<!-- 1. استدعاء مكتبات DataTables للسرعة القصوى -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css">
+
+<style>
+    /* تنسيقات الجدول */
+    .dataTables_wrapper {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+
+    table.dataTable thead th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+        font-weight: bold;
+    }
+
+    .text-success {
+        color: #198754 !important;
+        font-weight: bold;
+    }
+</style>
+
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold text-dark">LISTE DES STOCKS </h4>
+        <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Imprimer</button>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <!-- الجدول سيتم تعبئته عبر Ajax ليكون سريعاً جداً -->
+            <table id="stockTable" class="display nowrap table table-hover" style="width:100%">
+                <thead>
+                    <tr class="main-header">
+                        <th>REF</th>
+                        <th>INTITULE</th>
+                        <th>FAMILLE</th>
+                        <th>QTE</th>
+                        <th>PAMP</th>
+                        <th>MONTANT</th>
+                        <th>STOCK_INI</th>
+                        <th>CASIER</th>
+                        <th>DATE_MAJ</th>
+                        <th>EDIT</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js"></script>
+
+    <script>
+         $(document).ready(function () {
+            // 1. إضافة صف الفلترة
+            $('#stockTable thead tr').clone(true).addClass('filters').appendTo('#stockTable thead');
+
+            // 2. تهيئة الجدول
+            var table = $('#stockTable').DataTable({
+                ajax: {
+                    url: '?handler=AllData',
+                    dataSrc: ''
+                },
+                orderCellsTop: true,
+                fixedHeader: true,
+                deferRender: true,
+                scrollY: 600,
+                scroller: true,
+                columns: [
+                    { data: 'ref' },
+                    { data: 'intitule' },
+                    { data: 'famille' },
+                    { data: 'qte', className: 'text-end' },
+                    { data: 'pamp', className: 'text-end' },
+                    {
+                        data: null,
+                        render: function(data) { return (data.qte * data.pamp).toFixed(2); }
+                    },
+                    { data: 'stocK_INI' },
+                    { data: 'casier' },
+                    { data: 'datE_MAJ' },
+                    {
+                        data: null,
+                        render: function() { return '<button class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>'; }
+                    }
+                ],
+                initComplete: function () {
+                    var api = this.api();
+                    api.columns().every(function (i) {
+                        var column = this;
+                        var headerCell = $('.filters th').eq(i);
+                        if (i === 9) { headerCell.html(''); return; }
+
+                        var title = headerCell.text();
+                        headerCell.html('<input type="text" placeholder="Filter ' + title + '" />');
+
+                        $('input', headerCell).on('keyup change', function () {
+                            if (column.search() !== this.value) {
+                                column.search(this.value).draw();
+                            }
+                        });
+                    });
+                }
+            });
+        }); 
+    </script>
+}
+ 

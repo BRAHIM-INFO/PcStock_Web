@@ -1,0 +1,247 @@
+﻿@page "/Achats/NouvBonEntre"
+@model PcStock_Web.Pages.Achats.NouvBonEntreModel
+@{
+    ViewData["Title"] = "Bon d'Entrée Magasin";
+}
+
+<style>
+    /* Custom styles to enhance Bootstrap for this specific page */
+    .bem-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+    
+    .header-gradient {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .form-label-custom {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-control-custom {
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        border: 2px solid #f1f3f5;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .form-control-custom:focus {
+        border-color: #0d6efd;
+        box-shadow: none;
+        background-color: #fff;
+    }
+
+    .entry-bar {
+        background-color: #1e293b;
+        border-radius: 20px;
+        padding: 25px;
+        color: white;
+    }
+
+    .entry-bar label {
+        color: #94a3b8;
+    }
+
+    .entry-bar .form-control {
+        background-color: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: white;
+    }
+
+    .table-custom thead {
+        background-color: #f8f9fa;
+    }
+
+    .table-custom th {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #adb5bd;
+        padding: 1.25rem;
+        border: none;
+    }
+
+    .product-ref {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: 800;
+        color: #0d6efd;
+    }
+
+    .btn-validate {
+        padding: 0.75rem 2rem;
+        border-radius: 12px;
+        font-weight: 700;
+        box-shadow: 0 10px 20px rgba(25, 135, 84, 0.2);
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-primary p-3 rounded-4 shadow-sm text-white">
+                <i class="far fa-file-alt fa-lg"></i>
+            </div>
+            <div>
+                <h4 class="fw-black mb-0 text-dark">BON D'ENTREE MAGASIN</h4>
+                <small class="text-muted fw-bold text-uppercase">Saisie des Réceptions Articles</small>
+            </div>
+        </div>
+        <button type="submit" form="mainForm" class="btn btn-success btn-validate">
+            <i class="fas fa-save me-2"></i> VALIDER B.E.M
+        </button>
+    </div>
+
+    <!-- Main Form Header -->
+    <div class="card bem-card mb-4">
+        <div class="card-body p-4 p-md-5">
+            <form id="mainForm" method="post">
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <label class="form-label-custom"><i class="fas fa-hashtag text-primary"></i> NO_BEM</label>
+                        <input type="text" class="form-control form-control-custom bg-light" value="AUTO" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label-custom"><i class="far fa-calendar-alt text-primary"></i> Date de Réception</label>
+                        <input type="date" class="form-control form-control-custom" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label-custom">N° Facture Fournisseur</label>
+                        <input type="text" class="form-control form-control-custom" placeholder="Ex: FACT-2024-01">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label-custom">Bon de Commande (BC)</label>
+                        <input type="text" class="form-control form-control-custom" placeholder="N° BC">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label-custom"><i class="fas fa-user-tag text-primary"></i> Sélectionner le Fournisseur</label>
+                        <select class="form-select form-control-custom">
+                            <option value="">--- Choisir un fournisseur في القائمة ---</option>
+                            <option>SARL GLOBAL TRADE ALGERIE</option>
+                            <option>ETS BENALI ET FRERES</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Entry Bar (Dark Mode Style) -->
+    <div class="entry-bar mb-4 shadow-lg">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label-custom">Référence</label>
+                <input type="text" id="pRef" class="form-control border-0" placeholder="REF">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label-custom">Désignation Article</label>
+                <input type="text" id="pName" class="form-control border-0">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label-custom text-center d-block">Quantité</label>
+                <input type="number" id="pQty" class="form-control border-0 text-center fw-bold">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label-custom text-end d-block">P.A.M.P (DA)</label>
+                <input type="number" id="pPrice" class="form-control border-0 text-end fw-bold">
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="btnAdd" class="btn btn-primary w-100 py-3 rounded-3 shadow">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="card bem-card">
+        <div class="table-responsive">
+            <table class="table table-custom mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th width="150">Réf. Article</th>
+                        <th>Désignation</th>
+                        <th class="text-center">Qté Reçue</th>
+                        <th class="text-end">Prix Unit.</th>
+                        <th class="text-end">Total HT</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    <!-- Rows will be added here via JavaScript -->
+                    <tr id="emptyRow">
+                        <td colspan="6" class="p-5 text-center text-muted">
+                            <i class="fas fa-box-open d-block mb-3 fa-2x opacity-25"></i>
+                            <span class="fw-bold text-uppercase small tracking-widest">Aucun article dans la liste</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Simple logic to add/remove products in the view
+        const btnAdd = document.getElementById('btnAdd');
+        const tableBody = document.getElementById('productTableBody');
+        const emptyRow = document.getElementById('emptyRow');
+
+        btnAdd.addEventListener('click', function() {
+            const ref = document.getElementById('pRef').value;
+            const name = document.getElementById('pName').value;
+            const qty = document.getElementById('pQty').value;
+            const price = document.getElementById('pPrice').value;
+
+            if(!ref || !qty || !price) return;
+
+            if(emptyRow) emptyRow.style.display = 'none';
+
+            const total = (parseFloat(qty) * parseFloat(price)).toFixed(2);
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="p-4 product-ref">${ref}</td>
+                <td class="p-4 fw-bold text-dark">${name}</td>
+                <td class="p-4 text-center fw-black bg-light">${qty}</td>
+                <td class="p-4 text-end text-muted font-monospace">${price}</td>
+                <td class="p-4 text-end fw-bold text-dark font-monospace">${total}</td>
+                <td class="p-4 text-center">
+                    <button type="button" class="btn btn-link text-danger p-0 delete-row">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+
+            // Clear inputs
+            document.getElementById('pRef').value = '';
+            document.getElementById('pName').value = '';
+            document.getElementById('pQty').value = '';
+            document.getElementById('pPrice').value = '';
+            document.getElementById('pRef').focus();
+
+            // Handle delete
+            row.querySelector('.delete-row').addEventListener('click', () => {
+                row.remove();
+                if(tableBody.children.length === 1) emptyRow.style.display = 'table-row';
+            });
+        });
+    </script>
+}
