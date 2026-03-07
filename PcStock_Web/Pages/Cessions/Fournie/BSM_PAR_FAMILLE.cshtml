@@ -1,0 +1,249 @@
+﻿@page
+@model PcStock_Web.Pages.Cessions.Fournie.BSM_PAR_FAMILLEModel
+@{
+    ViewData["Title"] = "BSM par Famille";
+}
+
+<!-- المكتبات اللازمة -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+<link href="https://fonts.cdnfonts.com/css/digital-7-mono" rel="stylesheet">
+
+<style>
+    .page-header {
+        background: #1e40af;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255,255,255,0.1);
+        padding: 5px 15px;
+        border-radius: 8px;
+    }
+
+        .filter-group input {
+            border: none;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+    .filters-row input {
+        width: 100%;
+        padding: 4px 8px;
+        font-size: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 5px;
+    }
+
+    /* التصميم الرقمي LCD المتوهج */
+    .lcd-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 20px;
+        margin-top: 30px;
+        margin-bottom: 50px;
+    }
+
+    .lcd-screen {
+        background-color: #050505;
+        border: 4px solid #1e293b;
+        border-radius: 10px;
+        padding: 10px 35px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    #txtTotal {
+        color: #00ff41;
+        font-family: 'Digital-7 Mono', sans-serif;
+        font-size: 70px;
+        text-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
+        letter-spacing: 2px;
+    }
+
+    .lcd-currency {
+        color: #00ff41;
+        font-family: 'Digital-7 Mono', sans-serif;
+        font-size: 30px;
+        margin-left: 15px;
+        border: 1px solid rgba(0,255,65,0.3);
+        padding: 0 5px;
+    }
+
+    .card-table {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    /* تحسين شكل الجدول */
+    .dataTables_scrollBody {
+        background: white !important;
+        border-radius: 0 0 12px 12px;
+    }
+
+    thead tr.filters-row th {
+        background: #f8fafc !important;
+        padding: 5px !important;
+    }
+    /* إجبار الجدول على إظهار شريط التمرير */
+    .dataTables_scrollBody {
+        min-height: 400px;
+        max-height: 500px; /* يمكنك زيادة هذا الرقم حسب حجم الشاشة */
+        overflow-y: scroll !important;
+        background: white !important;
+    }
+
+    /* تجميل شريط التمرير ليظهر بشكل عصري */
+    .dataTables_scrollBody::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .dataTables_scrollBody::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+    
+    .dataTables_scrollBody::-webkit-scrollbar-thumb:hover {
+        background: #1e40af;
+    }
+     
+
+    /* تثبيت عناوين الجدول في الأعلى أثناء التمرير */
+    .dataTables_scrollHead {
+        background: #f8fafc !important;
+        border-bottom: 2px solid #e2e8f0 !important;
+    }
+
+</style>
+
+<div class="container-fluid p-4">
+    <!-- Header مع فلاتر التاريخ -->
+    <div class="page-header d-flex justify-content-between align-items-center shadow">
+        <h4 class="mb-0 fw-bold"><i class="fas fa-layer-group me-2"></i> BSM PAR FAMILLE (CESSIONS)</h4>
+
+        <div class="d-flex align-items-center">
+            <div class="filter-group me-3">
+                <label class="small text-white-50">DU:</label>
+                <input type="date" id="minDate">
+                <label class="small text-white-50">AU:</label>
+                <input type="date" id="maxDate">
+            </div>
+            <button id="btnExcel" class="btn btn-success btn-sm fw-bold px-3 me-2"><i class="fas fa-file-excel me-1"></i> EXCEL</button>
+            <button class="btn btn-light btn-sm fw-bold text-primary px-3" onclick="window.print()"><i class="fas fa-print me-1"></i> IMPRIMER</button>
+        </div>
+    </div>
+
+    <!-- الجدول الرئيسي -->
+    <div class="card card-table border-0 shadow-sm">
+        <table id="bsmTable" class="table table-hover align-middle mb-0 w-100">
+            <thead>
+                <tr>
+                    <th>FAMILLE</th>
+                    <th>BSM N°</th>
+                    <th>DATE</th>
+                    <th>CHANTIER / SOC</th>
+                    <th class="text-end">MONTANT TOTAL HT</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <!-- شاشة الإجمالي -->
+    <div class="lcd-container">
+        <span class="fw-bold text-muted" style="font-size: 20px;">TOTAL CESSIONS</span>
+        <div class="lcd-screen shadow-lg">
+            <span id="txtTotal">0,00</span>
+            <span class="lcd-currency">DA</span>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <!-- في قسم CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css">
+
+    <!-- في قسم Scripts بالأسفل -->
+    <script src="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // 1. منطق فلترة المدى الزمني
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                var min = $('#minDate').val();
+                var max = $('#maxDate').val();
+                if (!min && !max) return true;
+
+                var dateParts = data[2].split('/'); // عمود DATE هو رقم 2
+                var rowDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+                var start = min ? new Date(min) : null;
+                var end = max ? new Date(max) : null;
+
+                if (start) start.setHours(0,0,0,0);
+                if (end) end.setHours(23,59,59,999);
+
+                return (!start || rowDate >= start) && (!end || rowDate <= end);
+            });
+
+            // 2. إضافة صف الفلاتر في الهيدر
+            $('#bsmTable thead tr').clone(true).addClass('filters-row').appendTo('#bsmTable thead');
+
+            const table = $('#bsmTable').DataTable({
+                ajax: { url: "?handler=LoadData", dataSrc: "" },
+                     // --- تفعيل الـ Scroll هنا ---
+                deferRender:    true,
+                scrollY:        "450px",   // الارتفاع الذي تريده للجدول
+                scrollCollapse: true,      // ينكمش الجدول إذا كانت البيانات قليلة
+                scroller:       true,      // سرعة فائقة في التمرير
+                // ----------------------------
+                
+                dom: 'rt', // إظهار الجدول فقط بدون ترقيم سفلي
+                orderCellsTop: true,
+                buttons: [{ extend: 'excelHtml5', className: 'd-none', exportOptions: { columns: ':visible' } }],
+                columns: [
+                    { data: "famille", className: "fw-bold" },
+                    { data: "no_bc", className: "text-primary fw-bold" },
+                    {
+                        data: "date_cess",
+                        render: (d) => d ? new Date(d).toLocaleDateString('fr-FR') : '-'
+                    },
+                    { data: "cod_soc" },
+                    {
+                        data: "montant", className: "text-end fw-bold text-dark",
+                        render: (d) => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits:2})
+                    }
+                ],
+                initComplete: function () {
+                    this.api().columns().every(function (i) {
+                        var column = this;
+                        $('.filters-row th').eq(i).html('<input type="text" placeholder="Filtrer..." />');
+                        $('input', $('.filters-row th').eq(i)).on('keyup change', function () {
+                            if (column.search() !== this.value) column.search(this.value).draw();
+                        });
+                    });
+                },
+                drawCallback: function() {
+                    let total = 0;
+                    this.api().rows({ search: 'applied' }).data().each(d => total += d.montant);
+                    $('#txtTotal').text(total.toLocaleString('fr-FR', {minimumFractionDigits:2}));
+                }
+            });
+
+            $('#minDate, #maxDate').on('change', () => table.draw());
+            $('#btnExcel').on('click', () => table.button('.buttons-excel').trigger());
+        });
+    </script>
+}

@@ -8,8 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.3" />
     <PackageReference Include="NDbfReader" Version="2.4.0" />
     <PackageReference Include="System.Data.Odbc" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Pages\Cessions\Recue\" />
   </ItemGroup>
 
 </Project>

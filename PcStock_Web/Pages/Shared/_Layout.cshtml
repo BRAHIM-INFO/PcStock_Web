@@ -74,28 +74,38 @@
                     </li>
                 </ul>
             </div> 
-           
+             
             @{
-                var currentUrl = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
-                isStockSection = currentUrl.StartsWith("/Stocks");
-                // تعليق: فحص ما إذا كنا داخل قسم المشتريات
-                bool isAchatSection = currentUrl.StartsWith("/Achats");
-            }
+                 var currentUrl = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+                 
+                 // التحقق هل نحن في مجلد Achats
+                 bool isAchatSection = currentUrl.Contains("/Achats/");
+                 
+                 // التحقق هل نحن في مجلد Cessions
+                 bool isCFSection = currentUrl.Contains("/Cessions/");
+             }
 
+                @* Les Achats ------------------------------------------------------------- *@
             <div class="nav-group mt-2">
-                <div class="nav-item has-submenu @(isAchatSection ? "parent-active" : "")" id="achatMenuToggle">
+                    <div class="nav-item has-submenu @(isCFSection ? "parent-active" : "")" id="achatMenuToggle">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="menu-text">ACHATS</span>
-                    <i class="fas fa-chevron-down ms-auto arrow-icon @(isAchatSection ? "rotate" : "")"></i>
+                        <i class="fas fa-chevron-down ms-auto arrow-icon @(isCFSection ? "rotate" : "")"></i>
                 </div>
 
-                <ul class="submenu-list @(isAchatSection ? "show" : "")" id="achatSubmenu">
+                    <ul class="submenu-list @(isCFSection ? "show" : "")" id="achatSubmenu">
                     <li> 
                         <a asp-page="/Achats/NouvBonEntre" class="submenu-item @(currentUrl == "/Achats/NouvBonEntre" ? "active" : "")">
                             <i class="far fa-file-alt"></i>
-                            <span class="menu-text">BON ENTREE MAGASIN</span>
+                            <span class="menu-text">NOUVEAU BON ENTREE</span>
                         </a>
                     </li>
+                        <li> 
+                            <a asp-page="/Achats/BEM" class="submenu-item @(currentUrl == "/Achats/BEM" ? "active" : "")">
+                                <i class="far fa-file-alt"></i>
+                                <span class="menu-text">BONS ENTREE MAGASIN</span>
+                            </a>
+                        </li>
                     <li>
                         <a asp-page="/Achats/Reste" class="submenu-item @(currentUrl == "/Achats/Reste" ? "active" : "")">
                             <i class="fas fa-box-open"></i>
@@ -103,41 +113,79 @@
                         </a>
                     </li>
                     <li>
-                        <a asp-page="/Achats/ParBEM" class="submenu-item @(currentUrl == "/Achats/ParBEM" ? "active" : "")">
+                            <a asp-page="/Achats/ACHAT_PAR_BEM" class="submenu-item @(currentUrl == "/Achats/ACHAT_PAR_BEM" ? "active" : "")">
                             <i class="fas fa-list-ol"></i>
                             <span class="menu-text">ACHATS PAR BEM</span>
                         </a>
-                    </li>
+                    </li>   
                     <li>
-                        <a asp-page="/Achats/ParFacture" class="submenu-item @(currentUrl == "/Achats/ParFacture" ? "active" : "")">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            <span class="menu-text">ACHATS PAR FACTURE</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-page="/Achats/ParFournisseur" class="submenu-item @(currentUrl == "/Achats/ParFournisseur" ? "active" : "")">
-                            <i class="fas fa-user-tag"></i>
-                            <span class="menu-text">ACHAT PAR FOURNISSEUR</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-page="/Achats/Synthese" class="submenu-item @(currentUrl == "/Achats/Synthese" ? "active" : "")">
-                            <i class="fas fa-chart-pie"></i>
-                            <span class="menu-text">SYNTHSE DES ACHATS</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-page="/Achats/Recap" class="submenu-item @(currentUrl == "/Achats/Recap" ? "active" : "")">
+                            <a asp-page="/Achats/RECAP_DES_ACHATS" class="submenu-item @(currentUrl == "/Achats/RECAP_DES_ACHATS" ? "active" : "")">
                             <i class="fas fa-poll"></i>
                             <span class="menu-text">RECAP DES ACHATS</span>
                         </a>
                     </li>
                 </ul>
             </div>
-            <a href="#" class="nav-item">
-                <i class="fas fa-arrow-up-right-from-square"></i>
-                <span class="menu-text">CESSION FOURNIE</span>
-            </a>
+
+                @* Cession Fournie ------------------------------------------------------------- *@
+            <div class="nav-group mt-2"> 
+                   
+                    <div class="nav-item has-submenu" id="cessionFMenuToggle">
+                        <i class="fas fa-file-export"></i>
+                        <span class="menu-text">CESSION FOURNIE</span>
+                        <i class="fas fa-chevron-down ms-auto arrow-icon"></i>
+                    </div>
+
+                    <ul class="submenu-list @(isCFSection ? "show" : "")" id="cessionFSubmenu">
+                         <li>
+                            <a asp-page="/Cessions/Fournie/NouveauBSM" class="submenu-item @(currentUrl.Contains("NouveauBSM") ? "active" : "")">
+                                <i class="fas fa-plus-circle"></i>
+                                <span class="menu-text">NOUVEAU BSM</span>
+                            </a>
+                        </li>
+
+                         <li>
+                            <a asp-page="/Cessions/Fournie/Valeurisation" class="submenu-item @(currentUrl.Contains("Valeurisation") ? "active" : "")">
+                                <i class="fas fa-calculator"></i>
+                                <span class="menu-text">VALEURISATION BSM</span>
+                            </a>
+                        </li>
+
+                         <li>
+                            <a asp-page="/Cessions/Fournie/BonLivraison" class="submenu-item @(currentUrl.Contains("BonLivraison") ? "active" : "")">
+                                <i class="fas fa-truck"></i>
+                                <span class="menu-text">BON DE LIVRAISON</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Cessions/Fournie/BSM" class="submenu-item @(currentUrl.Contains("BSM") ? "active" : "")">
+                                <i class="fas fa-layer-group"></i>
+                                <span class="menu-text">BON SORTIE MAGASIN</span>
+                            </a>
+                        </li>
+                         <li>
+                            <a asp-page="/Cessions/Fournie/BSM_PAR_FAMILLE" class="submenu-item @(currentUrl.Contains("BSM_PAR_FAMILLE") ? "active" : "")">
+                                <i class="fas fa-layer-group"></i>
+                                <span class="menu-text">BSM PAR FAMILLE</span>
+                            </a>
+                        </li>
+
+                         <li>
+                            <a asp-page="/Cessions/Fournie/BSM_PAR_CHANTIER" class="submenu-item @(currentUrl.Contains("BSM_PAR_CHANTIER") ? "active" : "")">
+                                <i class="fas fa-building"></i>
+                                <span class="menu-text">BSM PAR CHANTIER</span>
+                            </a>
+                        </li>
+
+                         <li>
+                            <a asp-page="/Cessions/Fournie/RecapGeneral" class="submenu-item @(currentUrl.Contains("RecapGeneral") ? "active" : "")">
+                                <i class="fas fa-clipboard-list"></i>
+                                <span class="menu-text">RECAP GENERAL</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+ 
 
             <a href="#" class="nav-item">
                 <i class="fas fa-clipboard-list"></i>
@@ -164,8 +212,10 @@
                 </div>
             </div>
         </div>
-    </aside> 
+    </aside>
+
         
+
 
         <main class="main-content w-100">
             @RenderBody()
@@ -218,7 +268,23 @@
             arrow.classList.toggle('rotate');
         });
     </script>
+    <script>
+        // كود فتح وإغلاق قائمة CESSION FOURNIE
+         $('#cessionFMenuToggle').click(function(e) {
+            e.stopPropagation();
+            $('#cessionFSubmenu').toggleClass('show');
+            $(this).find('.arrow-icon').toggleClass('rotate');
 
+            // إغلاق قسم المشتريات إذا كان مفتوحاً
+            $('#achatSubmenu').removeClass('show');
+            $('#achatMenuToggle').find('.arrow-icon').removeClass('rotate');
+        }); 
+    </script>
+
+    @functions {
+        string IsActive(string page) =>
+        ViewContext.RouteData.Values["page"]?.ToString() == page ? "text-primary fw-bold" : "text-white opacity-75";
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

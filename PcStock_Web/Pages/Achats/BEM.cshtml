@@ -1,0 +1,391 @@
+﻿@page
+@model PcStock_Web.Pages.Achats.BEMModel
+@Html.AntiForgeryToken()
+ 
+<style>
+    @@media print {
+        .sidebar, .top-toolbar, .nav-link, .btn-action, .dataTables_scrollHeadInner input {
+            display: none !important;
+        }
+
+        .bem-container {
+            padding: 0 !important;
+            background: white !important;
+        }
+
+        .header-info-card {
+            border: 1px solid #000 !important;
+            margin-top: 20px;
+        }
+
+        .table-card {
+            box-shadow: none !important;
+            border: 1px solid #000 !important;
+        }
+
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+
+        th, td {
+            border: 1px solid #000 !important;
+            padding: 5px !important;
+        }
+
+         
+    }
+    .bem-container {
+        background: #f8fafc;
+        min-vh-100;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .top-toolbar {
+        background: #1e40af;
+        color: white;
+        padding: 15px 30px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+    }
+
+    .header-info-card {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .info-label {
+        font-size: 11px;
+        font-weight: 800;
+        color: #94a3b8;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .info-value {
+        font-weight: 800;
+        color: #0f172a;
+        border: none;
+        background: transparent;
+        width: 100%;
+        font-size: 18px;
+        outline: none;
+    }
+
+    .total-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 25px;
+        margin-top: 30px;
+    }
+
+    .total-label {
+        font-size: 20px;
+        font-weight: 900;
+        color: #334155;
+        letter-spacing: 1px;
+    }
+
+    /* الشاشة الرقمية (Digital LCD/LED) */
+    .total-display {
+        background-color: #050505; /* أسود داكن جداً */
+        color: #00ff41; /* لون أخضر Matrix/Digital */
+        font-family: 'Digital-7 Mono', sans-serif; /* الخط الذي استدعيناه */
+        font-size: 70px; /* حجم كبير جداً */
+        padding: 5px 30px;
+        border-radius: 8px;
+        border: 4px solid #1e293b;
+        min-width: 400px;
+        text-align: right;
+        line-height: 1;
+        /* تأثير التوهج (Glow) مثل الصورة */
+        text-shadow: 0 0 10px rgba(0, 255, 65, 0.7), 0 0 20px rgba(0, 255, 65, 0.5);
+        /* إضفاء طابع الشاشة القديمة */
+        box-shadow: inset 0 0 15px rgba(0,0,0,1), 0 5px 15px rgba(0,0,0,0.4);
+    }
+
+        /* عملة DA بنفس نمط الخط */
+        .total-display span.currency {
+            font-size: 25px;
+            margin-left: 10px;
+            vertical-align: middle;
+            opacity: 0.8;
+        }
+
+    .select2-selection {
+        border: none !important;
+        height: 40px !important;
+        font-size: 18px !important;
+        font-weight: bold !important;
+        color: #1e40af !important;
+    }
+
+    /* حذف الخلفية المخططة من حاوية الجدول */
+    .dataTables_scrollBody {
+        background-image: none !important;
+        background-color: white !important;
+    }
+
+    /* التأكد من أن الجدول نفسه خلفيته بيضاء */
+    #bemTable {
+        background-color: white !important;
+    }
+
+    /* إخفاء الخطوط التي تظهر في حالة البحث الفارغ أو التحميل */
+    #bemTable tbody {
+        background: none !important;
+    }
+
+    .table-card {
+        border: 1px solid #e2e8f0;
+        background-color: white;
+        min-height: 450px; /* لضمان بقاء مساحة الجدول ثابتة ومنظمة */
+    }
+    /* تنسيق حقول البحث في الهيدر */
+    .filters-row input {
+        width: 100%;
+        padding: 5px 8px;
+        font-size: 11px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-weight: normal;
+        color: #475569;
+        outline: none;
+    }
+
+        .filters-row input:focus {
+            border-color: #1e40af;
+            box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.1);
+        }
+
+    /* إخفاء أيقونات الترتيب في صف الفلاتر */
+    thead tr.filters-row th::after, thead tr.filters-row th::before {
+        display: none !important;
+    }
+
+    .filters-row th {
+        padding: 5px 10px !important;
+        background-color: #f8fafc !important;
+    }
+</style>
+
+<div class="bem-container p-4">
+    <!-- Toolbar -->
+    <div class="top-toolbar d-flex justify-content-between align-items-center shadow-lg">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-file-invoice-dollar fa-2x me-3"></i>
+            <h3 class="mb-0 fw-bold">BON ENTRÉE MAGASIN</h3>
+        </div>
+        <div class="d-flex gap-3 align-items-center">
+            <!-- ربط الأزرار بالـ IDs البرمجية -->
+            <button id="btnPrint" class="btn btn-action btn-light text-primary shadow-sm">
+                <i class="fas fa-print me-2"></i>Imprimer
+            </button>
+            <button id="btnExcel" class="btn btn-action btn-success shadow-sm">
+                <i class="fas fa-file-excel me-2"></i>Excel
+            </button> 
+            <div class="ms-2 bg-white rounded-3 p-1 d-flex align-items-center" style="width: 250px;">
+                <span class="text-dark fw-bold px-2 small">BEM N°:</span>
+                <select id="bemSearch" class="form-control border-0"></select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Info -->
+    <div class="header-info-card shadow-sm">
+        <div class="row text-center align-items-center">
+            <div class="col-md-2 border-end"><span class="info-label">Date du Bon</span><input type="text" id="dispDate" class="info-value text-center" readonly value="---"></div>
+            <div class="col-md-4 border-end"><span class="info-label">Fournisseur</span><input type="text" id="dispFourn" class="info-value text-center text-primary" readonly value="---"></div>
+            <div class="col-md-3 border-end"><span class="info-label">Facture N°</span><input type="text" id="dispFact" class="info-value text-center" readonly value="---"></div>
+            <div class="col-md-3"><span class="info-label">Bon Commande</span><input type="text" id="dispBC" class="info-value text-center" readonly value="---"></div>
+        </div>
+    </div> 
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <table id="bemTable" class="table table-hover align-middle mb-0 w-100" style="font-size: 15px;">
+            <thead>
+                <tr class="main-header">
+                    <th>BEM N°</th>
+                    <th>RÉFÉRENCE</th>
+                    <th>DÉSIGNATION</th>
+                    <th>FAMILLE</th>
+                    <th class="text-center">QTE</th>
+                    <th class="text-end">PAMP</th>
+                    <th class="text-end">MONTANT HT</th>
+                    <th>FACTURE</th>
+                    <th>B.C</th>
+                </tr>
+                <!-- صف الفلاتر سيتم إنشاؤه برمجياً لسهولة الصيانة -->
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+    <div class="total-wrapper">
+        <div class="me-auto col-md-5">
+            <label class="info-label mb-2"><i class="fas fa-comment-alt me-1"></i> Observation / Note</label>
+            <textarea class="form-control border-0 shadow-sm" rows="1" placeholder="Ajouter une note ici..." style="border-radius: 10px; font-size: 16px;"></textarea>
+        </div>
+
+        <div class="total-wrapper">
+            <span class="total-label">TOTAL GÉNÉRAL HT</span>
+            <div class="total-display">
+                <span id="grandTotal">000.000,00</span>
+                <span class="currency">DA</span>
+            </div>
+        </div> 
+    </div>
+     
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+
+    <!-- Scripts (تأكد من إضافتها في قسم Scripts بالأسفل) -->
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <link href="https://fonts.cdnfonts.com/css/digital-7-mono" rel="stylesheet">
+    <script>
+
+            $(document).ready(function () {
+                     // 1. إنشاء صف الفلاتر برمجياً
+            $('#bemTable thead tr').clone(true).addClass('filters-row').appendTo('#bemTable thead');
+            // 1. تهيئة الجدول (تأكد أن serverSide هي false)
+            const table = $('#bemTable').DataTable({
+                serverSide: false,
+                ajax: {
+                    url: "?handler=LoadAllBEM",
+                    dataSrc: ""
+                },
+                deferRender: true,
+                scrollY: 500,
+                scrollCollapse: true,
+                scroller: true,
+                orderCellsTop: true, // مهم جداً لكي لا يختلط الترتيب مع الفلترة
+                dom: 'Brt',
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        className: 'd-none',
+                        title: () => 'BEM_' + ($('#bemSearch').val() || 'Global'),
+                        exportOptions: { columns: ':visible' }
+                    }
+                ],
+                columns: [
+                    { data: "nO_BR", className: "fw-bold text-primary" }, // العمود 0
+                    { data: "ref", className: "fw-bold text-dark" },
+                    { data: "intitule" },
+                    { data: "famille" },
+                    {
+                        data: "qte", className: "text-center fw-bold text-success",
+                        render: (d) => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits:2})
+                    },
+                    {
+                        data: "pamp", className: "text-end",
+                        render: (d) => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits:2})
+                    },
+                    {
+                        data: null, className: "text-end fw-bold",
+                        render: (d, t, row) => (row.qte * row.pamp).toLocaleString('fr-FR', {minimumFractionDigits:2})
+                    },
+                    { data: "nO_FACA" },
+                    { data: "nO_BC" }
+                ],
+                 // 2. إعداد الفلاتر عند انتهاء تحميل الجدول
+                initComplete: function () {
+                var api = this.api();
+                api.columns().every(function (i) {
+                    var column = this;
+                    var title = $(column.header()).text();
+                    var headerCell = $('.filters-row th').eq(i);
+                
+                    // إضافة Input للبحث لكل عمود
+                    headerCell.html('<input type="text" placeholder="🔍 ' + title + '" />');
+                
+                    // ربط حدث الكتابة بالفلترة
+                    $('input', headerCell).on('keyup change', function () {
+                        if (column.search() !== this.value) {
+                            column.search(this.value).draw();
+                        }
+                    });
+                });
+                },
+                drawCallback: function() {
+                    updateUI(this.api());
+                }
+            });
+
+            // 2. تهيئة Select2 للبحث
+            $('#bemSearch').select2({
+                ajax: {
+                    url: '?handler=BEMAutocomplete',
+                    delay: 300,
+                    data: (p) => { return { term: p.term }; },
+                    processResults: (data) => { return { results: data }; }
+                },
+                placeholder: "Rechercher BEM...",
+                allowClear: true,
+                minimumInputLength: 1
+            });
+
+            // --- الجزء الذي تم إصلاحه للفلترة ---
+            $('#bemSearch').on('select2:select', function (e) {
+                var selectedVal = e.params.data.id;
+
+                // نقوم بالفلترة في العمود رقم 0 فقط (الذي هو BEM N°)
+                // نستخدم البحث الدقيق (Regex) لمنع تداخل الأرقام المتشابهة
+                table.column(0).search('^' + selectedVal + '$', true, false).draw();
+            });
+
+            $('#bemSearch').on('select2:clear', function () {
+                // مسح الفلتر من العمود الأول وإعادة الجدول كاملاً
+                table.column(0).search('').draw();
+            });
+            // ----------------------------------
+
+            // دالة تحديث الواجهة (الهيدر والتوتال)
+            function updateUI(api) {
+                let total = 0;
+                // حساب الإجمالي فقط للأسطر التي تظهر بعد الفلترة
+                api.rows({ search: 'applied' }).data().each(d => {
+                    total += (parseFloat(d.qte) * parseFloat(d.pamp));
+                });
+
+                // تحديث الشاشة الرقمية
+                $('#grandTotal').text(total.toLocaleString('fr-FR', {minimumFractionDigits:2}));
+
+                const searchVal = $('#bemSearch').val();
+                if (searchVal) {
+                    const first = api.row({ search: 'applied' }).data();
+                    if (first) {
+                        $('#dispDate').val(first.date ? new Date(first.date).toLocaleDateString('fr-FR') : '---');
+                        $('#dispFourn').val(first.noM_FOURN || '---');
+                        $('#dispFact').val(first.nO_FACA || '---');
+                        $('#dispBC').val(first.nO_BC || '---');
+                    }
+                } else {
+                    $('.info-value').val('---');
+                }
+            }
+
+            // ربط أزرار الطباعة والإكسل
+            $('#btnPrint').on('click', () => window.print());
+            $('#btnExcel').on('click', () => table.button('.buttons-excel').trigger());
+        }); 
+    </script>
+}
+

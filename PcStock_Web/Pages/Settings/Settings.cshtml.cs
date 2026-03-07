@@ -1,129 +1,60 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Data.Odbc;
-using Microsoft.AspNetCore.Hosting; // ضروري للوصول لمجلد الصور
 
 namespace PcStock_Web.Pages.Settings
 {
     public class SettingsModel : PageModel
-    { 
+    {
         private readonly ConfigService _configService;
-       
+        private readonly SqliteDbService _sqliteService;
+        private readonly IWebHostEnvironment _environment;
+
+        public SettingsModel(ConfigService configService, SqliteDbService sqliteService, IWebHostEnvironment environment)
+        {
+            _configService = configService;
+            _sqliteService = sqliteService;
+            _environment = environment;
+        }
 
         [BindProperty]
         public string DbPath { get; set; }
 
-        // داخل كلاس SettingsModel
-        private readonly IWebHostEnvironment _environment;
-         
-
         [BindProperty]
-        public IFormFile? LogoFile { get; set; } // لاستقبال ملف الصورة
-
-        public SettingsModel(ConfigService configService, IWebHostEnvironment environment)
-        {
-            _configService = configService;
-            _environment = environment; // 3. التعيين (هذا ما كان ينقصك)
-        }
-
-
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (!string.IsNullOrEmpty(DbPath))
-            {
-                // 1. حفظ مسار قاعدة البيانات باستخدام الخدمة
-                _configService.SaveDbPath(DbPath);
-            }
-
-            // 2. معالجة رفع الشعار (إذا تم اختيار صورة)
-            if (LogoFile != null && LogoFile.Length > 0)
-            {
-                var folderPath = Path.Combine(_environment.WebRootPath, "images");
-                if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
-
-                var filePath = Path.Combine(folderPath, "logo_entreprise.png");
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await LogoFile.CopyToAsync(stream);
-                }
-            }
-
-            TempData["SuccessMessage"] = "Paramètres enregistrés avec succès !";
-            return Page();
-
-            //// 1. هنا يمكنك حفظ مسار DbPath في قاعدة البيانات الخاصة بتطبيقك
-            //// string pathTosaver = DbPath; 
-
-            //// 2. معالجة رفع الشعار (Logo)
-            //if (LogoFile != null)
-            //{
-            //    var folderPath = Path.Combine(_environment.WebRootPath, "images");
-            //    if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
-
-            //    var filePath = Path.Combine(folderPath, "logo_entreprise.png"); // اسم ثابت أو ديناميكي
-
-            //    using (var stream = new FileStream(filePath, FileMode.Create))
-            //    {
-            //        await LogoFile.CopyToAsync(stream);
-            //    }
-            //}
-
-            //// إضافة رسالة نجاح ليقرأها الـ JavaScript
-            //TempData["SuccessMessage"] = "Les modifications ont ete enregistrees avec succes !";
-
-            //return Page();
-        }
+        public IFormFile? LogoFile { get; set; }
 
         public void OnGet()
         {
-            // هنا يتم تحميل البيانات عند فتح الصفحة أول مرة
             DbPath = _configService.GetDbPath();
         }
 
-        // أكشن لاختبار الاتصال (يُسمى Handler في Razor Pages)
-        public IActionResult OnPostTestConnection(string path)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (string.IsNullOrWhiteSpace(path))
-                return new JsonResult(new { success = false, message = "Veuillez saisir un chemin." });
-
-            try
+            // 1. حفظ المسار في الإعدادات
+            if (!string.IsNullOrEmpty(DbPath))
             {
-                if (!Directory.Exists(path))
-                    return new JsonResult(new { success = false, message = "Répertoire introuvable." });
-
-                string[] dbfFiles = Directory.GetFiles(path, "*.dbf");
-                if (dbfFiles.Length == 0)
-                    return new JsonResult(new { success = false, message = "Aucun fichier .dbf trouvé." });
-
-                return new JsonResult(new { success = true, message = $"Succès! {dbfFiles.Length} fichiers détectés." });
+                _configService.SaveDbPath(DbPath);
             }
-            catch (Exception ex)
+
+            // 2. معالجة رفع الشعار
+            if (LogoFile != null && LogoFile.Length > 0)
             {
-                return new JsonResult(new { success = false, message = ex.Message });
+                string folderPath = Path.Combine(_environment.WebRootPath, "images");
+                if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+                string filePath = Path.Combine(folderPath, "logo_entreprise.png");
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await LogoFile.CopyToAsync(stream);
             }
-        }
 
-        public IActionResult OnGetGetSubDirectories(string parentPath)
-        {
-            try
-            {
-                // إذا كان المسار فارغاً نبدأ من الأقراص الصلبة
-                if (string.IsNullOrEmpty(parentPath))
-                {
-                    var drives = DriveInfo.GetDrives().Select(d => d.Name).ToList();
-                    return new JsonResult(drives);
-                }
+            // 3. المزامنة التلقائية لأهم الجداول
+            var tablesToSync = new List<string> { "ST_STOCK", "ST_ACHAT", "ST_FOURN", "ST_CESS", "ST_UNITE" };
+            var result = await _sqliteService.SyncTables(tablesToSync);
 
-                var dirs = Directory.GetDirectories(parentPath)
-                                    .Select(d => Path.GetFullPath(d))
-                                    .ToList();
-                return new JsonResult(dirs);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            if (result.success)
+                TempData["SuccessMessage"] = "Paramètres enregistrés et données synchronisées dans SQLite !";
+            else
+                TempData["ErrorMessage"] = result.message;
+
+            return Page();
         }
     }
 }

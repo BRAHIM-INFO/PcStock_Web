@@ -1,6 +1,6 @@
 ﻿@page
 @model PcStock_Web.Pages.Stocks.ArticlesModel
-
+@Html.AntiForgeryToken()
 <!-- 1. استدعاء مكتبات DataTables للسرعة القصوى -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css">
@@ -42,6 +42,8 @@
                     <tr class="main-header">
                         <th>REF</th>
                         <th>INTITULE</th>
+                        <th>INTITULE2</th>
+                        <th>INTITULE3</th>
                         <th>FAMILLE</th>
                         <th>QTE</th>
                         <th>PAMP</th>
@@ -89,8 +91,8 @@
                         <div class="tab-pane fade show active" id="tab-info" role="tabpanel">
                             <div class="row g-3">
                                 <div class="col-md-4">
-                                    <label class="form-label small fw-bold text-muted">Référence (Non modifiable)</label>
-                                    <input type="text" id="editREF" name="REF" class="form-control bg-white fw-bold" readonly>
+                                    <label   class="form-label small fw-bold text-muted">Référence (Non modifiable)</label>
+                                    <input  type="text" id="editREF" name="REF" class="form-control bg-white fw-bold" readonly>
                                 </div>
                                 <div class="col-md-8">
                                     <label class="form-label small fw-bold text-muted">Intitulé Principal</label>
@@ -125,95 +127,128 @@
                                 <div class="col-md-3">
                                     <div class="p-3 bg-white rounded shadow-sm border-start border-4 border-success">
                                         <label class="small fw-bold text-success">Quantité Actuelle</label>
-                                        <input type="number" id="editQTE" name="QTE" class="form-control form-control-lg border-0 bg-transparent fw-bold" step="0.01">
+                                        <input type="number" id="editQTE" name="QTE" class="form-control form-control-lg border-0 bg-transparent fw-bold" step="0.01" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="p-3 bg-white rounded shadow-sm border-start border-4 border-primary">
                                         <label class="small fw-bold text-primary">PAMP</label>
-                                        <input type="number" id="editPAMP" name="PAMP" class="form-control form-control-lg border-0 bg-transparent fw-bold" step="0.01">
+                                        <input type="number" id="editPAMP" name="PAMP" class="form-control form-control-lg border-0 bg-transparent fw-bold" step="0.01" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="small fw-bold text-muted">Prix Achat</label>
-                                    <input type="number" id="editPRIX_ACH" name="PRIX_ACH" class="form-control" step="0.01">
+                                    <input type="number" id="editPRIX_ACH" name="PRIX_ACH" class="form-control" step="0.01" readonly>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="small fw-bold text-muted">Valeur Initiale</label>
-                                    <input type="number" id="editVALEUR_INI" name="VALEUR_INI" class="form-control" step="0.01">
+                                    <input type="number" id="editVALEUR_INI" name="VALEUR_INI" class="form-control" step="0.01" readonly>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="small fw-bold text-muted">Stock Initial</label>
-                                    <input type="number" id="editSTOCK_INI" name="STOCK_INI" class="form-control" step="0.01">
+                                    <input type="number" id="editSTOCK_INI" name="STOCK_INI" class="form-control" step="0.01" readonly>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="small fw-bold text-danger">Stock Max</label>
-                                    <input type="number" id="editSTOCK_MAX" name="STOCK_MAX" class="form-control border-danger shadow-sm" step="0.01">
+                                    <input type="number" id="editSTOCK_MAX" name="STOCK_MAX" class="form-control border-danger shadow-sm" step="0.01" readonly>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="small fw-bold text-warning">Stock Sécurité</label>
-                                    <input type="number" id="editSTOCK_SEC" name="STOCK_SEC" class="form-control border-warning shadow-sm" step="0.01">
+                                    <input type="number" id="editSTOCK_SEC" name="STOCK_SEC" class="form-control border-warning shadow-sm" step="0.01" readonly>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="small fw-bold text-muted">Dernière MAJ</label>
-                                    <input type="date" id="editDATE_MAJ" name="DATE_MAJ" class="form-control">
+                                    <input type="date" id="editDATE_MAJ" name="DATE_MAJ" class="form-control" readonly>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Tab 3: Statistiques (Read-only cards) -->
+                      <!-- Tab 3: Statistiques (Read-only cards) -->
                         <div class="tab-pane fade" id="tab-stats" role="tabpanel">
-                            <div class="row g-2 text-center">
+                            <div class="row g-3">
+                                <!-- المجموعة الأولى: عدد الحركات -->
                                 <div class="col-md-4">
-                                    <div class="card border-0 bg-white p-3 shadow-sm rounded-4">
-                                        <span class="text-muted small">Total Entrées / Sorties</span>
-                                        <div class="d-flex justify-content-around mt-2">
-                                            <div><h5 id="statENTREES" class="text-success fw-bold mb-0">0</h5><small>Entrées</small></div>
-                                            <div class="vr"></div>
-                                            <div><h5 id="statSORTIES" class="text-danger fw-bold mb-0">0</h5><small>Sorties</small></div>
+                                    <div class="card border-0 shadow-sm p-3 rounded-4 bg-white">
+                                        <label class="text-muted small fw-bold mb-2"><i class="fas fa-exchange-alt me-1"></i> Total Mouvements (Nombre)</label>
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text bg-success-subtle text-success border-0 small">Entrées</span>
+                                            <input type="text" id="editENTREES" class="form-control bg-light border-0 text-center fw-bold text-success" readonly tabindex="-1">
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-danger-subtle text-danger border-0 small">Sorties</span>
+                                            <input type="text" id="editSORTIES" class="form-control bg-light border-0 text-center fw-bold text-danger" readonly tabindex="-1">
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- المجموعة الثانية: الكميات الإجمالية -->
                                 <div class="col-md-4">
-                                    <div class="card border-0 bg-white p-3 shadow-sm rounded-4">
-                                        <span class="text-muted small">Quantités (Val.) E/S</span>
-                                        <div class="d-flex justify-content-around mt-2">
-                                            <div><h5 id="statQTE_ENT" class="text-info fw-bold mb-0">0</h5><small>Qte Ent</small></div>
-                                            <div class="vr"></div>
-                                            <div><h5 id="statQTE_SOR" class="text-warning fw-bold mb-0">0</h5><small>Qte Sor</small></div>
+                                    <div class="card border-0 shadow-sm p-3 rounded-4 bg-white">
+                                        <label class="text-muted small fw-bold mb-2"><i class="fas fa-boxes me-1"></i> Quantités Cumulées</label>
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text bg-info-subtle text-info border-0 small">Qte Ent.</span>
+                                            <input type="text" id="editQTE_ENT" class="form-control bg-light border-0 text-center fw-bold text-info" readonly tabindex="-1">
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-warning-subtle text-warning border-0 small">Qte Sor.</span>
+                                            <input type="text" id="editQTE_SOR" class="form-control bg-light border-0 text-center fw-bold text-warning" readonly tabindex="-1">
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- المجموعة الثالثة: القيمة المتبقية -->
                                 <div class="col-md-4">
-                                    <div class="card border-0 bg-primary text-white p-3 shadow-sm rounded-4">
-                                        <span class="small opacity-75">Valeur Résiduelle (TEMPVAL)</span>
-                                        <h4 id="statTEMPVAL" class="fw-bold mt-2">0.00 DA</h4>
+                                    <div class="card border-0 shadow-sm p-3 rounded-4 bg-primary text-white h-100 justify-content-center">
+                                        <label class="small fw-bold mb-2 opacity-75"><i class="fas fa-wallet me-1"></i> Valeur Résiduelle (TEMPVAL)</label>
+                                        <div class="input-group">
+                                            <input type="text" id="editTEMPVAL" class="form-control form-control-lg bg-white border-0 text-center fw-bold text-primary shadow-sm" readonly tabindex="-1">
+                                            <span class="input-group-text bg-white border-0 text-primary fw-bold">DA</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3 mt-3">
-                                    <div class="bg-light p-2 border-bottom border-primary"><small>Achat HT:</small> <b id="statACHAT_HT">0</b></div>
-                                </div>
-                                <div class="col-md-3 mt-3">
-                                    <div class="bg-light p-2 border-bottom border-success"><small>Conso HT:</small> <b id="statCONSO_HT">0</b></div>
-                                </div>
-                                <div class="col-md-3 mt-3">
-                                    <div class="bg-light p-2 border-bottom border-info"><small>Cession HT:</small> <b id="statCESS_HT">0</b></div>
-                                </div>
-                                <div class="col-md-3 mt-3">
-                                    <div class="bg-light p-2 border-bottom border-warning"><small>Reinté. HT:</small> <b id="statCESSR_HT">0</b></div>
+
+                                <!-- السطر الثاني: المبالغ المالية HT -->
+                                <div class="col-12 mt-2">
+                                    <div class="row g-2">
+                                        <div class="col-md-3">
+                                            <div class="p-2 bg-white rounded-3 shadow-sm border-bottom border-primary border-3">
+                                                <label class="d-block small text-muted mb-1">Achat HT</label>
+                                                <input type="text" id="editACHAT_HT" class="form-control form-control-sm border-0 bg-light text-primary fw-bold text-center" readonly tabindex="-1">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="p-2 bg-white rounded-3 shadow-sm border-bottom border-success border-3">
+                                                <label class="d-block small text-muted mb-1">Conso HT</label>
+                                                <input type="text" id="editCONSO_HT" class="form-control form-control-sm border-0 bg-light text-success fw-bold text-center" readonly tabindex="-1">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="p-2 bg-white rounded-3 shadow-sm border-bottom border-info border-3">
+                                                <label class="d-block small text-muted mb-1">Cession HT</label>
+                                                <input type="text" id="editCESS_HT" class="form-control form-control-sm border-0 bg-light text-info fw-bold text-center" readonly tabindex="-1">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="p-2 bg-white rounded-3 shadow-sm border-bottom border-warning border-3">
+                                                <label class="d-block small text-muted mb-1">Reinté. HT</label>
+                                                <input type="text" id="editCESSR_HT" class="form-control form-control-sm border-0 bg-light text-warning fw-bold text-center" readonly tabindex="-1">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> 
                     </div>
                 </div>
 
                 <!-- Footer -->
-                <div class="modal-footer border-0 p-4">
-                    <button type="button" class="btn btn-outline-secondary px-4 rounded-pill shadow-sm" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-success px-5 rounded-pill shadow">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <!-- يجب أن يكون النوع submit وليس button -->
+                    <button type="submit" class="btn btn-success">
                         <i class="fas fa-save me-2"></i> Enregistrer les modifications
                     </button>
-                </div>
+                </div> 
             </form>
         </div>
     </div>
@@ -223,85 +258,233 @@
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js"></script>
-
     <script>
-         $(document).ready(function () {
-            // 1. إضافة صف الفلترة
-            $('#stockTable thead tr').clone(true).addClass('filters').appendTo('#stockTable thead');
+                $('#editForm').submit(function (e) {
+            e.preventDefault();
 
-            // 2. تهيئة الجدول
-            var table = $('#stockTable').DataTable({
-                ajax: {
-                    url: '?handler=AllData',
-                    dataSrc: ''
-                },
-                orderCellsTop: true,
-                fixedHeader: true,
-                deferRender: true,
-                scrollY: 600,
-                scroller: true,
-                columns: [
-                    { data: 'ref' },
-                    { data: 'intitule' },
-                    { data: 'famille' },
-                    { data: 'qte', className: 'text-end' },
-                    { data: 'pamp', className: 'text-end' },
-                    {
-                        data: null,
-                        render: function(data) { return (data.qte * data.pamp).toFixed(2); }
-                    },
-                    { data: 'stocK_INI' },
-                    { data: 'casier' },
-                    { data: 'datE_MAJ' },
-                    {
-                        data: null,
-                        render: function() { return '<button class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>'; }
+            // إظهار حالة التحميل على الزر
+            const btn = $(this).find('button[type="submit"]');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Enregistrement...');
+
+            // تجهيز البيانات (نرسل فقط الحقول القابلة للتعديل + المرجع)
+            const formData = {
+                articleRef: $('#editREF').val(),
+                intitule: $('#editINTITULE').val(),
+                intitule2: $('#editINTITULE2').val(),
+                intitule3: $('#editINTITULE3').val(),
+                famille: $('#editFAMILLE').val(),
+                lieu_sto: $('#editLIEU_STO').val(),
+                casier: $('#editCASIER').val()
+            };
+
+            $.ajax({
+                url: window.location.pathname + '?handler=UpdateArticle',
+                type: 'POST',
+                headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                data: formData, 
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire('Succès !', response.message, 'success');
+                        $('#editArticleModal').modal('hide');
+                        // تحديث الجدول فوراً دون إعادة تحميل الصفحة كاملة
+                        $('#stockTable').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire('Erreur', response.message, 'error');
                     }
-                    // === هنا تضع الكود الجديد لزر التعديل ===
-                    // {
-                    //     data: null,
-                    //     className: 'text-center',
-                    //     render: function(data) {
-                    //         // نقوم بتحويل الكائن بالكامل إلى نص مشفر لإرساله للدالة
-                    //         let dataStr = encodeURIComponent(JSON.stringify(data));
-                    //         return `<button type="button" class="btn btn-edit" onclick="openEditModal('${dataStr}')">
-                    //                     <i class="fas fa-edit"></i>
-                    //                 </button>`;
-                    //     }
-                    // }
-                    // // =======================================
-                ],
-                initComplete: function () {
-                    var api = this.api();
-                    api.columns().every(function (i) {
-                        var column = this;
-                        var headerCell = $('.filters th').eq(i);
-                        if (i === 9) { headerCell.html(''); return; }
-
-                        var title = headerCell.text();
-                        headerCell.html('<input type="text" placeholder="Filter ' + title + '" />');
-
-                        $('input', headerCell).on('keyup change', function () {
-                            if (column.search() !== this.value) {
-                                column.search(this.value).draw();
-                            }
-                        });
-                    });
+                },
+                complete: function() {
+                    btn.prop('disabled', false).html('<i class="fas fa-save me-2"></i> Enregistrer les modifications');
                 }
             });
         });
-           // لا تنسَ وضع دالة openEditModal خارج الـ $(document).ready لتكون عامة (Global)
-        function openEditModal(encodedData) {
-            const data = JSON.parse(decodeURIComponent(encodedData));
-            console.log("Données reçues:", data); // للتأكد من وصول البيانات في الـ Console
+    </script>
+    <script> 
 
-            // هنا تضع الكود الذي يملأ الحقول في الـ Modal (الذي أعطيتك إياه في الرد السابق)
-            $('#displayRef').text(data.ref);
-            $('#editREF').val(data.ref);
-            $('#editINTITULE').val(data.intitule);
-            // ... وهكذا لبقية الحقول ...
+        $(document).ready(function () {
+    var table = $('#stockTable').DataTable({
+        "processing": true,
+        "serverSide": true, // تفعيل البحث والترقيم من السيرفر
+        "ajax": {
+            "url": "?handler=LoadData",
+            "type": "POST",
+            "headers": { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() }
+        },
+        "pageLength": 25,
+        "deferRender": true,
+        "scrollY": 650,
+        "scroller": true,
+        "scrollX": true,
+        "columns": [
+            { "data": "ref" },
+            { "data": "intitule" },
+            { "data": "intitule2", "defaultContent": "" },
+            { "data": "intitule3", "defaultContent": "" },
+            { "data": "famille" },
+            { 
+                "data": "qte", "className": "text-end",
+                "render": function(data){ return parseFloat(data).toLocaleString('fr-FR', {minimumFractionDigits: 2}); }
+            },
+            { 
+                "data": "pamp", "className": "text-end",
+                "render": function(data){ return parseFloat(data).toLocaleString('fr-FR', {minimumFractionDigits: 2}); }
+            },
+            { 
+                "data": null, "className": "text-end fw-bold",
+                "render": function(data, type, row){ return (row.qte * row.pamp).toLocaleString('fr-FR', {minimumFractionDigits: 2}); }
+            },
+            { 
+                "data": "stock_ini", "className": "text-end",
+                "render": function(data){ return parseFloat(data).toLocaleString('fr-FR', {minimumFractionDigits: 2}); }
+            },
+            { "data": "casier" },
+            { "data": "date_maj" },
+            {
+                "data": null,
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    return `<button type="button" class="btn btn-primary btn-sm" onclick="prepareEdit('${row.ref}')">
+                                <i class="fas fa-edit"></i>
+                            </button>`;
+                }
+            }
+        ]
+    });
+});
 
+        // $(document).ready(function () {
+        //     // مسح أي فلتر قديم لتجنب التكرار
+        //     $('.filters').remove();
+
+        //     // إضافة صف الفلترة
+        //     $('#stockTable thead tr').clone(true).addClass('filters').appendTo('#stockTable thead');
+
+        //     var table = $('#stockTable').DataTable({ 
+        //         ajax: {
+        //             url: '?handler=AllData', // تأكد أن هذا الاسم يطابق OnGetAllData في الـ C#
+        //             dataSrc: '',
+        //             error: function (xhr, error, thrown) {
+        //                 console.error("خطأ في جلب البيانات:", error);
+        //                 alert("Erreur lors du chargement des données. Vérifiez la console (F12)");
+        //             }
+        //         },
+        //         orderCellsTop: true,
+        //         deferRender: true,
+        //         scrollY: 600,
+        //         scroller: true,
+        //         scrollX: true, // مهم جداً لأن الحقول كثيرة
+        //         columns: [
+        //             { data: 'ref' },
+        //             { data: 'intitule' },
+        //             { data: 'intitule2', defaultContent: '' },
+        //             { data: 'intitule3', defaultContent: '' },
+        //             { data: 'famille' },
+        //             {
+        //                 data: 'qte', className: 'text-end',
+        //                 render: function(data){ return parseFloat(data).toLocaleString('fr-FR', {minimumFractionDigits: 2}); }
+        //             },
+        //             {
+        //                 data: 'pamp', className: 'text-end',
+        //                 render: function(data){ return parseFloat(data).toLocaleString('fr-FR', {minimumFractionDigits: 2}); }
+        //             },
+        //             {
+        //                 data: null, className: 'text-end fw-bold',
+        //                 render: function(data){ return (data.qte * data.pamp).toLocaleString('fr-FR', {minimumFractionDigits: 2}); }
+        //             },
+        //             {
+        //                 data: 'stocK_INI', className: 'text-end',
+        //                 render: function(data){ return parseFloat(data).toLocaleString('fr-FR', {minimumFractionDigits: 2}); }
+        //             },
+        //             { data: 'casier' },
+        //             {
+        //                 data: 'datE_MAJ',
+        //                 render: function(data){ return data ? new Date(data).toLocaleDateString('fr-FR') : '-'; }
+        //             },
+                    
+        //             // العمود رقم 10: زر التعديل
+        //             {
+        //                 data: null,
+        //                 className: 'text-center',
+        //                 orderable: false,
+        //                 render: function(data, type, row) {
+        //                     // نستخدم المرجع فقط لفتح المودال بأمان
+        //                     return `<button type="button" class="btn btn-primary btn-sm" onclick="prepareEdit('${row.ref}')">
+        //                                 <i class="fas fa-edit"></i>
+        //                             </button>`;
+        //                 }
+        //             }
+        //         ],
+        //         initComplete: function () {
+        //             var api = this.api();
+        //             api.columns().every(function (i) {
+        //                 var column = this;
+        //                 var headerCell = $('.filters th').eq(i);
+        //                 if (i === 11) { headerCell.html(''); return; } // عمود التعديل بدون فلتر
+
+        //                 headerCell.html('<input type="text" style="width:100%; font-size:11px;" placeholder="Filter" />');
+        //                 $('input', headerCell).on('keyup change', function () {
+        //                     if (column.search() !== this.value) {
+        //                         column.search(this.value).draw();
+        //                     }
+        //                 });
+        //             });
+        //         }
+        //     });
+        // });
+
+        // دالة تحضير البيانات للمودال
+          // لا تنسَ وضع دالة openEditModal خارج الـ $(document).ready لتكون عامة (Global)
+   
+        function prepareEdit(ref) {
+            var table = $('#stockTable').DataTable();
+            // البحث عن السطر في ذاكرة الجدول
+            var rowData = table.rows().data().toArray().find(x => x.ref === ref);
+
+                 if (rowData) {
+            // --- 1. ملء بيانات التبويب الأول (Identification) ---
+            $('#displayRef').text(rowData.ref);
+            $('#editREF').val(rowData.ref);
+            $('#editINTITULE').val(rowData.intitule);
+            $('#editINTITULE2').val(rowData.intitule2 || "");
+            $('#editINTITULE3').val(rowData.intitule3 || "");
+            $('#editFAMILLE').val(rowData.famille || "");
+            $('#editLIEU_STO').val(rowData.lieU_STO || "");
+            $('#editCASIER').val(rowData.casier || "");
+
+            // --- 2. ملء بيانات التبويب الثاني (Stock & Prix) ---
+            $('#editQTE').val(rowData.qte);
+            $('#editPAMP').val(rowData.pamp);
+            $('#editPRIX_ACH').val(rowData.priX_ACH || rowData.prixAch || 0);
+            $('#editSTOCK_INI').val(rowData.stocK_INI || rowData.stockIni || 0);
+            $('#editVALEUR_INI').val(rowData.valeuR_INI || rowData.valeurIni || 0);
+            $('#editSTOCK_MAX').val(rowData.stocK_MAX || rowData.stockMax || 0);
+            $('#editSTOCK_SEC').val(rowData.stocK_SEC || rowData.stockSec || 0);
+
+            // تنسيق التاريخ ليعمل مع حقل input type="date"
+            if (rowData.datE_MAJ || rowData.dateMaj) {
+                let dateVal = rowData.datE_MAJ || rowData.dateMaj;
+                $('#editDATE_MAJ').val(new Date(dateVal).toISOString().split('T')[0]);
+            }
+
+            // --- 3. ملء بيانات التبويب الثالث (Statistiques) ---
+            // دالة مساعدة لتنسيق الأرقام
+            const formatNum = (num) => parseFloat(num || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2 });
+
+            // تفعيل الأسطر التي كانت معطلة مع تصحيح اسم الكائن إلى rowData
+            $('#editENTREES').val(rowData.entrees || 0);
+            $('#editSORTIES').val(rowData.sorties || 0);
+
+            $('#editQTE_ENT').val(formatNum(rowData.qtE_ENT || rowData.qteEnt));
+            $('#editQTE_SOR').val(formatNum(rowData.qtE_SOR || rowData.qteSor));
+            $('#editTEMPVAL').val(formatNum(rowData.tempval) + " DA");
+
+            $('#editACHAT_HT').val(formatNum(rowData.achaT_HT || rowData.achatHt));
+            $('#editCONSO_HT').val(formatNum(rowData.consO_HT || rowData.consoHt));
+            $('#editCESS_HT').val(formatNum(rowData.cesS_HT || rowData.cessHt));
+            $('#editCESSR_HT').val(formatNum(rowData.cessR_HT || rowData.cessrHt));
+
+            // فتح النافذة
             $('#editArticleModal').modal('show');
+        }
         }
     </script>
 }
