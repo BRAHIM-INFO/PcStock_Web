@@ -1,0 +1,526 @@
+﻿@page
+@model PcStock_Web.Pages.Cessions.Fournie.ValeurisationModel
+@{
+    ViewData["Title"] = "Valeurisation BSM";
+}
+
+<!-- المكتبات اللازمة -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://fonts.cdnfonts.com/css/digital-7-mono" rel="stylesheet">
+
+<style>
+    .val-container { background: #f1f5f9; min-vh-100; padding: 20px; font-family: 'Segoe UI', sans-serif; }
+
+    /* الهيدر العلوي */
+    .header-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
+    .form-label-custom { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; display: block; }
+
+    /* شريط اختيار المنتج (مثل الصورة) */
+ /*    .entry-bar {
+        background: #1e293b; /* لون داكن احترافي */
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    } */
+    .entry-bar input, .entry-bar .select2-selection {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        color: white !important;
+        font-weight: bold;
+    }
+    .entry-bar .form-control:focus { background: rgba(255,255,255,0.1); border-color: #3b82f6; color: white; }
+
+    /* الجدول */
+    .table-card { background: white; border-radius: 15px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); overflow: hidden; }
+    .table thead th { background: #f8fafc; color: #64748b; font-size: 12px; text-transform: uppercase; padding: 15px; border-bottom: 2px solid #f1f5f9; }
+    .table tbody td { padding: 15px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-weight: 600; }
+
+    /* زر الإضافة */
+    .btn-add { background: #2563eb; color: white; width: 100%; height: 45px; border-radius: 10px; font-size: 24px; display: flex; align-items: center; justify-content: center; transition: 0.2s; border: none; }
+    .btn-add:hover { background: #1d4ed8; transform: scale(1.02); }
+
+    /* الإجمالي الرقمي */
+    .lcd-total {
+        background: #000; color: #00ff41; font-family: 'Digital-7 Mono', sans-serif;
+        font-size: 45px; padding: 5px 20px; border-radius: 8px; border: 3px solid #334155;
+        text-shadow: 0 0 10px rgba(0, 255, 65, 0.5); min-width: 250px; text-align: right;
+    }
+
+
+    /* شريط الإدخال المطور (بخطوط كبيرة وتصميم عصري) */
+    .entry-bar {
+        background: #1e293b;
+        padding: 25px;
+        border-radius: 18px;
+        margin-bottom: 25px;
+        color: white;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    /* تكبير العناوين فوق الحقول */
+    .label-xl {
+        font-size: 13px;
+        font-weight: 850;
+        color: #94a3b8;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        display: block;
+        letter-spacing: 0.5px;
+    }
+
+    /* تنسيق الحقول الضخمة */
+    .entry-bar .form-control-xl {
+        background: rgba(255, 255, 255, 0.07) !important;
+        border: 2px solid rgba(255, 255, 255, 0.15) !important;
+        color: #fff !important;
+        font-size: 20px !important; /* تكبير الخط */
+        font-weight: 700 !important;
+        padding: 12px 15px !important;
+        border-radius: 12px !important;
+        height: auto !important;
+        transition: 0.3s;
+    }
+
+        .entry-bar .form-control-xl:focus {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2) !important;
+        }
+
+    /* تنسيق خاص لحقل الكمية ليبرز */
+    #itemQte {
+        border-color: rgba(59, 130, 246, 0.4) !important;
+        color: #60a5fa !important; /* لون أزرق فاتح مريح */
+    }
+
+    /* تنسيق نص "الكمية في المخزن" */
+    .stock-info {
+        font-size: 13px;
+        font-weight: 700;
+        margin-top: 8px;
+        display: block;
+    }
+
+    /* تنسيق زر الإضافة الضخم */
+    .btn-add-xl {
+        background: #2563eb;
+        color: white;
+        width: 100%;
+        height: 58px; /* نفس ارتفاع الحقول */
+        border-radius: 12px;
+        font-size: 30px;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+
+        .btn-add-xl:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+    /* تعديل Select2 ليتناسب مع الحجم الجديد */
+    .entry-bar .select2-container--default .select2-selection--single {
+        background: rgba(255, 255, 255, 0.07) !important;
+        border: 2px solid rgba(255, 255, 255, 0.15) !important;
+        height: 58px !important;
+        border-radius: 12px !important;
+        display: flex;
+        align-items: center;
+    }
+
+    .entry-bar .select2-selection__rendered {
+        color: white !important;
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        padding-left: 15px !important;
+    }
+
+    .entry-bar .select2-selection__arrow {
+        height: 58px !important;
+    }
+</style>
+
+<div class="val-container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold text-primary mb-0"><i class="fas fa-calculator me-2"></i> VALEURISATION BSM</h4>
+        <button class="btn btn-success fw-bold px-4 rounded-pill shadow-sm"><i class="fas fa-save me-2"></i>Enregistrer le bon</button>
+    </div>
+
+    <!-- 1. Header Info (BSM, Date, Chantier) -->
+    <div class="header-card shadow-sm">
+        <div class="row g-3">
+            <div class="col-md-2">
+                <label class="form-label-custom">BSM N°</label>
+                <input type="text" id="bsmNo" class="form-control fw-bold border-primary" placeholder="000000">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label-custom">Date</label>
+                <input type="date" id="bsmDate" class="form-control fw-bold" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+            </div>
+            <div class="col-md-7">
+                <label class="form-label-custom">Chantier / Destination (ST_UNITE)</label>
+                <select id="chantierSelect" class="form-control"></select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Entry Bar (Product Selection) -->
+   @*  <div class="entry-bar shadow">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label-custom text-white-50">Référence</label>
+                <select id="refSelect" class="form-control"></select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label-custom text-white-50">Désignation Article</label>
+                <input type="text" id="itemDesig" class="form-control border-0" readonly tabindex="-1">
+            </div> 
+            <div class="col-md-2">
+                <label class="form-label-custom text-white-50">Quantité</label>
+                <input type="number" id="itemQte" class="form-control text-center fw-bold" step="0.01" placeholder="0.00">
+                <!-- السطر الجديد المضاف بالأسفل -->
+                <div class="mt-1" style="font-size: 10px;">
+                    <span class="text-white-50">Qte En Stock = </span>
+                    <span id="displayStock" class="text-warning fw-bold">0.00</span>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label-custom text-white-50">P.A.M.P (DA)</label>
+                <input type="text" id="itemPamp" class="form-control text-end border-0" readonly tabindex="-1">
+            </div>
+            <div class="col-md-1">
+                <label class="form-label-custom text-white-50">Total HT</label>
+                <input type="text" id="itemMontant" class="form-control text-end border-0 text-info" readonly tabindex="-1">
+            </div>
+            <div class="col-md-1">
+                <button type="button" id="btnAddRow" class="btn-add"><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
+    </div> *@
+    <div class="entry-bar shadow-lg">
+        <div class="row g-3 align-items-start">
+            <!-- Référence -->
+            <div class="col-md-2">
+                <label class="label-xl">Référence</label>
+                <select id="refSelect" class="form-control"></select>
+            </div>
+
+            <!-- Désignation -->
+            <div class="col-md-4">
+                <label class="label-xl">Désignation Article</label>
+                <input type="text" id="itemDesig" class="form-control form-control-xl border-0" readonly tabindex="-1" placeholder="---">
+            </div>
+
+            <!-- Quantité (التصميم المطور) -->
+            <div class="col-md-2">
+                <label class="label-xl">Quantité</label>
+                <input type="number" id="itemQte" class="form-control form-control-xl text-center" step="0.01" placeholder="0.00">
+                <div class="stock-info text-center">
+                    <span class="text-white-50">En Stock:</span>
+                    <span id="displayStock" class="text-warning">0.00</span>
+                </div>
+            </div>
+
+            <!-- P.A.M.P -->
+            <div class="col-md-2">
+                <label class="label-xl">P.A.M.P (DA)</label>
+                <input type="text" id="itemPamp" class="form-control form-control-xl text-end border-0" readonly tabindex="-1" placeholder="0.00">
+            </div>
+
+            <!-- Total HT -->
+            <div class="col-md-1">
+                <label class="label-xl">Total HT</label>
+                <input type="text" id="itemMontant" class="form-control form-control-xl text-end border-0 text-info" readonly tabindex="-1" placeholder="0.00">
+            </div>
+
+            <!-- Add Button -->
+            <div class="col-md-1">
+                <label class="label-xl">&nbsp;</label> <!-- مسافة فارغة للمحاذاة -->
+                <button type="button" id="btnAddRow" class="btn-add-xl">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Items Table -->
+    <div class="table-card shadow-sm">
+        <table class="table table-hover mb-0" id="itemsTable">
+            <thead>
+                <tr>
+                    <th width="15%">Réf. Article</th>
+                    <th width="40%">Désignation</th>
+                    <th width="10%" class="text-center">Qté Reçue</th>
+                    <th width="15%" class="text-end">Prix Unit. (PAMP)</th>
+                    <th width="15%" class="text-end">Total HT</th>
+                    <th width="5%" class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- الأسطر تضاف هنا -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 4. Footer (Grand Total) -->
+    <div class="d-flex justify-content-end align-items-center mt-4 gap-3">
+        <span class="fw-bold text-muted fs-5">TOTAL GÉNÉRAL HT</span>
+        <div class="lcd-total" id="grandTotal">0.00</div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            let itemsList = [];
+
+            // --- 1. تهيئة Autocomplete للورشات (ST_UNITE) ---
+            $('#chantierSelect').select2({
+                placeholder: "Sélectionner un chantier...",
+                ajax: {
+                    url: '?handler=ChantierAutocomplete',
+                    delay: 250,
+                    data: (p) => ({ term: p.term }),
+                    processResults: (d) => ({ results: d })
+                }
+            });
+
+            // --- 2. تهيئة Autocomplete للمنتجات (ST_STOCK) ---
+            $('#refSelect').select2({
+                placeholder: "REF...",
+                minimumInputLength: 1,
+                ajax: {
+                    url: '?handler=ArticleAutocomplete',
+                    delay: 200,
+                    data: (p) => ({ term: p.term }),
+                    processResults: (d) => ({ results: d })
+                }
+            });
+
+            // --- 3. عند اختيار المنتج: جلب البيانات تلقائياً ---
+            // $('#refSelect').on('select2:select', function (e) {
+            //     const item = e.params.data; 
+            //     $('#itemDesig').val(item.intitule);
+            //     $('#itemPamp').val(parseFloat(item.pamp).toFixed(2));
+
+            //      const stockActual = parseFloat(item.qteStock) || 0;
+            //      const stockDisplay = $('#displayStock');
+                
+            //      stockDisplay.text(stockActual.toLocaleString('fr-FR', { minimumFractionDigits: 2 }));
+                
+            //      // إذا كان المخزون 0، نغير لون النص للأحمر ليعرف المستخدم فوراً
+            //      if (stockActual <= 0) {
+            //          stockDisplay.removeClass('text-warning').addClass('text-danger');
+            //      } else {
+            //          stockDisplay.removeClass('text-danger').addClass('text-warning');
+            //      }
+
+            //       // تحديث كمية المخزون تحت حقل Quantité
+            //     $('#displayStock').text(parseFloat(item.qteStock).toLocaleString('fr-FR', { minimumFractionDigits: 2 }));
+
+            //     // حفظ البيانات الإضافية في الذاكرة مؤقتاً
+            //     $(this).data('selected', item);
+
+            //     // نقل المؤشر فوراً للكمية
+            //     $('#itemQte').focus().select();
+            //     calculateLineTotal();
+            // });
+                    $('#refSelect').on('select2:select', function (e) {
+            // 1. جلب البيانات من العنصر المختار (التي أرسلها السيرفر في Autocomplete)
+            const item = e.params.data;
+
+            // 2. تعبئة التسمية والسعر (PAMP)
+            $('#itemDesig').val(item.intitule);
+            $('#itemPamp').val(parseFloat(item.pamp || 0).toFixed(2));
+
+            // 3. معالجة عرض الكمية في المخزن (Qte En Stock)
+            const stockActual = parseFloat(item.qteStock || 0);
+            const stockDisplay = $('#displayStock');
+
+            // تحديث نص الكمية بتنسيق جميل (مثال: 1 250,00)
+            stockDisplay.text(stockActual.toLocaleString('fr-FR', { minimumFractionDigits: 2 }));
+
+            // 4. تغيير لون التنبيه بناءً على حالة المخزون
+            if (stockActual <= 0) {
+                stockDisplay.removeClass('text-warning').addClass('text-danger');
+                // تمييز حقل الكمية باللون الأحمر كتحذير بصري إضافي
+                $('#itemQte').addClass('is-invalid');
+            } else {
+                stockDisplay.removeClass('text-danger').addClass('text-warning');
+                $('#itemQte').removeClass('is-invalid');
+            }
+
+            // 5. حفظ كائن البيانات بالكامل في خانة الـ select لاستخدامه لاحقاً عند الضغط على (+)
+            $(this).data('selected', item);
+
+            // 6. نقل مؤشر الكتابة للكمية (استخدام setTimeout يضمن أن Focus لا يضيع)
+            setTimeout(function() {
+                $('#itemQte').focus().select();
+            }, 100);
+
+            // 7. حساب إجمالي السطر فوراً (بناءً على الكمية المكتوبة حالياً إن وجدت)
+            calculateLineTotal();
+        });
+            // --- 4. حساب المجموع عند تغيير الكمية ---
+            $('#itemQte').on('input keyup', function (e) {
+                calculateLineTotal();
+                // إذا ضغط ENTER في حقل الكمية
+                if (e.which === 13) $('#btnAddRow').click();
+            });
+
+            function calculateLineTotal() {
+                const qte = parseFloat($('#itemQte').val()) || 0;
+                const pamp = parseFloat($('#itemPamp').val()) || 0;
+                const total = qte * pamp;
+                $('#itemMontant').val(total.toLocaleString('fr-FR', { minimumFractionDigits: 2 }));
+            }
+
+            // --- 5. إضافة السطر للجدول ---
+                    // --- 5. إضافة السطر للجدول مع التحقق من الكمية ---
+            // $('#btnAddRow').click(function () {
+            //     const ref = $('#refSelect').val();
+            //     const qteInput = $('#itemQte').val();
+            //     const qte = parseFloat(qteInput) || 0;
+            //     const itemData = $('#refSelect').data('selected');
+            
+            //     // 1. التنبيه إذا لم يتم اختيار منتج
+            //     if (!ref) {
+            //         Swal.fire({
+            //             icon: 'info',
+            //             title: 'Champs manquants',
+            //             text: 'Veuillez sélectionner un article (Référence) d\'abord.',
+            //             confirmButtonColor: '#2563eb'
+            //         });
+            //         return;
+            //     }
+            
+            //     // 2. التنبيه إذا كانت الكمية صفر أو سالبة (المطلوب)
+            //     if (qte <= 0) {
+            //         Swal.fire({
+            //             icon: 'warning',
+            //             title: 'Quantité invalide',
+            //             text: 'Veuillez saisir une valeur correcte.',
+            //             confirmButtonColor: '#f59e0b', // لون تحذيري برتقالي
+            //             didClose: () => {
+            //                 // إعادة التركيز على حقل الكمية بعد إغلاق التنبيه
+            //                 $('#itemQte').focus().select();
+            //             }
+            //         });
+            //         return; // التوقف عن الإضافة
+            //     }
+            
+            //     // إذا كانت البيانات سليمة، يتم إنشاء السطر
+            //     const row = {
+            //         ref: ref,
+            //         desig: itemData.intitule,
+            //         qte: qte,
+            //         pamp: itemData.pamp,
+            //         total: qte * itemData.pamp
+            // };
+
+            // itemsList.push(row);
+            // renderTable();
+            // resetEntryBar();
+            // });
+                    // --- 5. إضافة السطر للجدول مع التحقق من توفر المخزون ---
+        $('#btnAddRow').click(function () {
+            const ref = $('#refSelect').val();
+            const qteInput = $('#itemQte').val();
+            const qte = parseFloat(qteInput) || 0;
+            const itemData = $('#refSelect').data('selected'); // جلب بيانات المنتج المختار
+
+            // 1. التحقق من اختيار منتج
+            if (!ref) {
+                Swal.fire({ icon: 'info', title: 'Attention', text: 'Veuillez sélectionner un article d\'abord.' });
+                return;
+            }
+
+            // 2. التحقق من أن الكمية في المخزن ليست 0 (طلبك)
+            const stockActual = parseFloat(itemData.qteStock) || 0;
+            if (stockActual <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Stock Épuisé !',
+                    text: `Impossible d'ajouter cet article car la quantité en stock est de 0.00`,
+                    confirmButtonColor: '#ef4444' // لون أحمر للتنبيه بالخطأ
+                });
+                return; // توقف هنا، لا تدرج في الجدول
+            }
+
+            // 3. التحقق من أن الكمية المدخلة صحيحة (> 0)
+            if (qte <= 0) {
+                Swal.fire({ icon: 'warning', title: 'Quantité invalide', text: 'Veuillez saisir une quantité supérieure à zéro.' });
+                $('#itemQte').focus();
+                return;
+            }
+
+            // 4. (اختياري) تنبيه إذا كانت الكمية المطلوبة أكبر من الموجودة
+            if (qte > stockActual) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Alerte Stock',
+                    text: 'La quantité saisie est supérieure au stock disponible !',
+                    confirmButtonColor: '#f59e0b'
+                });
+                // ملاحظة: هنا تركت الكود يكمل (فقط تنبيه)، إذا أردت منعه تماماً أضف return هنا أيضاً.
+            }
+
+            // إذا مر بكل الشروط، ندرج السطر
+            const row = {
+                ref: ref,
+                desig: itemData.intitule,
+                qte: qte,
+                pamp: itemData.pamp,
+                total: qte * itemData.pamp
+            };
+
+            itemsList.push(row);
+            renderTable();
+            resetEntryBar();
+        });
+            function renderTable() {
+                let html = '';
+                let grandTotal = 0;
+                itemsList.forEach((item, index) => {
+                    grandTotal += item.total;
+                    html += `<tr>
+                        <td class="text-primary">${item.ref}</td>
+                        <td>${item.desig}</td>
+                        <td class="text-center">${item.qte.toFixed(2)}</td>
+                        <td class="text-end">${item.pamp.toLocaleString('fr-FR', {minimumFractionDigits:2})}</td>
+                        <td class="text-end fw-bold">${item.total.toLocaleString('fr-FR', {minimumFractionDigits:2})}</td>
+                        <td class="text-center">
+                            <button class="btn btn-link text-danger p-0" onclick="removeRow(${index})">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+                $('#itemsTable tbody').html(html);
+                $('#grandTotal').text(grandTotal.toLocaleString('fr-FR', { minimumFractionDigits: 2 }));
+            }
+
+            window.removeRow = function (index) {
+                itemsList.splice(index, 1);
+                renderTable();
+            };
+
+            function resetEntryBar() {
+                   $('#refSelect').val(null).trigger('change');
+                   $('#itemDesig, #itemQte, #itemPamp, #itemMontant').val('');
+                   $('#displayStock').text('0.00'); // تصفير نص الكمية
+                   $('#refSelect').select2('open'); 
+            }
+        });
+    </script>
+}
