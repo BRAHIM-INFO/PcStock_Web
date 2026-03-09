@@ -46,7 +46,7 @@ namespace PcStock_Web.Pages.Settings
             }
 
             // 3. المزامنة التلقائية لأهم الجداول
-            var tablesToSync = new List<string> { "ST_STOCK", "ST_ACHAT", "ST_FOURN", "ST_CESS", "ST_UNITE" };
+            var tablesToSync = new List<string> { "ST_STOCK", "ST_ACHAT", "ST_FOURN", "ST_CESS", "ST_UNITE", "ST_CONSO" };
             var result = await _sqliteService.SyncTables(tablesToSync);
 
             if (result.success)

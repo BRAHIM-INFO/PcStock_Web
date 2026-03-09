@@ -166,14 +166,14 @@
 }
 
 /* تنسيق القائمة الفرعية */
-.submenu-list {
+/*.submenu-list {
     list-style: none;
     padding-left: 35px;  إزاحة جهة اليمين لتظهر تحت الأيقونة الرئيسية 
     margin: 5px 0;
     border-left: 1px solid rgba(255, 255, 255, 0.2);  الخط العمودي الخفيف 
     margin-left: 25px;
     display: none;  مخفية افتراضياً 
-} 
+} */
 
 /* العنصر الفرعي */
 .submenu-item {
@@ -223,15 +223,8 @@
     box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* ظل خفيف لإبرازه */
 }
 
-/* تعليق: كلاس لفتح القائمة فوراً عند تحميل الصفحة */
-.submenu-list.show {
-    display: block !important;
-}
-
-/* تدوير السهم إذا كانت القائمة مفتوحة افتراضياً */
-.arrow-icon.rotate {
-    transform: rotate(180deg);
-}
+ 
+ 
 
 /* تمييز الأب (STOCKS) عندما تكون القائمة مفتوحة */
 .parent-active {
@@ -387,11 +380,11 @@
 }
 
 /* المسافة البادئة للقوائم المنسدلة لتبدو هرمية */
-.submenu-list {
+/*.submenu-list {
     padding-left: 20px;
     border-left: 1px solid rgba(255,255,255,0.15);
     margin-left: 25px;
-}
+}*/
 .page-item.active .page-link {
     background-color: #1e56d0 !important; /* أزرق كوزيدار */
     border-color: #1e56d0 !important;
@@ -536,3 +529,124 @@ thead tr.filters th::after, thead tr.filters th::before {
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
     border-color: #2563eb;
 }
+
+:root {
+    --sidebar-bg: #1e40af;
+    --active-bg: rgba(255, 255, 255, 0.15);
+    --hover-bg: rgba(255, 255, 255, 0.1);
+    --text-color: #f8fafc;
+}
+
+.sidebar-cosider {
+    width: 270px;
+    background-color: var(--sidebar-bg);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+}
+
+/* قسم اللوجو في الأعلى */
+.logo-section {
+    padding: 20px;
+    background: #fff; /* خلفية بيضاء ليبرز اللوجو */
+    text-align: center;
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 15px;
+}
+
+    .logo-section img {
+        max-width: 180px;
+        height: auto;
+    }
+
+/* تحسين الروابط */
+.nav-list {
+    padding: 10px;
+}
+
+.nav-item, .submenu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 10px;
+    margin-bottom: 4px;
+    transition: 0.2s;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+    .nav-item:hover, .submenu-item:hover {
+        background-color: var(--hover-bg);
+        color: #fff;
+    }
+
+    /* الحالة النشطة - Active */
+    .nav-item.active, .submenu-item.active {
+        background-color: #fff !important;
+        color: var(--sidebar-bg) !important;
+        font-weight: 700;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+.parent-active {
+    background-color: var(--active-bg);
+    border-left: 4px solid #fff;
+}
+
+/* تحسين القوائم الفرعية */
+/*.submenu-list {
+    list-style: none;
+    padding-left: 20px;
+    margin: 5px 0;
+    display: none;*/ /* مخفية افتراضياً */
+/*}*/
+ 
+.arrow-icon {
+    transition: transform 0.3s;
+    font-size: 12px;
+}
+
+    .arrow-icon.rotate {
+        transform: rotate(180deg);
+    }
+
+/* إخفاء القوائم الفرعية افتراضياً */
+/*.submenu-list {
+    display: none;
+    list-style: none;
+    padding-left: 45px;
+    background: rgba(0, 0, 0, 0.1);
+}*/
+ 
+
+/* تدوير السهم عند الفتح */
+.arrow-icon {
+    transition: transform 0.3s ease;
+}
+ 
+
+/* تصميم الزر النشط (الأبيض) */
+.nav-item.active {
+    background: white !important;
+    color: #1e40af !important; /* لون أزرق كوزيدار */
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+/* إخفاء القائمة الافتراضي */
+.submenu-list {
+    display: none;
+    list-style: none;
+    padding-left: 30px;
+    transition: all 0.3s ease;
+}
+
+/* الكلاس الذي سيضيفه الجافا سكريبت ليظهر القائمة */
+.submenu-list.show {
+    display: block !important;
+} 
+
+     
