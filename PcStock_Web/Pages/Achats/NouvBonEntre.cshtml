@@ -1,4 +1,499 @@
-﻿@page "/Achats/NouvBonEntre"
+﻿@page
+@model PcStock_Web.Pages.Achats.NouvBonEntreModel
+@{
+    ViewData["Title"] = "Bon d'Entrée Magasin";
+}
+@Html.AntiForgeryToken()
+<!-- المكتبات -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<style>
+    .bem-container {
+        background: #f4f7f6;
+        min-vh-100;
+        padding: 20px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /*Header & Buttons*/
+    .page-title {
+        color: #334155;
+        font-weight: 700;
+    }
+
+    .btn-valider {
+        background-color: #10b981;
+        color: white;
+        border: none;
+        font-weight: 700;
+        padding: 10px 25px;
+        border-radius: 10px;
+        transition: 0.3s;
+    }
+
+        .btn-valider:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+
+    /* Cards */
+    .card-custom {
+        background: white;
+        border-radius: 15px;
+        border: 1px solid #e2e8f0;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+
+    .label-custom {
+        font-size: 11px;
+        font-weight: 850;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* Entry Bar (Dark) */
+    .entry-bar {
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        color: white;
+    }
+
+        .entry-bar input, .entry-bar .select2-selection {
+            background: rgba(255,255,255,0.08) !important;
+            border: 2px solid rgba(255,255,255,0.15) !important;
+            color: white !important;
+            height: 50px !important;
+            font-size: 16px !important;
+            font-weight: 700 !important;
+        }
+
+        .entry-bar .select2-selection__rendered {
+            color: white !important;
+            line-height: 46px !important;
+            padding-left: 15px !important;
+        }
+
+    /* Table */
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .table thead th {
+        background: #f8fafc;
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 15px;
+        border: none;
+    }
+
+    .table tbody td {
+        padding: 15px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .empty-state {
+        padding: 60px;
+        text-align: center;
+        color: #94a3b8;
+    }
+    /* تصميم شاشة الإجمالي الرقمية LCD */
+    .lcd-total-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 20px;
+        margin-top: 30px;
+        margin-bottom: 50px;
+    }
+
+    .lcd-screen {
+        background-color: #050505;
+        border: 4px solid #1e293b;
+        border-radius: 10px;
+        padding: 10px 35px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4), inset 0 0 15px #000;
+    }
+
+    #grandTotal {
+        color: #00ff41;
+        font-family: 'Digital-7 Mono', sans-serif;
+        font-size: 65px;
+        font-weight: normal;
+        text-shadow: 0 0 12px rgba(0, 255, 65, 0.9);
+        letter-spacing: 2px;
+    }
+
+    .lcd-currency {
+        color: #00ff41;
+        font-family: 'Digital-7 Mono', sans-serif;
+        font-size: 28px;
+        margin-left: 15px;
+        text-shadow: 0 0 10px rgba(0, 255, 65, 0.7);
+        border: 1px solid rgba(0, 255, 65, 0.3);
+        padding: 2px 5px;
+        line-height: 1;
+    }
+
+    /* تحسين حقل No_BEM ليكون بارزاً للكتابة */
+    #bemNo {
+        border: 2px solid #2563eb !important;
+        color: #1e40af !important;
+        background-color: #f0f7ff !important;
+    }
+</style>
+
+<div class="bem-container">
+    <!-- Top Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+        <div class="d-flex align-items-center">
+            <div class="bg-primary p-2 rounded-3 me-3 text-white">
+                <i class="fas fa-file-alt fa-2x"></i>
+            </div>
+            <div>
+                <h3 class="mb-0 page-title text-uppercase">Bon d'Entrée Magasin</h3>
+                <small class="text-muted fw-bold">SAISIE DES RÉCEPTIONS ARTICLES</small>
+            </div>
+        </div>
+        <button id="btnValiderBem" class="btn btn-valider shadow-sm">
+            <i class="fas fa-save me-2"></i> VALIDER B.E.M
+        </button>
+    </div>
+
+    <!-- Header Form -->
+    <div class="card-custom">
+        <div class="row g-3">
+            <div class="col-md-2">
+                <label class="label-custom"><i class="fas fa-hashtag me-1"></i> No_BEM</label>
+                <!-- أصبح الآن قابلاً للكتابة وليس readonly -->
+                <input type="text" id="bemNo" class="form-control fw-bold" placeholder="Saisir N° BEM">
+            </div>
+            <div class="col-md-3">
+                <label class="label-custom"><i class="fas fa-calendar-alt me-1"></i> Date de Réception</label>
+                <input type="date" id="bemDate" class="form-control fw-bold" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+            </div>
+            <div class="col-md-3">
+                <label class="label-custom">N° Facture Fournisseur</label>
+                <input type="text" id="factureNo" class="form-control fw-bold" placeholder="N° Facture">
+            </div>
+            <div class="col-md-4">
+                <label class="label-custom">Bon de Commande (BC)</label>
+                <input type="text" id="bcNo" class="form-control fw-bold" placeholder="N° BC">
+            </div>
+            <div class="col-md-12 mt-4">
+                <label class="label-custom"><i class="fas fa-user-tie me-1"></i> Sélectionner le Fournisseur</label>
+                <select id="fournisseurSelect" class="form-control"></select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Entry Bar (Product Selection) -->
+    <div class="entry-bar shadow-lg">
+        <div class="row g-2 align-items-start">
+            <div class="col-md-2">
+                <label class="label-custom text-white-50">Référence</label>
+                <select id="refSelect" class="form-control"></select>
+            </div>
+            <div class="col-md-4">
+                <label class="label-custom text-white-50">Désignation Article</label>
+                <input type="text" id="itemDesig" class="form-control border-0" readonly tabindex="-1" placeholder="---">
+            </div>
+            <div class="col-md-2">
+                <label class="label-custom text-white-50">Quantité</label>
+                <input type="number" id="itemQte" class="form-control text-center" step="0.01" placeholder="0.00">
+            </div>
+            <div class="col-md-2">
+                <label class="label-custom text-white-50">P.A.M.P (DA)</label>
+                <input type="number" id="itemPamp" class="form-control text-end" step="0.01" placeholder="0.00">
+            </div>
+            <div class="col-md-1">
+                <label class="label-custom text-white-50">Montant</label>
+                <input type="text" id="itemMontant" class="form-control text-end border-0 text-info" readonly tabindex="-1" value="0.00">
+            </div>
+            <div class="col-md-1">
+                <label class="label-custom">&nbsp;</label>
+                <button type="button" id="btnAddRow" class="btn btn-primary w-100" style="height: 50px; border-radius: 10px; font-size: 20px;">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Table -->
+    <div class="table-container">
+        <table class="table table-hover mb-0" id="bemTable">
+            <thead>
+                <tr>
+                    <th width="15%">Réf. Article</th>
+                    <th width="40%">Désignation</th>
+                    <th width="10%" class="text-center">Qté Reçue</th>
+                    <th width="15%" class="text-end">Prix Unit.</th>
+                    <th width="15%" class="text-end">Total HT</th>
+                    <th width="5%" class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="emptyRow">
+                    <td colspan="6" class="empty-state">
+                        <i class="fas fa-box-open fa-3x mb-3"></i><br>
+                        AUCUN ARTICLE DANS LA LISTE
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- إضافة شاشة الإجمالي الرقمية أسفل الجدول -->
+    <div class="lcd-total-container">
+        <span class="fw-bold text-muted" style="font-size: 18px;">TOTAL GÉNÉRAL HT</span>
+        <div class="lcd-screen shadow-lg">
+            <span id="grandTotal">0,00</span>
+            <span class="lcd-currency">DA</span>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            // مصفوفة لتخزين أسطر السند مؤقتاً
+            let bemList = [];
+
+            // 1. تهيئة Autocomplete للموردين (ST_FOURN)
+            $('#fournisseurSelect').select2({
+                placeholder: "--- Choisir un fournisseur في القائمة ---",
+                tags: true, // يسمح بكتابة مورد جديد غير موجود
+                ajax: {
+                    url: '?handler=FournisseurAutocomplete',
+                    delay: 250,
+                    data: (p) => ({ term: p.term }),
+                    processResults: (d) => ({ results: d })
+                }
+            });
+
+            // 2. تهيئة Autocomplete لحقل المرجع (ST_STOCK)
+            $('#refSelect').select2({
+                placeholder: "RÉFÉRENCE",
+                minimumInputLength: 1,
+                tags: true, // يسمح بكتابة مراجع جديدة غير موجودة
+                ajax: {
+                    url: '?handler=ArticleAutocomplete',
+                    delay: 200,
+                    data: (p) => ({ term: p.term }),
+                    processResults: (d) => ({ results: d })
+                }
+            });
+
+            // 3. حدث اختيار المنتج من القائمة
+            $('#refSelect').on('select2:select', function (e) {
+                const item = e.params.data;
+
+                // التحقق هل المنتج موجود في قاعدة البيانات (عبر علامة exists التي يرسلها السيرفر)
+                if (item.exists) {
+                    // أ. المنتج موجود: ملء الحقول تلقائياً
+                    $('#itemDesig').val(item.intitule).attr('readonly', true).addClass('border-0').removeClass('border-primary');
+                    $('#itemPamp').val(parseFloat(item.pamp || 0).toFixed(2));
+
+                    // حفظ البيانات المختارة في الذاكرة مؤقتاً
+                    $(this).data('selected', item);
+
+                    // نقل المؤشر للكمية فوراً
+                    setTimeout(() => { $('#itemQte').focus().select(); }, 100);
+                    calculateLineTotal();
+                }
+                else {
+                    // ب. المنتج غير موجود: إظهار رسالة OUI | NON بالفرنسية
+                    const newRef = item.id;
+
+                    Swal.fire({
+                        title: 'Article introuvable',
+                        text: `L'article "${newRef}" n'existe pas dans le stock. Voulez-vous créer un nouvel article ?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Oui, créer',
+                        cancelButtonText: 'Non, annuler',
+                        confirmButtonColor: '#10b981',
+                        cancelButtonColor: '#64748b'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // إذا وافق: نفتح خانة التسمية للكتابة اليدوية
+                            $('#itemDesig').removeAttr('readonly').removeClass('border-0').addClass('border-primary').val('').focus();
+                            $('#itemPamp').val('0.00');
+                            $(this).data('selected', { id: newRef, intitule: "", exists: false });
+                        } else {
+                            resetEntry();
+                        }
+                    });
+                }
+            });
+
+            // 4. حساب المجموع اللحظي عند تغيير الكمية أو السعر
+            $('#itemQte, #itemPamp').on('input', function() {
+                calculateLineTotal();
+            });
+
+            // دالة حساب إجمالي السطر
+            function calculateLineTotal() {
+                const q = parseFloat($('#itemQte').val()) || 0;
+                const p = parseFloat($('#itemPamp').val()) || 0;
+                const total = q * p;
+                $('#itemMontant').val(total.toLocaleString('fr-FR', { minimumFractionDigits: 2 }));
+            }
+
+            // 5. إضافة السطر إلى الجدول
+            $('#btnAddRow').click(function () {
+                const ref = $('#refSelect').val();
+                const desig = $('#itemDesig').val();
+                const qte = parseFloat($('#itemQte').val()) || 0;
+                const pamp = parseFloat($('#itemPamp').val()) || 0;
+
+                if (!ref || !desig || qte <= 0) {
+                    Swal.fire('Attention', 'Veuillez remplir la référence, la désignation et une quantité valide.', 'warning');
+                    return;
+                }
+
+                const row = {
+                    ref: ref,
+                    desig: desig,
+                    qte: qte,
+                    pamp: pamp,
+                    total: qte * pamp
+                };
+
+                bemList.push(row);
+                renderTable();
+                resetEntry();
+            });
+
+            // دالة رسم الجدول وتحديث الإجمالي الكلي
+            function renderTable() {
+                const tbody = $('#bemTable tbody');
+                tbody.empty();
+
+                if (bemList.length === 0) {
+                    tbody.append('<tr id="emptyRow"><td colspan="6" class="text-center py-5 text-muted"><i class="fas fa-box-open fa-3x mb-3"></i><br>AUCUN ARTICLE DANS LA LISTE</td></tr>');
+                    $('#grandTotal').text('0,00');
+                    return;
+                }
+
+                let grandTotal = 0;
+                bemList.forEach((item, index) => {
+                    grandTotal += item.total;
+                    tbody.append(`
+                        <tr>
+                            <td class="text-primary fw-bold">${item.ref}</td>
+                            <td class="text-uppercase">${item.desig}</td>
+                            <td class="text-center">${item.qte.toLocaleString('fr-FR', {minimumFractionDigits:2})}</td>
+                            <td class="text-end">${item.pamp.toLocaleString('fr-FR', {minimumFractionDigits:2})}</td>
+                            <td class="text-end fw-bold">${item.total.toLocaleString('fr-FR', {minimumFractionDigits:2})}</td>
+                            <td class="text-center">
+                                <button class="btn btn-link text-danger p-0" onclick="removeRow(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                });
+
+                $('#grandTotal').text(grandTotal.toLocaleString('fr-FR', { minimumFractionDigits: 2 }));
+            }
+
+            // دالة حذف سطر
+            window.removeRow = function(index) {
+                bemList.splice(index, 1);
+                renderTable();
+            };
+
+            // دالة تصفير شريط الإدخال
+            function resetEntry() {
+                $('#refSelect').val(null).trigger('change');
+                $('#itemDesig').val('').attr('readonly', true).addClass('border-0').removeClass('border-primary');
+                $('#itemQte, #itemPamp, #itemMontant').val('');
+                $('#refSelect').select2('open');
+            }
+
+            // 6. زر الحفظ النهائي (Valider BEM)
+            $('#btnValiderBem').click(function () {
+                const bemNo = $('#bemNo').val(); // جلب الرقم اليدوي
+                const fournisseurId = $('#fournisseurSelect').val();
+                const factureNo = $('#factureNo').val();
+
+                 if (!bemNo) {
+                    Swal.fire('Attention', 'Veuillez saisir le numéro du BEM.', 'warning');
+                    $('#bemNo').focus();
+                    return;
+                }
+
+                if (!fournisseurId || bemList.length === 0) {
+                    Swal.fire('Erreur', 'Veuillez choisir un fournisseur et ajouter au moins un article.', 'error');
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Validation en cours...',
+                    text: 'Veuillez patienter pendant l\'enregistrement du BEM',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                const postData = {
+                    noBem: bemNo, // نرسل الرقم الذي أدخله المستخدم                    
+                    date: $('#bemDate').val(),
+                    fournisseurId: fournisseurId,
+                    factureNo: factureNo,
+                    bcNo: $('#bcNo').val(),
+                    items: bemList
+                };
+
+                $.ajax({
+                    url: window.location.pathname + '?handler=ValiderBEM',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: {
+                        "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val()
+                    },
+                    data: JSON.stringify(postData),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Succès !',
+                                text: response.message,
+                                confirmButtonColor: '#10b981'
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Erreur', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Erreur', 'Impossible de contacter le serveur.', 'error');
+                    }
+                });
+            });
+        });
+    </script>
+}
+@* @page "/Achats/NouvBonEntre"
 @model PcStock_Web.Pages.Achats.NouvBonEntreModel
 @{
     ViewData["Title"] = "Bon d'Entrée Magasin";
@@ -244,4 +739,4 @@
             });
         });
     </script>
-}
+} *@
