@@ -1,0 +1,308 @@
+﻿@page
+@model PcStock_Web.Pages.Repports.RepportMensuelModel 
+@{
+    ViewData["Title"] = "Rapport Mensuel - COSIDER";
+    Layout = null; // نلغي الـ Layout الافتراضي ليصبح التقرير مستقلاً تماماً للطباعة
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport Mensuel de Gestion des Stocks</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --cosider-blue: #1e40af;
+            --cosider-gold: #b3935a;
+            --bg-light: #f8fafc;
+        }
+
+        body { background-color: #525659; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        /* حاوية الورقة A4 */
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        /* تنسيق الهيدر المائل كما في الصورة */
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .header-blue-shape {
+            position: absolute;
+            top: -15mm;
+            right: -15mm;
+            width: 60%;
+            height: 40mm;
+            background: var(--cosider-blue);
+            clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%);
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .brand-logo img { width: 180px; }
+        
+        .header-titles {
+            text-align: center;
+            color: white;
+            margin-right: 20px;
+        }
+        .header-titles h2 { font-size: 20px; font-weight: 800; margin-bottom: 2px; }
+        .header-titles h4 { font-size: 14px; color: var(--cosider-gold); font-weight: 700; }
+
+        /* بطاقات الإحصائيات */
+        .stat-card {
+            background: var(--bg-light);
+            border-radius: 15px;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        .stat-card h6 { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 0; }
+        .stat-card .val { font-size: 18px; font-weight: 800; color: #0f172a; }
+
+        /* جداول التقرير */
+        .report-table { font-size: 11px; margin-bottom: 0; }
+        .report-table thead th { background: var(--bg-light); color: #1e293b; border-bottom: 2px solid #cbd5e1; }
+        .card-box {
+            background: var(--bg-light);
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            height: 100%;
+        }
+        .card-title { font-size: 13px; font-weight: 800; color: #1e293b; text-align: center; margin-bottom: 12px; }
+
+        /* قسم الملاحظات */
+        .notes-section {
+            margin-top: 20px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 15px;
+            background: #fff;
+        }
+
+        .footer-info {
+            margin-top: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            color: #334155;
+        }
+
+        /* زر الطباعة (يختفي عند الطباعة) */
+        .no-print {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        @@media print {
+            body { background: none; }
+            .page { margin: 0; box-shadow: none; border: none; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn btn-primary no-print shadow-lg px-4 rounded-pill" onclick="window.print()">
+        <i class="fas fa-print me-2"></i> Imprimer le Rapport
+    </button>
+
+    <div class="page shadow">
+        <!-- Header -->
+        <div class="report-header">
+            <div class="header-blue-shape"></div>
+            <div class="header-content">
+                <div class="brand-logo">
+                    <img src="~/images/logo_entreprise.png" alt="COSIDER LOGO">
+                </div>
+                <div class="header-titles">
+                    <h2>COSIDER TP</h2>
+                    <h4>DCM - MSILA</h4>
+                    <p class="mb-0 small text-white">SERVICE GESTION DES STOCKS</p>
+                    <p class="mb-0 small text-white">MAGASIN CENTRAL DE PDR</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-4">
+                <div class="stat-card shadow-sm">
+                    <div class="stat-icon bg-primary"><i class="fas fa-shopping-cart"></i></div>
+                    <div>
+                        <h6>Montant Total des Achats</h6>
+                        <div class="val">124,751,389 DA</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="stat-card shadow-sm">
+                    <div class="stat-icon bg-warning text-dark"><i class="fas fa-hand-holding-usd"></i></div>
+                    <div>
+                        <h6>Montant Total des Ventes</h6>
+                        <div class="val">89,190,871 DA</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="stat-card shadow-sm">
+                    <div class="stat-icon bg-success"><i class="fas fa-boxes"></i></div>
+                    <div>
+                        <h6>Nombre Total de Produits</h6>
+                        <div class="val">21,360</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top 10 Tables -->
+        <div class="row g-3 mb-4">
+            <div class="col-6">
+                <div class="card-box shadow-sm">
+                    <div class="card-title">Top 10 Fournisseurs (par Valeur)</div>
+                    <table class="table table-sm report-table">
+                        <thead>
+                            <tr><th>#</th><th>Fournisseur</th><th>Montant</th><th>Part %</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td>NAFTAL</td><td>12.5M</td><td>15%</td></tr>
+                            <tr><td>2</td><td>KING PNEUS</td><td>8.2M</td><td>10%</td></tr>
+                            @for(int i=3; i<=10; i++){ <tr><td>@i</td><td>---</td><td>-</td><td>-</td></tr> }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card-box shadow-sm">
+                    <div class="card-title">Top 10 Projets les plus Fournis</div>
+                    <table class="table table-sm report-table">
+                        <thead>
+                            <tr><th>#</th><th>Projet</th><th>Montant</th><th>Part %</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td>CH_T162</td><td>25.4M</td><td>22%</td></tr>
+                            <tr><td>2</td><td>CH_M48</td><td>18.1M</td><td>16%</td></tr>
+                            @for(int i=3; i<=10; i++){ <tr><td>@i</td><td>---</td><td>-</td><td>-</td></tr> }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-6">
+                <div class="card-box shadow-sm text-center">
+                    <div class="card-title">Répartition des Stocks par Catégorie</div>
+                    <canvas id="stockChart" style="max-height: 180px;"></canvas>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card-box shadow-sm">
+                    <div class="card-title">Mouvement Mensuel des Stocks</div>
+                    <canvas id="moveChart" style="max-height: 180px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Table -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card-box shadow-sm">
+                    <div class="card-title">Produits les plus Consommés (Top 5)</div>
+                    <table class="table table-sm report-table">
+                        <thead class="table-dark">
+                            <tr><th>#</th><th>Nom du Produit</th><th>Quantité</th><th>Valeur HT</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td>HUILE MOTEUR 15W40</td><td>1250 L</td><td>924,600.00</td></tr>
+                            <tr><td>2</td><td>FILTRE A AIR Liebherr</td><td>45 U</td><td>255,400.00</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="notes-section">
+            <h6 class="fw-bold mb-2">Notes Supplémentaires et Recommandations :</h6>
+            <p class="small text-muted mb-0">Rapport généré automatiquement par PcStock-Web. Les données reflètent l'état actuel du magasin central. Il est recommandé de surveiller les niveaux de stock de sécurité pour les consommables critiques.</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-info">
+            <span>Date d'Exportation: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</span>
+            <span>Nom du Responsable: [Chef de Service Gestion des Stocks]</span>
+        </div>
+    </div>
+
+    <!-- Scripts pour les graphes -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 1. Chart Donut (Stocks par Catégorie)
+        new Chart(document.getElementById('stockChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Filtres', 'Huiles', 'Pneus', 'Moteurs'],
+                datasets: [{
+                    data: [35, 25, 20, 20],
+                    backgroundColor: ['#1e40af', '#10b981', '#f59e0b', '#ef4444']
+                }]
+            },
+            options: { plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } } } }
+        });
+
+        // 2. Chart Line (Mouvement Mensuel)
+        new Chart(document.getElementById('moveChart'), {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai'],
+                datasets: [
+                    { label: 'Achats', data: [12, 19, 15, 25, 32], borderColor: '#1e40af', tension: 0.3 },
+                    { label: 'Sorties', data: [10, 15, 20, 18, 28], borderColor: '#f59e0b', tension: 0.3 }
+                ]
+            },
+            options: { scales: { y: { beginAtZero: true }, x: { ticks: { font: { size: 9 } } } }, plugins: { legend: { labels: { font: { size: 10 } } } } }
+        });
+    </script>
+</body>
+</html>
