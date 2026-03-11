@@ -647,6 +647,118 @@ thead tr.filters th::after, thead tr.filters th::before {
 /* الكلاس الذي سيضيفه الجافا سكريبت ليظهر القائمة */
 .submenu-list.show {
     display: block !important;
-} 
+}
+.sidebar-cosider {
+    width: 270px;
+    background-color: #1e40af;
+    height: 100vh; /* ملء ارتفاع الشاشة بالكامل */
+    position: fixed; /* تثبيت الشريط في الجانب */
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column; /* ترتيب العناصر عمودياً */
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+/* الجزء الذي سيحتوي على الـ Scroll */
+.nav-list {
+    flex-grow: 1; /* يأخذ المساحة المتبقية بين الهيدر والفوتر */
+    overflow-y: auto; /* تفعيل التمرير العمودي */
+    overflow-x: hidden; /* إخفاء التمرير الأفقي */
+    padding: 10px;
+    /* تجميل شريط التمرير للمتصفحات الحديثة */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+    /* تخصيص شكل الـ Scrollbar لمتصفحات Chrome و Edge */
+    .nav-list::-webkit-scrollbar {
+        width: 5px; /* عرض نحيف جداً */
+    }
+
+    .nav-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .nav-list::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2); /* لون شفاف خفيف */
+        border-radius: 10px;
+    }
+
+        .nav-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+/* تأمين محتوى الصفحة الرئيسي لكي لا يختفي خلف الـ Sidebar الثابت */
+.main-content {
+    margin-left: 270px; /* نفس عرض السايدبار */
+    transition: all 0.3s ease;
+}
+
+.sidebar-cosider.collapsed + .main-content {
+    margin-left: 70px; /* العرض عند الانهيار */
+}
+
+
+
+.sidebar-cosider {
+    width: 270px;
+    transition: width 0.3s ease;
+    overflow-x: hidden; /* لمنع ظهور نصوص خارج الحاوية أثناء الحركة */
+}
+
+    /* --- الحالة عندما يكون السايدبار مغلقاً (.collapsed) --- */
+
+    .sidebar-cosider.collapsed {
+        width: 75px; /* عرض الأيقونات فقط */
+    }
+
+        /* 1. إخفاء كل النصوص والأسهم */
+        .sidebar-cosider.collapsed .menu-text,
+        .sidebar-cosider.collapsed .brand-text,
+        .sidebar-cosider.collapsed .arrow-icon,
+        .sidebar-cosider.collapsed .user-info {
+            display: none !important; /* إخفاء إجباري للنصوص والأسهم */
+        }
+
+        /* 2. توسيط الأيقونات في المنتصف تماماً */
+        .sidebar-cosider.collapsed .nav-item,
+        .sidebar-cosider.collapsed .submenu-item {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+            .sidebar-cosider.collapsed .nav-item i {
+                margin-right: 0 !important;
+                font-size: 1.3rem; /* تكبير الأيقونة قليلاً لتظهر بوضوح */
+            }
+
+        /* 3. تعديل الهيدر (اللوجو) عند الانغلاق */
+        .sidebar-cosider.collapsed .brand-section {
+            justify-content: center;
+            padding: 15px 0;
+        }
+
+        /* 4. تعديل الفوتر (صورة المستخدم) عند الانغلاق */
+        .sidebar-cosider.collapsed .sidebar-footer {
+            padding: 15px 0;
+            justify-content: center;
+        }
+
+        .sidebar-cosider.collapsed .user-box {
+            justify-content: center;
+            width: 100%;
+        }
+
+        .sidebar-cosider.collapsed .user-avatar {
+            margin: 0 !important; /* إلغاء المسافات الجانبية للـ CT */
+        }
+
+        /* 5. منع فتح القوائم الفرعية وهي مغلقة (اختياري لجمالية التصميم) */
+        .sidebar-cosider.collapsed .submenu-list.show {
+            display: none !important;
+        }
 
      
