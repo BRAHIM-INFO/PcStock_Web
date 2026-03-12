@@ -198,38 +198,7 @@
         </div>
     </div>
 </div>
-
-@* <div class="container-fluid p-4">
-    <div class="page-header d-flex justify-content-between align-items-center shadow">
-        <h4 class="mb-0 fw-bold"><i class="fas fa-layer-group me-2"></i> ACHATS PAR BEM & FAMILLE</h4>
-        <div class="d-flex gap-2">
-            <button id="btnExport" class="btn btn-success btn-sm fw-bold"><i class="fas fa-file-excel me-1"></i> EXCEL</button>
-            <button id="btnPrint" class="btn btn-light btn-sm fw-bold text-primary"><i class="fas fa-print me-1"></i> IMPRIMER</button>
-        </div>
-    </div>
-
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <table id="mainTable" class="table table-hover align-middle mb-0 w-100">
-            <thead>
-                <tr>
-                    <th>FAMILLE</th>
-                    <th>BEM N°</th>
-                    <th>DATE</th>
-                    <th>FACTURE N°</th>
-                    <th>FOURNISSEUR</th>
-                    <th class="text-end">MONTANT TOTAL HT</th>
-                </tr>
-            </thead>
-        </table>
-    </div>
-
-    <div class="total-wrapper">
-        <span class="fw-bold text-muted">TOTAL SÉLECTIONNÉ</span>
-        <div class="total-display">
-            <span id="txtTotal">0,00</span> <small style="font-size: 18px">DA</small>
-        </div>
-    </div>
-</div> *@
+ 
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
@@ -291,8 +260,16 @@
                     { data: "no_faca" },
                     { data: "fournisseur" },
                     {
-                        data: "montant", className: "text-end fw-bold",
-                        render: (d) => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits:2})
+                         data: "montant",
+                            className: "text-end fw-bold",
+                            render: function (data) {
+                                return parseFloat(data).toLocaleString('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                });
+                            }
+                        // data: "montant", className: "text-end fw-bold text-dark",
+                        // render: (d) => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits:2})
                     }
                 ],
                 initComplete: function () {

@@ -179,8 +179,16 @@
                         render: (d) => d ? new Date(d).toLocaleDateString('fr-FR') : '-'
                     },
                     {
-                        data: "montant", className: "text-end fw-bold text-dark",
-                        render: (d) => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits:2})
+                        data: "montant",
+                            className: "text-end fw-bold",
+                            render: function (data) {
+                                return parseFloat(data).toLocaleString('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                });
+                            }
+                        // data: "montant", className: "text-end fw-bold text-dark",
+                        // render: (d) => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits:2})
                     }
                 ],
                 initComplete: function () {

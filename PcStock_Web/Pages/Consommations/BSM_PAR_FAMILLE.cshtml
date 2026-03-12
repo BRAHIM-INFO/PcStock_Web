@@ -1,5 +1,5 @@
 ﻿@page
-@model PcStock_Web.Pages.Cessions.Fournie.BSM_PAR_FAMILLEModel
+@model PcStock_Web.Pages.Consommations.BSM_PAR_FAMILLEModel
 @{
     ViewData["Title"] = "BSM par Famille";
 }
@@ -151,7 +151,7 @@
                     <th>FAMILLE</th>
                     <th>BSM N°</th>
                     <th>DATE</th>
-                    <th>CHANTIER / SOC</th>
+                    <th>ATELIER</th>
                     <th class="text-end">MONTANT TOTAL HT</th>
                 </tr>
             </thead>
@@ -215,14 +215,14 @@
                 buttons: [{ extend: 'excelHtml5', className: 'd-none', exportOptions: { columns: ':visible' } }],
                 columns: [
                     { data: "famille", className: "fw-bold" },
-                    { data: "no_bc", className: "text-primary fw-bold" },
+                    { data: "no_bs", className: "text-primary fw-bold" },
                     {
                         data: "date_cess",
                         render: (d) => d ? new Date(d).toLocaleDateString('fr-FR') : '-'
                     },
                     { data: "cod_soc" },
                     {
-                       data: "montant",
+                            data: "montant",
                             className: "text-end fw-bold",
                             render: function (data) {
                                 return parseFloat(data).toLocaleString('en-US', {

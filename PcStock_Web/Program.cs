@@ -1,11 +1,13 @@
-using PcStock_Web;
+﻿using PcStock_Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();  
 builder.Services.AddSingleton<ConfigService>();
-builder.Services.AddSingleton<SqliteDbService>(); 
+builder.Services.AddSingleton<SqliteDbService>();
+// تثبيت البرنامج ليعمل دائماً على المنفذ 5000
+//builder.WebHost.UseUrls("http://localhost:5000");
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
