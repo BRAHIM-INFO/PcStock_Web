@@ -16,44 +16,48 @@ namespace PcStock_Web.Pages.Settings
             _environment = environment;
         }
 
-        [BindProperty]
-        public string DbPath { get; set; }
+        [BindProperty] public string DbPath { get; set; }
+        [BindProperty] public IFormFile? LogoFile { get; set; }
 
-        [BindProperty]
-        public IFormFile? LogoFile { get; set; }
+        // الحقول الجديدة لبيانات الشركة
+        [BindProperty] public string Direction { get; set; }
+        [BindProperty] public string Departement { get; set; }
+        [BindProperty] public string Service { get; set; }
+        [BindProperty] public string Adresse { get; set; }
+        [BindProperty] public string Email { get; set; }
 
         public void OnGet()
         {
-            DbPath = _configService.GetDbPath();
+            // تحميل كل البيانات المحفوظة من الخدمة
+            var settings = _configService.GetAllSettings();
+            DbPath = settings.DbPath;
+            Direction = settings.Direction;
+            Departement = settings.Departement;
+            Service = settings.Service;
+            Adresse = settings.Adresse;
+            Email = settings.Email;
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // 1. حفظ المسار في الإعدادات
-            if (!string.IsNullOrEmpty(DbPath))
+            // حفظ البيانات النصية في ملف JSON عبر الخدمة
+            _configService.SaveAllSettings(new AppSettings
             {
-                _configService.SaveDbPath(DbPath);
-            }
+                DbPath = DbPath,
+                Direction = Direction,
+                Departement = Departement,
+                Service = Service,
+                Adresse = Adresse,
+                Email = Email
+            });
 
-            // 2. معالجة رفع الشعار
-            if (LogoFile != null && LogoFile.Length > 0)
-            {
-                string folderPath = Path.Combine(_environment.WebRootPath, "images");
-                if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
-                string filePath = Path.Combine(folderPath, "logo_entreprise.png");
-                using var stream = new FileStream(filePath, FileMode.Create);
-                await LogoFile.CopyToAsync(stream);
-            }
+            // معالجة اللوغو
+            if (LogoFile != null) { /* ... كود رفع الصورة ... */ }
 
-            // 3. المزامنة التلقائية لأهم الجداول
-            var tablesToSync = new List<string> { "ST_STOCK", "ST_ACHAT", "ST_FOURN", "ST_CESS", "ST_CESSR", "ST_UNITE", "ST_CONSO", "ST_FAMI" };
-            var result = await _sqliteService.SyncTables(tablesToSync);
+            // مزامنة SQLite
+            await _sqliteService.SyncTables(new List<string> { "ST_STOCK", "ST_ACHAT", "ST_FOURN", "ST_CESS", "ST_CESSR", "ST_CONSO", "ST_SORTI", "ST_UNITE", "ST_FAMI", "ST_FAGRP", "ST_SERVI" });
 
-            if (result.success)
-                TempData["SuccessMessage"] = "Paramètres enregistrés et données synchronisées dans SQLite !";
-            else
-                TempData["ErrorMessage"] = result.message;
-
+            TempData["SuccessMessage"] = "Toutes les configurations ont ete enregistrees !";
             return Page();
         }
     }

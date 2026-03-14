@@ -1,0 +1,229 @@
+﻿@page
+@model PcStock_Web.Pages.Tables.GroupeFamilleModel
+@Html.AntiForgeryToken()
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+
+<style>
+    .page-header {
+        background: #2043B3;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .btn-add {
+        background: #22c55e;
+        color: white;
+        border: none;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 8px 20px;
+        transition: 0.2s;
+    }
+
+        .btn-add:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-table-edit {
+        background-color: #f0f4ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .btn-table-delete {
+        background-color: #fef2f2;
+        color: #ef4444;
+        border: 1px solid #fee2e2;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .filters-row input {
+        width: 100%;
+        padding: 4px;
+        font-size: 11px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+    }
+
+    thead tr.filters-row th::after, thead tr.filters-row th::before {
+        display: none !important;
+    }
+</style>
+
+<div class="container-fluid p-4">
+    <div class="page-header d-flex justify-content-between align-items-center shadow">
+        <h4 class="mb-0 fw-bold"><i class="fas fa-folder-tree me-2"></i> GROUPES DE FAMILLES</h4>
+        <div class="d-flex gap-2">
+            <button class="btn btn-add shadow-sm" onclick="openAddModal()"><i class="fas fa-plus-circle me-1"></i> AJOUTER GROUPE</button>
+            <button id="btnExcel" class="btn btn-success btn-sm px-3 shadow-sm"><i class="fas fa-file-excel"></i></button>
+            <button class="btn btn-light btn-sm text-primary px-3 shadow-sm" onclick="window.print()"><i class="fas fa-print"></i></button>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <table id="grpTable" class="table table-hover align-middle mb-0 w-100">
+            <thead class="bg-light">
+                <tr>
+                    <th>CODE GROUPE</th>
+                    <th>DÉSIGNATION DU GROUPE</th>
+                    <th class="text-center" style="width: 120px;">ACTIONS</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="grpModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="modalTitle">Nouveau Groupe</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="grpForm">
+                <input type="hidden" id="isEdit" value="false">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="small fw-bold">CODE DU GROUPE (COD_GRP)</label>
+                        <input type="text" id="m_cod" name="cod_grp" class="form-control fw-bold border-primary" required maxlength="10">
+                    </div>
+                    <div class="mb-0">
+                        <label class="small fw-bold">NOM / DÉSIGNATION</label>
+                        <input type="text" id="m_nom" name="nom" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
+    <script>
+        let table;
+
+        $(document).ready(function () {
+            $('#grpTable thead tr').clone(true).addClass('filters-row').appendTo('#grpTable thead');
+
+            table = $('#grpTable').DataTable({
+                ajax: { url: "?handler=LoadData", dataSrc: "" },
+                dom: 'Brtip',
+                orderCellsTop: true,
+                buttons: [{ extend: 'excelHtml5', className: 'd-none', exportOptions: { columns: [0,1] } }],
+                columns: [
+                    { data: "cod_grp", className: "fw-bold text-dark" },
+                    { data: "nom", className: "fw-bold text-primary" },
+                    {
+                        data: null, className: "text-center", orderable: false,
+                        render: (d) => `
+                            <div class="action-buttons">
+                                <div class="btn-table-edit" onclick='openEditModal(${JSON.stringify(d)})'><i class="fas fa-pen-nib"></i></div>
+                                <div class="btn-table-delete" onclick="deleteGrp('${d.cod_grp}')"><i class="fas fa-trash-alt"></i></div>
+                            </div>`
+                    }
+                ],
+                initComplete: function () {
+                    this.api().columns().every(function (i) {
+                        var column = this; if (i === 2) return;
+                        $('.filters-row th').eq(i).html('<input type="text" placeholder="Filtrer..." />');
+                        $('input', $('.filters-row th').eq(i)).on('keyup change', function () {
+                            column.search(this.value).draw();
+                        });
+                    });
+                }
+            });
+
+            $('#grpForm').submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '?handler=Save',
+                    type: 'POST',
+                    data: $(this).serialize() + '&isEdit=' + $('#isEdit').val(),
+                    headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                    success: function (r) {
+                        if (r.success) {
+                            Swal.fire('Succès', r.message, 'success');
+                            $('#grpModal').modal('hide');
+                            table.ajax.reload();
+                        } else { Swal.fire('Erreur', r.message, 'error'); }
+                    }
+                });
+            });
+
+            $('#btnExcel').click(() => table.button('.buttons-excel').trigger());
+        });
+
+        function openAddModal() {
+            $('#grpForm')[0].reset();
+            $('#isEdit').val('false');
+            $('#m_cod').prop('readonly', false);
+            $('#modalTitle').text('Nouveau Groupe');
+            $('#grpModal').modal('show');
+        }
+
+        function openEditModal(d) {
+            $('#m_cod').val(d.cod_grp).prop('readonly', true);
+            $('#m_nom').val(d.nom);
+            $('#isEdit').val('true');
+            $('#modalTitle').text('Modifier Groupe');
+            $('#grpModal').modal('show');
+        }
+
+        function deleteGrp(id) {
+            Swal.fire({
+                title: 'Attention !',
+                // text: "Supprimer هذا القروب سيؤدي لحذف كل العائلات التابعة له (ST_FAMI). هل أنت متأكد؟",
+                text : " La suppression de ce groupe entraînera la suppression de toutes ses familles affiliées. Êtes-vous sûr ? ",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Oui, supprimer tout',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '?handler=Delete',
+                        type: 'POST',
+                        data: { id: id },
+                        headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                        success: (r) => { if(r.success) table.ajax.reload(); else Swal.fire('Erreur', r.message, 'error'); }
+                    });
+                }
+            });
+        }
+    </script>
+}

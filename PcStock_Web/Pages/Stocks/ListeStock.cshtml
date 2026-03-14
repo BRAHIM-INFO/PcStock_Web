@@ -1,150 +1,73 @@
 ﻿@page
-@model PcStock_Web.Pages.Stocks.ArticlesModel
+@model PcStock_Web.Pages.Stocks.ListeStockModel
 @Html.AntiForgeryToken()
-<!-- 1. استدعاء مكتبات DataTables للسرعة القصوى -->
+
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css">
+<link href="https://fonts.cdnfonts.com/css/digital-7-mono" rel="stylesheet">
 
 <style>
-    .dataTables_wrapper {
-        padding: 10px;
-        font-size: 0.85rem;
-    }
+    /* تنسيق فلتر الإكسل */
+    .filter-trigger { cursor: pointer; color: #94a3b8; font-size: 10px; margin-left: 5px; }
+    .filter-trigger.active { color: #2563eb; }
+    .excel-filter-menu { display: none; position: absolute; background: white; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); z-index: 9999; width: 230px; padding: 12px; }
+    .filter-search { width: 100%; padding: 6px; font-size: 12px; border: 1px solid #e2e8f0; border-radius: 5px; margin-bottom: 10px; }
+    .filter-list { max-height: 180px; overflow-y: auto; margin-bottom: 10px; list-style: none; padding: 0; }
+    .filter-item { font-size: 12px; padding: 4px 0; display: flex; align-items: center; }
+    .filter-item input { margin-right: 8px; }
 
-    table.dataTable thead th {
-        background-color: #f8f9fa;
-        border-bottom: 2px solid #dee2e6;
-        padding: 10px;
-    }
+    /* شاشة الإجمالي LCD */
+    .lcd-screen { background: #050505; border: 4px solid #334155; border-radius: 12px; padding: 10px 30px; display: inline-flex; align-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+    #txtGrandTotal { color: #00ff41; font-family: 'Digital-7 Mono', sans-serif; font-size: 60px; text-shadow: 0 0 10px #00ff41; }
+    .lcd-unit { color: #00ff41; font-family: 'Digital-7 Mono', sans-serif; font-size: 25px; margin-left: 10px; opacity: 0.8; }
 
-    /* تنسيق حقول الفلترة في الهيدر */
-    .filters-row input {
-        width: 100%;
-        padding: 4px 6px;
-        font-size: 11px;
-        border: 1px solid #cbd5e1;
-        border-radius: 4px;
-        font-weight: normal;
-    }
-    /* إخفاء أسهم الترتيب في صف الفلاتر */
-    thead tr.filters-row th::after, thead tr.filters-row th::before {
-        display: none !important;
-    }
-
-
-
-        /* أيقونة الفلتر بجانب العنوان */
-        .filter-icon {
-            font-size: 10px;
-            margin-left: 5px;
-            cursor: pointer;
-            color: #94a3b8;
-        }
-
-        .filter-icon.active {
-            color: #2563eb;
-        }
-
-        /* حاوية الفلتر (النافذة المنبثقة) */
-        .excel-filter-dropdown {
-            display: none;
-            position: absolute;
-            background: white;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            z-index: 2000;
-            width: 250px;
-            padding: 10px;
-        }
-        
-        /* مربع البحث الداخلي */
-        .filter-search-input {
-            width: 100%;
-            padding: 6px;
-            font-size: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        
-        /* قائمة الخيارات */
-        .filter-list {
-            max-height: 200px;
-            overflow-y: auto;
-            list-style: none;
-            padding: 0;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .filter-list li {
-            font-size: 12px;
-            padding: 4px 0;
-            color: #334155;
-        }
-
-        .filter-list input {
-            margin-right: 8px;
-        }
-
-        /* أزرار التحكم في الأسفل */
-        .filter-footer {
-            display: flex;
-            justify-content: space-between;
-        }
-       
-        .btn-filter-action {
-            font-size: 11px;
-            padding: 5px 10px;
-            border-radius: 5px;
-            border: 1px solid #e2e8f0;
-            background: white;
-            cursor: pointer;
-        }
-       
-        .btn-filter-apply {
-            background: #2563eb;
-            color: white;
-            border: none;
-        }
+    table.dataTable thead th { background: #f8fafc; padding: 12px 8px; font-size: 13px; border-bottom: 2px solid #dee2e6; }
 </style>
 
- 
-<div class="container-fluid px-4 py-3">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="fw-bold text-dark">LISTE DES STOCKS</h4>
-        <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Imprimer</button>
+<div class="container-fluid p-4">
+  @*   <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm border">
+        <h4 class="fw-bold mb-0 text-primary"><i class="fas fa-boxes me-2"></i> LISTE DES STOCKS</h4>
+        <button class="btn btn-light border text-primary fw-bold" onclick="window.print()"><i class="fas fa-print me-2"></i>Imprimer</button>
+    </div> *@
+    <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm border">
+        <h4 class="fw-bold mb-0 text-primary"><i class="fas fa-boxes me-2"></i> LISTE DES STOCKS</h4>
+
+        <div class="d-flex gap-3 align-items-center">
+            <!-- حقل البحث العام الجديد -->
+            <div class="input-group shadow-sm" style="width: 350px;">
+                <span class="input-group-text bg-white border-end-0 text-muted">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" id="globalSearch" class="form-control border-start-0 ps-0 shadow-none"
+                       placeholder="Rechercher (REF, Désignation, Famille...)">
+            </div>
+
+            <button class="btn btn-light border text-primary fw-bold" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Imprimer
+            </button>
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <table id="stockTable" class="table table-hover align-middle mb-0 w-100">
+            <thead>
+                <tr>
+                    <th>REF</th><th>INTITULE</th><th>INTITULE2</th><th>INTITULE3</th><th>FAMILLE</th>
+                    <th>QTE</th><th>PAMP</th><th>MONTANT</th><th>STOCK_INI</th><th>CASIER</th><th>DATE_MAJ</th><th>EDIT</th>
+                </tr>
+            </thead>
+        </table>
     </div>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-0">
-            <table id="stockTable" class="display nowrap table table-hover" style="width:100%">
-                <thead>
-                    <tr class="main-header">
-                       @*  <th>REF <i class="fas fa-filter filter-icon" data-col="0"></i></th>
-                        <th>INTITULE <i class="fas fa-filter filter-icon" data-col="1"></i></th>
-                        <th>INTITULE2 <i class="fas fa-filter filter-icon" data-col="2"></i></th>
-                        <th>INTITULE3 <i class="fas fa-filter filter-icon" data-col="3"></i></th>
-                        <th>FAMILLE <i class="fas fa-filter filter-icon" data-col="4"></i></th> *@
-                        <th>REF</th>
-                        <th>INTITULE</th>
-                        <th>INTITULE2</th>
-                        <th>INTITULE3</th>
-                        <th>FAMILLE</th>  
-                        <th>QTE</th>
-                        <th>PAMP</th>
-                        <th>MONTANT</th>
-                        <th>STOCK_INI</th>
-                        <th>CASIER</th>
-                        <th>DATE_MAJ</th>
-                        <th>EDIT</th>
-                    </tr>
-                </thead>
-            </table>
+    <div class="text-end mt-4">
+        <span class="fw-bold text-muted me-3">TOTAL GÉNÉRAL HT (FILTRÉ)</span>
+        <div class="lcd-screen shadow-lg">
+            <span id="txtGrandTotal">0,00</span>
+            <span class="lcd-unit">DA</span>
         </div>
     </div>
 </div>
+
+@* ... (كود الـ Modal الخاص بالتعديل من الرسائل السابقة - كما هو بدون تغيير) ... *@
 <!-- Modal de Modification -->
 <div class="modal fade" id="editArticleModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -177,8 +100,8 @@
                         <div class="tab-pane fade show active" id="tab-info" role="tabpanel">
                             <div class="row g-3">
                                 <div class="col-md-4">
-                                    <label   class="form-label small fw-bold text-muted">Référence (Non modifiable)</label>
-                                    <input  type="text" id="editREF" name="REF" class="form-control bg-white fw-bold" readonly>
+                                    <label class="form-label small fw-bold text-muted">Référence (Non modifiable)</label>
+                                    <input type="text" id="editREF" name="REF" class="form-control bg-white fw-bold" readonly>
                                 </div>
                                 <div class="col-md-8">
                                     <label class="form-label small fw-bold text-muted">Intitulé Principal</label>
@@ -249,7 +172,7 @@
                             </div>
                         </div>
 
-                      <!-- Tab 3: Statistiques (Read-only cards) -->
+                        <!-- Tab 3: Statistiques (Read-only cards) -->
                         <div class="tab-pane fade" id="tab-stats" role="tabpanel">
                             <div class="row g-3">
                                 <!-- المجموعة الأولى: عدد الحركات -->
@@ -323,7 +246,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div> 
+                        </div>
                     </div>
                 </div>
 
@@ -334,226 +257,12 @@
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save me-2"></i> Enregistrer les modifications
                     </button>
-                </div> 
+                </div>
             </form>
         </div>
     </div>
 </div>
- 
-@* @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <style>
-        /* تصميم أيقونة الفلتر */
-        .filter-trigger {
-            cursor: pointer;
-            margin-left: 5px;
-            color: #94a3b8;
-            font-size: 10px;
-        }
-
-            .filter-trigger.active {
-                color: #2563eb;
-            }
-
-        /* حاوية قائمة الفلتر (Popup) */
-        .excel-filter-menu {
-            display: none;
-            position: absolute;
-            background: white;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            z-index: 9999;
-            width: 220px;
-            padding: 10px;
-        }
-
-        .filter-search-node {
-            width: 100%;
-            padding: 5px;
-            font-size: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-
-        .filter-options-container {
-            max-height: 180px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-
-        .filter-option-item {
-            font-size: 12px;
-            padding: 3px 0;
-            display: flex;
-            align-items: center;
-        }
-
-            .filter-option-item input {
-                margin-right: 8px;
-            }
-
-        .filter-actions {
-            display: flex;
-            justify-content: space-between;
-            border-top: 1px solid #f1f5f9;
-            padding-top: 8px;
-        }
-    </style>
-
-    <script>
-        $(document).ready(function () {
-            // إضافة أيقونة الفلتر بجانب عناوين الأعمدة
-            $('#stockTable thead th').each(function (i) {
-                if (i !== 11 && i !== 7) { // استثناء عمود التعديل والمبلغ
-                    $(this).append('<i class="fas fa-filter filter-trigger" data-col="' + i + '"></i>');
-                }
-            });
-
-            var table = $('#stockTable').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "ajax": {
-                    "url": "?handler=LoadData",
-                    "type": "POST",
-                    "headers": { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() }
-                },
-                "pageLength": 25,
-                "deferRender": true,
-                "scrollY": 550,
-                "scroller": true,
-                "scrollX": true,
-                "dom": "lrtip",
-                "columns": [
-                    { "data": "ref" },
-                    { "data": "intitule" },
-                    { "data": "intitule2", "defaultContent": "" },
-                    { "data": "intitule3", "defaultContent": "" },
-                    { "data": "famille" },
-                    { "data": "qte", "className": "text-end", render: d => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits: 2}) },
-                    { "data": "pamp", "className": "text-end", render: d => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits: 2}) },
-                    { "data": null, "className": "text-end fw-bold", render: (d,t,row) => (row.qte * row.pamp).toLocaleString('fr-FR', {minimumFractionDigits: 2}) },
-                    { "data": "stock_ini", "className": "text-end", render: d => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits: 2}) },
-                    { "data": "casier" },
-                    { "data": "date_maj" },
-                    {
-                        "data": null, "className": "text-center", "orderable": false,
-                        render: (data, type, row) => `<button type="button" class="btn btn-primary btn-sm" onclick="prepareEdit('${row.ref}')"><i class="fas fa-edit"></i></button>`
-                    }
-                ]
-            });
-
-            // إنشاء هيكل القائمة المنبثقة
-            $('body').append(`
-                <div id="filterPopup" class="excel-filter-menu">
-                    <input type="text" class="filter-search-node" placeholder="Rechercher...">
-                    <div class="filter-options-container" id="optionsList">
-                        <div class="filter-option-item"><label><input type="checkbox" id="checkAll"> (Tout sélectionner)</label></div>
-                        <div id="itemArea"></div>
-                    </div>
-                    <div class="filter-actions">
-                        <button class="btn btn-sm btn-light" id="btnCancelFilter">Annuler</button>
-                        <button class="btn btn-sm btn-primary" id="btnApplyFilter">Appliquer</button>
-                    </div>
-                </div>
-            `);
-
-            let currentCol = -1;
-
-            // عند الضغط على أيقونة الفلتر
-            $('.filter-trigger').on('click', function (e) {
-                e.stopPropagation();
-                currentCol = $(this).data('col');
-                let colName = table.settings().init().columns[currentCol].data;
-                let rect = this.getBoundingClientRect();
-
-                $('#itemArea').html('<div class="text-center small py-2">Chargement...</div>');
-                $('#filterPopup').css({ top: rect.bottom + window.scrollY, left: rect.left - 150 }).fadeIn(100);
-
-                // جلب القيم من السيرفر
-                $.get('?handler=UniqueValues&columnName=' + colName.toUpperCase(), function (values) {
-                    let html = '';
-                    values.forEach(v => {
-                        html += `<div class="filter-option-item"><label><input type="checkbox" class="opt-check" value="${v}"> ${v}</label></div>`;
-                    });
-                    $('#itemArea').html(html);
-                });
-            });
-
-            // تطبيق الفلتر
-            $('#btnApplyFilter').click(function () {
-                let selected = [];
-                $('.opt-check:checked').each(function () { selected.push($(this).val()); });
-
-                // تحويل القيم إلى Regex (Val1|Val2) ليفهمها السيرفر كبحث متعدد
-                let searchStr = selected.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|');
-                table.column(currentCol).search(searchStr ? '^(' + searchStr + ')$' : '', true, false).draw();
-
-                $(`.filter-trigger[data-col="${currentCol}"]`).toggleClass('active', selected.length > 0);
-                $('#filterPopup').fadeOut(100);
-            });
-
-            // البحث الداخلي في القائمة
-            $('.filter-search-node').on('keyup', function() {
-                let val = $(this).val().toLowerCase();
-                $('#itemArea .filter-option-item').filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(val) > -1);
-                });
-            });
-
-            $('#checkAll').change(function() { $('.opt-check:visible').prop('checked', this.checked); });
-            $('#btnCancelFilter').click(() => $('#filterPopup').fadeOut(100));
-            $(document).click((e) => { if (!$(e.target).closest('#filterPopup').length) $('#filterPopup').fadeOut(100); });
-        });
-
-        // دالة التعديل (prepareEdit)
-        function prepareEdit(ref) {
-            var table = $('#stockTable').DataTable();
-            var rowData = table.rows().data().toArray().find(x => x.ref === ref);
-            if (rowData) {
-                $('#displayRef').text(rowData.ref);
-                $('#editREF').val(rowData.ref);
-                $('#editINTITULE').val(rowData.intitule);
-                $('#editINTITULE2').val(rowData.intitule2 || "");
-                $('#editINTITULE3').val(rowData.intitule3 || "");
-                $('#editFAMILLE').val(rowData.famille || "");
-                $('#editLIEU_STO').val(rowData.lieu_sto || "");
-                $('#editCASIER').val(rowData.casier || "");
-                $('#editQTE').val(rowData.qte);
-                $('#editPAMP').val(rowData.pamp);
-                $('#editPRIX_ACH').val(rowData.priX_ACH);
-                $('#editSTOCK_INI').val(rowData.stock_ini);
-                $('#editVALEUR_INI').val(rowData.valeuR_INI);
-                $('#editSTOCK_MAX').val(rowData.stocK_MAX);
-                $('#editSTOCK_SEC').val(rowData.stocK_SEC);
-
-                if (rowData.date_maj) {
-                    $('#editDATE_MAJ').val(new Date(rowData.date_maj).toISOString().split('T')[0]);
-                }
-
-                const formatNum = (num) => parseFloat(num || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2 });
-                $('#editENTREES').val(rowData.entrees || 0);
-                $('#editSORTIES').val(rowData.sorties || 0);
-                $('#editQTE_ENT').val(formatNum(rowData.qtE_ENT));
-                $('#editQTE_SOR').val(formatNum(rowData.qtE_SOR));
-                $('#editTEMPVAL').val(formatNum(rowData.tempval) + " DA");
-                $('#editACHAT_HT').val(formatNum(rowData.achaT_HT));
-                $('#editCONSO_HT').val(formatNum(rowData.consO_HT));
-                $('#editCESS_HT').val(formatNum(rowData.cesS_HT));
-                $('#editCESSR_HT').val(formatNum(rowData.cessR_HT));
-
-                $('#editArticleModal').modal('show');
-            }
-        }
-    </script>
-}
- *@
- 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -561,72 +270,75 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        let table;
+
         $(document).ready(function () {
-            // 1. إضافة صف الفلترة برمجياً
-            $('#stockTable thead tr').clone(true).addClass('filters-row').appendTo('#stockTable thead');
+            // إضافة أيقونات الفلتر
+            $('#stockTable thead th').each(function (i) {
+                if (i !== 11 && i !== 7) $(this).append('<i class="fas fa-filter filter-trigger" data-col="'+i+'"></i>');
+            });
 
-            var table = $('#stockTable').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "orderCellsTop": true, // مهم جداً لاستخدام صفين في الهيدر
-                "ajax": {
-                    "url": "?handler=LoadData",
-                    "type": "POST",
-                    "headers": { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() }
+            table = $('#stockTable').DataTable({
+                serverSide: true, processing: true, scrollX: true, scrollY: 550, scroller: true, dom: 'lrtip',
+                ajax: {
+                    url: "?handler=LoadData", type: "POST",
+                    headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() }
                 },
-                "pageLength": 25,
-                "deferRender": true,
-                "scrollY": 550,
-                "scroller": true,
-                "scrollX": true,
-                "dom": "lrtip", // حذف 'f' لإخفاء البحث العام العلوي والاكتفاء بفلتر الأعمدة
-                "columns": [
-                    { "data": "ref" },
-                    { "data": "intitule" },
-                    { "data": "intitule2", "defaultContent": "" },
-                    { "data": "intitule3", "defaultContent": "" },
-                    { "data": "famille" },
-                    { "data": "qte", "className": "text-end", render: d => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits: 2}) },
-                    { "data": "pamp", "className": "text-end", render: d => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits: 2}) },
-                    { "data": null, "className": "text-end fw-bold", render: (d,t,row) => (row.qte * row.pamp).toLocaleString('fr-FR', {minimumFractionDigits: 2}) },
-                    { "data": "stock_ini", "className": "text-end", render: d => parseFloat(d).toLocaleString('fr-FR', {minimumFractionDigits: 2}) },
-                    { "data": "casier" },
-                    { "data": "date_maj" },
-                    {
-                        "data": null, "className": "text-center", "orderable": false,
-                        render: (data, type, row) => `<button type="button" class="btn btn-primary btn-sm" onclick="prepareEdit('${row.ref}')"><i class="fas fa-edit"></i></button>`
-                    }
+                columns: [
+                    { data: "ref" }, { data: "intitule" }, { data: "intitule2" }, { data: "intitule3" }, { data: "famille" },
+                    { data: "qte", className: "text-end", render: d => parseFloat(d).toLocaleString('en-US', {minimumFractionDigits: 2}) },
+                    { data: "pamp", className: "text-end", render: d => parseFloat(d).toLocaleString('en-US', {minimumFractionDigits: 2}) },
+                    { data: null, className: "text-end fw-bold", render: (d,t,row) => (row.qte * row.pamp).toLocaleString('en-US', {minimumFractionDigits: 2}) },
+                    { data: "stock_ini", className: "text-end", render: d => parseFloat(d).toLocaleString('en-US', {minimumFractionDigits: 2}) },
+                    { data: "casier" }, { data: "date_maj" },
+                    { data: null, orderable: false, render: d => `<button class="btn btn-primary btn-sm" onclick="prepareEdit('${d.ref}')"><i class="fas fa-edit"></i></button>` }
                 ],
-                // 2. إعداد حقول الإدخال في صف الفلاتر
-                initComplete: function () {
-                    var api = this.api();
-                    api.columns().every(function (i) {
-                        var column = this;
-                        var headerCell = $('.filters-row th').eq(i);
-
-                        if (i === 11 || i === 7) { // عمود EDIT و MONTANT بدون فلتر
-                            headerCell.html('');
-                            return;
-                        }
-
-                        var title = $(column.header()).text();
-                        headerCell.html(`<input type="text" placeholder="${title}" />`);
-
-                        // إرسال البحث للسيرفر عند الكتابة
-                        $('input', headerCell).on('keyup change', function () {
-                            if (column.search() !== this.value) {
-                                column.search(this.value).draw();
-                            }
-                        });
-                    });
+                drawCallback: function(settings) {
+                    $('#txtGrandTotal').text(parseFloat(settings.json.filterSum || 0).toLocaleString('en-US', {minimumFractionDigits: 2}));
                 }
             });
-        });
 
-        // دالة تحضير البيانات للمودال
-          // لا تنسَ وضع دالة openEditModal خارج الـ $(document).ready لتكون عامة (Global)
-   
-        function prepareEdit(ref) {
+            // نافذة فلتر الإكسل
+            $('body').append('<div id="filterPopup" class="excel-filter-menu"><input type="text" class="filter-search" placeholder="Rechercher..."><div class="filter-list" id="itemsArea"></div><div class="d-flex justify-content-between mt-2 border-top pt-2"><button class="btn btn-sm btn-light" id="btnCancel">Annuler</button><button class="btn btn-sm btn-primary" id="btnApply">Filtrer</button></div></div>');
+
+            let currentCol = -1;
+            $('.filter-trigger').click(function (e) {
+                e.stopPropagation(); currentCol = $(this).data('col');
+                let rect = this.getBoundingClientRect();
+                $('#itemsArea').html('<div class="text-center small py-3">Chargement...</div>');
+                $('#filterPopup').css({ top: rect.bottom + window.scrollY, left: rect.left - 150 }).fadeIn(100);
+                
+                let colName = table.settings().init().columns[currentCol].data;
+                $.get('?handler=UniqueValues&columnName=' + colName.toUpperCase(), function (values) {
+                    let html = '<div class="filter-item"><label><input type="checkbox" id="checkAll"> (Tout)</label></div>';
+                    values.forEach(v => html += `<div class="filter-item"><label><input type="checkbox" class="opt-check" value="${v}"> ${v}</label></div>`);
+                    $('#itemsArea').html(html);
+                });
+            });
+
+            $(document).on('click', '#btnApply', function () {
+                let selected = []; $('.opt-check:checked').each(function () { selected.push($(this).val()); });
+                let searchStr = selected.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|');
+                table.column(currentCol).search(searchStr ? '^(' + searchStr + ')$' : '', true, false).draw();
+                $(`.filter-trigger[data-col="${currentCol}"]`).toggleClass('active', selected.length > 0);
+                $('#filterPopup').fadeOut(100);
+            });
+
+            $('.filter-search').on('keyup', function() {
+                let v = $(this).val().toLowerCase();
+                $('.filter-item').filter(function() { $(this).toggle($(this).text().toLowerCase().indexOf(v) > -1); });
+            });
+            $('#btnCancel').click(() => $('#filterPopup').fadeOut(100));
+            $(document).click(e => { if (!$(e.target).closest('#filterPopup').length) $('#filterPopup').fadeOut(100); });
+
+                // ربط حقل البحث العام بالجدول
+            $('#globalSearch').on('keyup', function () {
+            table.search(this.value).draw();
+        });
+        });
+        
+        // دالة التعديل كما في الرسائل السابقة
+          function prepareEdit(ref) {
             var table = $('#stockTable').DataTable();
             // البحث عن السطر في ذاكرة الجدول
             var rowData = table.rows().data().toArray().find(x => x.ref === ref);
@@ -678,6 +390,15 @@
             $('#editArticleModal').modal('show');
         }
         }
+        // function prepareEdit(ref) {
+        //     let row = table.rows().data().toArray().find(x => x.ref === ref);
+        //     if(row) {
+        //         $('#displayRef').text(row.ref);
+        //         $('#editREF').val(row.ref);
+        //         $('#editINTITULE').val(row.intitule);
+        //         // ... بقية حقول المودال ...
+        //         $('#editArticleModal').modal('show');
+        //     }
+        // }
     </script>
 }
- 

@@ -1,11 +1,11 @@
 ﻿/* الألوان المستوحاة من شعار كوزيدار وتصميمك */
-:root {
-    --cosider-blue: #1e56d0; /* الأزرق الرئيسي للخلفيات */
-    --cosider-dark-blue: #1542a3; /* أزرق أغمق للقائمة */
-    --active-white: #ffffff; /* اللون الأبيض للعنصر النشط */
-    --text-muted: #d1dcf3; /* نص خافت للأيقونات غير النشطة */
-    --bg-light: #f8faff; /* خلفية المحتوى خفيفة جداً */
-}
+/*:root {
+    --cosider-blue: #1e56d0;*/ /* الأزرق الرئيسي للخلفيات */
+    /*--cosider-dark-blue: #1542a3;*/ /* أزرق أغمق للقائمة */
+    /*--active-white: #ffffff;*/ /* اللون الأبيض للعنصر النشط */
+    /*--text-muted: #d1dcf3;*/ /* نص خافت للأيقونات غير النشطة */
+    /*--bg-light: #f8faff;*/ /* خلفية المحتوى خفيفة جداً */
+/*}*/
 
 /* تنسيق حاوية التطبيق بالكامل */
 .app-wrapper {
@@ -15,7 +15,7 @@
 }
 
 /* --- تصميم الشريط الجانبي (Sidebar) --- */
-.sidebar-cosider {
+/*.sidebar-cosider {
     width: 280px;
     background-color: var(--cosider-blue);
     color: white;
@@ -23,13 +23,13 @@
     flex-direction: column;
     padding: 15px;
     transition: all 0.3s;
-}
+}*/
 
-.brand-section {
+/*.brand-section {
     padding: 20px 10px;
     border-bottom: 1px solid rgba(255,255,255,0.1);
     margin-bottom: 20px;
-}
+}*/
 
 .brand-title {
     font-weight: 800;
@@ -43,10 +43,10 @@
 }
 
 /* عناصر القائمة - تصميم الزوايا المنحنية */
-.nav-list {
+/*.nav-list {
     list-style: none;
     padding: 0;
-}
+}*/
 
 .nav-item {
     display: flex;
@@ -67,11 +67,11 @@
     }
 
     /* العنصر النشط (Tableau de Bord) */
-    .nav-item.active {
+ /*   .nav-item.active {
         background-color: var(--active-white);
         color: var(--cosider-blue);
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
+    }*/
 
 /* --- تصميم محتوى لوحة التحكم (Cards) --- */
 .main-content {
@@ -138,10 +138,10 @@
 }
 
 /* الحالة الطبيعية (مفتوح) */
-.sidebar-cosider {
+/*.sidebar-cosider {
     width: 280px;
     transition: all 0.3s ease-in-out;
-}
+}*/
 
 /* الحالة عندما يكون مغلقاً */
 .sidebar-cosider.collapsed {
@@ -176,7 +176,7 @@
 } */
 
 /* العنصر الفرعي */
-.submenu-item {
+/*.submenu-item {
     display: flex;
     align-items: center;
     padding: 10px 15px;
@@ -185,21 +185,21 @@
     border-radius: 10px;
     font-size: 0.9rem;
     transition: 0.3s;
-}
+}*/
 
 /* تعليق: تصميم العنصر عند اختياره */
-.submenu-item.active {
-    background-color: white !important; /* اللون الأبيض المشرق */
-    color: #1e56d0 !important; /* لون كوزيدار الأزرق للنص */
-    font-weight: bold;
+/*.submenu-item.active {
+    background-color: white !important;*/ /* اللون الأبيض المشرق */
+    /*color: #1e56d0 !important;*/ /* لون كوزيدار الأزرق للنص */
+    /*font-weight: bold;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    border-radius: 10px; /* الانحناء المطلوب في صورتك */
-}
+    border-radius: 10px;*/ /* الانحناء المطلوب في صورتك */
+/*}*/
 
-.submenu-item i {
+/*.submenu-item i {
     margin-right: 12px;
     font-size: 0.9rem;
-}
+}*/
 /* تعليق: هذا الكود يضمن أن النص لا يختفي عند مرور الماوس */
 
 /* 1. تنسيق العنصر عند مرور الماوس (Hover) */
@@ -372,12 +372,12 @@
     color: #17a2b8;
 }
 /* تمييز عنصر الشراء النشط باللون الأبيض المنحني */
-.submenu-item.active {
+/*.submenu-item.active {
     background-color: #ffffff !important;
-    color: #1e56d0 !important; /* أزرق كوزيدار */
-    font-weight: 700;
+    color: #1e56d0 !important;*/ /* أزرق كوزيدار */
+    /*font-weight: 700;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+}*/
 
 /* المسافة البادئة للقوائم المنسدلة لتبدو هرمية */
 /*.submenu-list {
@@ -530,21 +530,21 @@ thead tr.filters th::after, thead tr.filters th::before {
     border-color: #2563eb;
 }
 
-:root {
+/*:root {
     --sidebar-bg: #1e40af;
     --active-bg: rgba(255, 255, 255, 0.15);
     --hover-bg: rgba(255, 255, 255, 0.1);
     --text-color: #f8fafc;
-}
+}*/
 
-.sidebar-cosider {
+/*.sidebar-cosider {
     width: 270px;
     background-color: var(--sidebar-bg);
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-}
+}*/
 
 /* قسم اللوجو في الأعلى */
 .logo-section {
@@ -561,9 +561,9 @@ thead tr.filters th::after, thead tr.filters th::before {
     }
 
 /* تحسين الروابط */
-.nav-list {
+/*.nav-list {
     padding: 10px;
-}
+}*/
 
 .nav-item, .submenu-item {
     display: flex;
@@ -604,10 +604,10 @@ thead tr.filters th::after, thead tr.filters th::before {
     display: none;*/ /* مخفية افتراضياً */
 /*}*/
  
-.arrow-icon {
+/*.arrow-icon {
     transition: transform 0.3s;
     font-size: 12px;
-}
+}*/
 
     .arrow-icon.rotate {
         transform: rotate(180deg);
@@ -623,68 +623,68 @@ thead tr.filters th::after, thead tr.filters th::before {
  
 
 /* تدوير السهم عند الفتح */
-.arrow-icon {
+/*.arrow-icon {
     transition: transform 0.3s ease;
-}
+}*/
  
 
 /* تصميم الزر النشط (الأبيض) */
-.nav-item.active {
+/*.nav-item.active {
     background: white !important;
-    color: #1e40af !important; /* لون أزرق كوزيدار */
-    border-radius: 10px;
+    color: #1e40af !important;*/ /* لون أزرق كوزيدار */
+    /*border-radius: 10px;
     font-weight: bold;
-}
+}*/
 
 /* إخفاء القائمة الافتراضي */
-.submenu-list {
+/*.submenu-list {
     display: none;
     list-style: none;
     padding-left: 30px;
     transition: all 0.3s ease;
-}
+}*/
 
 /* الكلاس الذي سيضيفه الجافا سكريبت ليظهر القائمة */
 .submenu-list.show {
     display: block !important;
 }
-.sidebar-cosider {
+/*.sidebar-cosider {
     width: 270px;
     background-color: #1e40af;
-    height: 100vh; /* ملء ارتفاع الشاشة بالكامل */
-    position: fixed; /* تثبيت الشريط في الجانب */
-    top: 0;
+    height: 100vh;*/ /* ملء ارتفاع الشاشة بالكامل */
+    /*position: fixed;*/ /* تثبيت الشريط في الجانب */
+    /*top: 0;
     left: 0;
     display: flex;
-    flex-direction: column; /* ترتيب العناصر عمودياً */
-    z-index: 1000;
+    flex-direction: column;*/ /* ترتيب العناصر عمودياً */
+    /*z-index: 1000;
     transition: all 0.3s ease;
-}
+}*/
 
 /* الجزء الذي سيحتوي على الـ Scroll */
-.nav-list {
-    flex-grow: 1; /* يأخذ المساحة المتبقية بين الهيدر والفوتر */
-    overflow-y: auto; /* تفعيل التمرير العمودي */
-    overflow-x: hidden; /* إخفاء التمرير الأفقي */
-    padding: 10px;
+/*.nav-list {
+    flex-grow: 1;*/ /* يأخذ المساحة المتبقية بين الهيدر والفوتر */
+    /*overflow-y: auto;*/ /* تفعيل التمرير العمودي */
+    /*overflow-x: hidden;*/ /* إخفاء التمرير الأفقي */
+    /*padding: 10px;*/
     /* تجميل شريط التمرير للمتصفحات الحديثة */
-    scrollbar-width: thin;
+    /*scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-}
+}*/
 
     /* تخصيص شكل الـ Scrollbar لمتصفحات Chrome و Edge */
-    .nav-list::-webkit-scrollbar {
-        width: 5px; /* عرض نحيف جداً */
-    }
+    /*.nav-list::-webkit-scrollbar {
+        width: 5px;*/ /* عرض نحيف جداً */
+    /*}*/
 
     .nav-list::-webkit-scrollbar-track {
         background: transparent;
     }
 
-    .nav-list::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2); /* لون شفاف خفيف */
-        border-radius: 10px;
-    }
+    /*.nav-list::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);*/ /* لون شفاف خفيف */
+        /*border-radius: 10px;
+    }*/
 
         .nav-list::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.4);
@@ -702,11 +702,11 @@ thead tr.filters th::after, thead tr.filters th::before {
 
 
 
-.sidebar-cosider {
+/*.sidebar-cosider {
     width: 270px;
     transition: width 0.3s ease;
-    overflow-x: hidden; /* لمنع ظهور نصوص خارج الحاوية أثناء الحركة */
-}
+    overflow-x: hidden;*/ /* لمنع ظهور نصوص خارج الحاوية أثناء الحركة */
+/*}*/
 
     /* --- الحالة عندما يكون السايدبار مغلقاً (.collapsed) --- */
 
@@ -761,4 +761,274 @@ thead tr.filters th::after, thead tr.filters th::before {
             display: none !important;
         }
 
-     
+
+
+
+
+
+
+:root {
+    --sidebar-bg: #316BDE;
+    --item-hover: rgba(255, 255, 255, 0.15);
+    --item-active: #ffffff;
+    --text-color: #ffffff;
+    --sub-item-color: rgba(255, 255, 255, 0.8);
+}
+
+.sidebar-cosider {
+    width: 270px;
+    background-color: var(--sidebar-bg);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 1050;
+    transition: all 0.3s ease;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+}
+
+/* قسم اللوجو العلوي */
+.brand-section {
+    padding: 20px;
+    background: rgba(0,0,0,0.05);
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+    .brand-section img {
+        max-width: 100%;
+        max-height: 80px;
+        object-fit: contain;
+    }
+
+/* القائمة القابلة للتمرير */
+.nav-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 15px 10px;
+}
+
+    .nav-list::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .nav-list::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.2);
+        border-radius: 10px;
+    }
+
+/* عناصر القائمة */
+.nav-item, .nav-item-toggle {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: var(--text-color);
+    text-decoration: none !important;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: 0.2s;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+    .nav-item:hover, .nav-item-toggle:hover {
+        background-color: var(--item-hover);
+    }
+
+    .nav-item.active {
+        background-color: var(--item-active) !important;
+        color: var(--sidebar-bg) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .nav-item i, .nav-item-toggle i {
+        width: 25px;
+        font-size: 16px;
+        margin-right: 10px;
+    }
+
+/* القوائم الفرعية */
+.submenu-list {
+    list-style: none;
+    padding-left: 35px;
+    display: none;
+    margin-bottom: 10px;
+}
+
+.submenu-item {
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    color: var(--sub-item-color);
+    text-decoration: none !important;
+    font-size: 12.5px;
+    border-radius: 5px;
+    transition: 0.2s;
+}
+
+    .submenu-item:hover {
+        color: white;
+        padding-left: 15px;
+    }
+
+    .submenu-item.active {
+        color: white;
+        font-weight: bold;
+    }
+
+    .submenu-item i {
+        font-size: 10px;
+        margin-right: 10px;
+        width: 15px;
+    }
+
+/* Labels داخل قسم التقارير */
+.report-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.5);
+    padding: 10px 0 5px 15px;
+    text-transform: uppercase;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    margin-top: 10px;
+}
+
+.arrow-icon {
+    transition: transform 0.3s;
+    font-size: 10px !important;
+}
+
+.rotate {
+    transform: rotate(180deg);
+}
+
+:root {
+    --sidebar-bg: #2043B3;
+    --item-hover: rgba(255, 255, 255, 0.12);
+    --text-color: #ffffff;
+    --sub-item-color: rgba(255, 255, 255, 0.85);
+}
+
+.sidebar-cosider {
+    width: 275px;
+    background-color: var(--sidebar-bg);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 1050;
+    transition: all 0.3s ease;
+}
+
+.brand-section {
+    padding: 15px;
+    background: #fff;
+    text-align: center;
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 10px;
+}
+
+    .brand-section img {
+        max-width: 100%;
+        max-height: 70px;
+        object-fit: contain;
+    }
+
+.nav-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+/* تنسيق العناصر الرئيسية */
+.nav-item, .nav-item-toggle {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: var(--text-color);
+    text-decoration: none !important;
+    border-radius: 10px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .nav-item:hover, .nav-item-toggle:hover {
+        background-color: var(--item-hover);
+    }
+
+    .nav-item.active {
+        background-color: #ffffff !important;
+        color: var(--sidebar-bg) !important;
+    }
+
+    .nav-item i, .nav-item-toggle i {
+        width: 30px;
+        font-size: 18px;
+    }
+
+/* تنسيق العناصر الفرعية مع الأيقونات */
+.submenu-list {
+    list-style: none;
+    padding-left: 15px;
+    display: none;
+    margin-bottom: 8px;
+}
+
+.submenu-item {
+    padding: 9px 15px;
+    display: flex;
+    align-items: center;
+    color: var(--sub-item-color);
+    text-decoration: none !important;
+    font-size: 13px;
+    border-radius: 8px;
+    margin-bottom: 2px;
+    transition: 0.2s;
+}
+
+    .submenu-item i {
+        width: 25px;
+        font-size: 14px;
+        margin-right: 10px;
+        opacity: 0.7;
+    }
+
+    .submenu-item:hover, .submenu-item.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+    }
+
+.report-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.5);
+    padding: 10px 0 5px 15px;
+    text-transform: uppercase;
+}
+
+.arrow-icon {
+    transition: transform 0.3s;
+    font-size: 12px !important;
+}
+
+.rotate {
+    transform: rotate(180deg);
+}
+
+.nav-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.nav-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+}
+
+ 

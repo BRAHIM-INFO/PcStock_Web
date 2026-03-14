@@ -1,0 +1,278 @@
+﻿@page
+@model PcStock_Web.Pages.Tables.FamilleArticleModel
+@Html.AntiForgeryToken()
+
+<!-- المكتبات اللازمة -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+    .page-header {
+        background: #2043B3;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .btn-add {
+        background: #22c55e;
+        color: white;
+        border: none;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 8px 20px;
+        transition: 0.2s;
+    }
+
+        .btn-add:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-table-edit {
+        background-color: #f0f4ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .btn-table-delete {
+        background-color: #fef2f2;
+        color: #ef4444;
+        border: 1px solid #fee2e2;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .filters-row input {
+        width: 100%;
+        padding: 4px;
+        font-size: 11px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+    }
+
+    /* تنسيق Select2 ليتناسب مع المودال */
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-selection {
+        height: 38px !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+</style>
+
+<div class="container-fluid p-4">
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center shadow">
+        <h4 class="mb-0 fw-bold"><i class="fas fa-tags me-2"></i> FAMILLES D'ARTICLES</h4>
+        <div class="d-flex gap-2">
+            <button class="btn btn-add shadow-sm" onclick="openAddModal()">
+                <i class="fas fa-plus-circle me-1"></i> AJOUTER FAMILLE
+            </button>
+            <button id="btnExcel" class="btn btn-success btn-sm px-3 shadow-sm"><i class="fas fa-file-excel"></i></button>
+            <button class="btn btn-light btn-sm text-primary px-3 shadow-sm" onclick="window.print()"><i class="fas fa-print"></i></button>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <table id="familleTable" class="table table-hover align-middle mb-0 w-100">
+            <thead class="bg-light">
+                <tr>
+                    <th>CODE FAMILLE</th>
+                    <th>DÉSIGNATION FAMILLE</th>
+                    <th>GROUPE ASSOCIÉ</th>
+                    <th class="text-center" style="width: 120px;">ACTIONS</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Ajout / Modification -->
+<div class="modal fade" id="famModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="modalTitle">Nouvelle Famille</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="famForm">
+                <input type="hidden" id="isEdit" value="false">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="small fw-bold">CODE FAMILLE (COD_SOC)</label>
+                        <input type="text" id="m_cod" name="cod_soc" class="form-control fw-bold border-primary" required maxlength="10">
+                    </div>
+                    <div class="mb-3">
+                        <label class="small fw-bold">NOM DE LA FAMILLE</label>
+                        <input type="text" id="m_nom" name="nom" class="form-control" required>
+                    </div>
+                    <div class="mb-0">
+                        <label class="small fw-bold">GROUPE DE FAMILLE (ST_FAGRP)</label>
+                        <select id="m_grp" name="cod_grp" class="form-control" required></select>
+                        <div class="form-text small text-muted">Sélectionnez le groupe parent pour cette famille.</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        let table;
+
+        $(document).ready(function () {
+            // 1. إضافة صف الفلاتر برمجياً
+            $('#familleTable thead tr').clone(true).addClass('filters-row').appendTo('#familleTable thead');
+
+            // 2. تهيئة الجدول
+            table = $('#familleTable').DataTable({
+                ajax: { url: "?handler=LoadData", dataSrc: "" },
+                dom: 'Brtip',
+                orderCellsTop: true,
+                buttons: [{ extend: 'excelHtml5', className: 'd-none', exportOptions: { columns: [0,1,2] } }],
+                columns: [
+                    { data: "cod_soc", className: "fw-bold text-dark" },
+                    { data: "nom", className: "fw-bold text-primary" },
+                    {
+                        data: "grp_nom",
+                        render: (data, type, row) => `<span class="badge bg-secondary opacity-75">${row.cod_grp}</span> ${data || 'Non défini'}`
+                    },
+                    {
+                        data: null, className: "text-center", orderable: false,
+                        render: (d) => `
+                            <div class="action-buttons">
+                                <div class="btn-table-edit" onclick='openEditModal(${JSON.stringify(d)})' title="Modifier"><i class="fas fa-pen-nib"></i></div>
+                                <div class="btn-table-delete" onclick="deleteFamille('${d.cod_soc}')" title="Supprimer"><i class="fas fa-trash-alt"></i></div>
+                            </div>`
+                    }
+                ],
+                initComplete: function () {
+                    this.api().columns().every(function (i) {
+                        var column = this; if (i === 3) return;
+                        $('.filters-row th').eq(i).html('<input type="text" placeholder="Filtrer..." />');
+                        $('input', $('.filters-row th').eq(i)).on('keyup change', function () {
+                            column.search(this.value).draw();
+                        });
+                    });
+                }
+            });
+
+            // 3. تهيئة Select2 لجلب المجموعات من السيرفر
+            $('#m_grp').select2({
+                dropdownParent: $('#famModal'),
+                ajax: {
+                    url: '?handler=Groups',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: (data) => ({ results: data })
+                }
+            });
+
+            // 4. معالجة حفظ الفورم (إضافة/تعديل)
+            $('#famForm').submit(function (e) {
+                e.preventDefault();
+                const isEdit = $('#isEdit').val();
+
+                $.ajax({
+                    url: '?handler=Save',
+                    type: 'POST',
+                    data: $(this).serialize() + '&isEdit=' + isEdit,
+                    headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                    success: function (r) {
+                        if (r.success) {
+                            Swal.fire('Succès', 'Opération effectuée مع النجاح', 'success');
+                            $('#famModal').modal('hide');
+                            table.ajax.reload();
+                        } else {
+                            Swal.fire('Erreur', r.message, 'error');
+                        }
+                    }
+                });
+            });
+
+            $('#btnExcel').click(() => table.button('.buttons-excel').trigger());
+        });
+
+        // دالات التحكم بالنافذة المنبثقة
+        function openAddModal() {
+            $('#famForm')[0].reset();
+            $('#isEdit').val('false');
+            $('#m_cod').prop('readonly', false);
+            $('#m_grp').val(null).trigger('change');
+            $('#modalTitle').text('Nouvelle Famille');
+            $('#famModal').modal('show');
+        }
+
+        function openEditModal(d) {
+            $('#m_cod').val(d.cod_soc).prop('readonly', true);
+            $('#m_nom').val(d.nom);
+
+            // تعيين القيمة لـ Select2 يدوياً عند التعديل
+            var option = new Option(d.grp_nom, d.cod_grp, true, true);
+            $('#m_grp').append(option).trigger('change');
+
+            $('#isEdit').val('true');
+            $('#modalTitle').text('Modifier Famille');
+            $('#famModal').modal('show');
+        }
+
+        function deleteFamille(id) {
+            Swal.fire({
+                title: 'Supprimer ?',
+                text: "Voulez-vous supprimer cette famille (DBF & SQLite) ?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Oui, Supprimer'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '?handler=Delete',
+                        type: 'POST',
+                        data: { id: id },
+                        headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                        success: (r) => { if(r.success) table.ajax.reload(); }
+                    });
+                }
+            });
+        }
+    </script>
+}

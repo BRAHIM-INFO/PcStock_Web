@@ -1,0 +1,256 @@
+﻿@page
+@model PcStock_Web.Pages.Tables.StructuresModel
+@Html.AntiForgeryToken()
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+
+<style>
+    .page-header {
+        background: #2043B3;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .btn-add {
+        background: #22c55e;
+        color: white;
+        border: none;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 8px 20px;
+        transition: 0.2s;
+    }
+
+        .btn-add:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-table-edit {
+        background-color: #f0f4ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .btn-table-edit:hover {
+            background-color: #2563eb;
+            color: white;
+        }
+
+    .btn-table-delete {
+        background-color: #fef2f2;
+        color: #ef4444;
+        border: 1px solid #fee2e2;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .btn-table-delete:hover {
+            background-color: #ef4444;
+            color: white;
+        }
+
+    .filters-row input {
+        width: 100%;
+        padding: 4px;
+        font-size: 11px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+    }
+
+    thead tr.filters-row th::after, thead tr.filters-row th::before {
+        display: none !important;
+    }
+</style>
+
+<div class="container-fluid p-4">
+    <div class="page-header d-flex justify-content-between align-items-center shadow">
+        <h4 class="mb-0 fw-bold"><i class="fas fa-sitemap me-2"></i> GESTION DES STRUCTURES / SERVICES</h4>
+        <div class="d-flex gap-2">
+            <button class="btn btn-add shadow-sm" onclick="openAddModal()"><i class="fas fa-plus-circle me-1"></i> AJOUTER SERVICE</button>
+            <button id="btnExcel" class="btn btn-success btn-sm px-3 shadow-sm"><i class="fas fa-file-excel me-1"></i> EXCEL</button>
+            <button class="btn btn-light btn-sm text-primary px-3 shadow-sm" onclick="window.print()"><i class="fas fa-print me-1"></i> IMPRIMER</button>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <table id="serviTable" class="table table-hover align-middle mb-0 w-100">
+            <thead class="bg-light">
+                <tr>
+                    <th>CODE</th>
+                    <th>NOM DU SERVICE / STRUCTURE</th>
+                    <th>ADRESSE</th>
+                    <th>RESPONSABLE</th>
+                    <th class="text-center" style="width: 120px;">ACTIONS</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="serviModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="modalTitle">Nouvelle Structure</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="serviForm">
+                <input type="hidden" id="isEdit" value="false">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="small fw-bold">CODE STRUCTURE</label>
+                        <input type="text" id="m_cod" class="form-control fw-bold border-primary" required maxlength="10">
+                    </div>
+                    <div class="mb-3">
+                        <label class="small fw-bold">NOM DE LA STRUCTURE</label>
+                        <input type="text" id="m_nom" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small fw-bold">ADRESSE</label>
+                        <input type="text" id="m_adr" class="form-control">
+                    </div>
+                    <div class="mb-0">
+                        <label class="small fw-bold">RESPONSABLE</label>
+                        <input type="text" id="m_res" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // إضافة صف الفلاتر
+            $('#serviTable thead tr').clone(true).addClass('filters-row').appendTo('#serviTable thead');
+
+            const table = $('#serviTable').DataTable({
+                ajax: { url: "?handler=LoadData", dataSrc: "" },
+                dom: 'Brtip',
+                orderCellsTop: true,
+                buttons: [{ extend: 'excelHtml5', className: 'd-none', exportOptions: { columns: [0,1,2,3] } }],
+                columns: [
+                    { data: "cod_soc", className: "fw-bold text-dark" },
+                    { data: "nom", className: "fw-bold text-primary" },
+                    { data: "adresse" },
+                    { data: "responsab", defaultContent: "" },
+                    {
+                        data: null, className: "text-center", orderable: false,
+                        render: (d) => `
+                            <div class="action-buttons">
+                                <button type="button" class="btn-table-edit" onclick='openEditModal(${JSON.stringify(d)})'><i class="fas fa-pen-nib"></i></button>
+                                <button type="button" class="btn-table-delete" onclick="deleteServi('${d.cod_soc}')"><i class="fas fa-trash-alt"></i></button>
+                            </div>`
+                    }
+                ],
+                initComplete: function () {
+                    this.api().columns().every(function (i) {
+                        var column = this; if (i === 4) return;
+                        $('.filters-row th').eq(i).html('<input type="text" placeholder="Filtrer..." />');
+                        $('input', $('.filters-row th').eq(i)).on('keyup change', function () {
+                            column.search(this.value).draw();
+                        });
+                    });
+                }
+            });
+
+            // دالة الحفظ
+            $('#serviForm').submit(function (e) {
+                e.preventDefault();
+                const formData = new FormData();
+                formData.append('cod_soc', $('#m_cod').val());
+                formData.append('nom', $('#m_nom').val());
+                formData.append('adresse', $('#m_adr').val());
+                formData.append('responsab', $('#m_res').val());
+                formData.append('isEdit', $('#isEdit').val());
+
+                $.ajax({
+                    url: '?handler=Save',
+                    type: 'POST',
+                    data: formData,
+                    processData: false, contentType: false,
+                    headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                    success: function (r) {
+                        if (r.success) {
+                            Swal.fire('Succès', r.message, 'success');
+                            $('#serviModal').modal('hide');
+                            table.ajax.reload();
+                        } else { Swal.fire('Erreur', r.message, 'error'); }
+                    }
+                });
+            });
+
+            $('#btnExcel').click(() => table.button('.buttons-excel').trigger());
+        });
+
+        function openAddModal() {
+            $('#serviForm')[0].reset();
+            $('#isEdit').val('false');
+            $('#m_cod').prop('readonly', false);
+            $('#modalTitle').text('Nouvelle Structure');
+            $('#serviModal').modal('show');
+        }
+
+        function openEditModal(d) {
+            $('#m_cod').val(d.cod_soc).prop('readonly', true);
+            $('#m_nom').val(d.nom);
+            $('#m_adr').val(d.adresse);
+            $('#m_res').val(d.responsab);
+            $('#isEdit').val('true');
+            $('#modalTitle').text('Modifier Structure');
+            $('#serviModal').modal('show');
+        }
+
+        function deleteServi(id) {
+            Swal.fire({
+                title: 'Supprimer ?',
+                text: "Voulez-vous supprimer cette structure (DBF & SQLite) ?",
+                icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '?handler=Delete', type: 'POST', data: { id: id },
+                        headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                        success: (r) => { if(r.success) $('#serviTable').DataTable().ajax.reload(); }
+                    });
+                }
+            });
+        }
+    </script>
+}

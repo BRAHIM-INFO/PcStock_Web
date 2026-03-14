@@ -1,116 +1,164 @@
-﻿using ClosedXML.Excel;
+﻿using DocumentFormat.OpenXml.ExtendedProperties;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.Sqlite;
 
 namespace PcStock_Web.Pages.Stocks
 {
     public class ArrivageModel : PageModel
     {
-        [BindProperty(SupportsGet = true)]
-        public int CurrentPage { get; set; } = 1;
-
-        [BindProperty(SupportsGet = true)]
-        public int PageSize { get; set; } = 10;
-
-        public int TotalPages { get; set; }
-
-        public int TotalItems { get; set; } // لإظهار إجمالي عدد الأسطر
-
-        private readonly string _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ArrivageData.xlsx");
-
-        [BindProperty]
-        public ArrivageEntry NewEntry { get; set; } = new ArrivageEntry();
-
-        // القائمة التي ستعرض في الجدول أسفل الصفحة
-        public List<ArrivageEntry> SavedEntries { get; set; } = new List<ArrivageEntry>();
-
-        public void OnGet()
-        {
-            var allData = LoadDataFromExcel(); // جلب كل البيانات
-
-            TotalItems = allData.Count;
-            TotalPages = (int)Math.Ceiling(TotalItems / (double)PageSize);
-
-            // تقسيم البيانات للعرض (Pagination)
-            SavedEntries = allData
-                .Skip((CurrentPage - 1) * PageSize)
-                .Take(PageSize)
-                .ToList();
-
-            //TotalPages = (int)Math.Ceiling(allData.Count / (double)PageSize);
-
-            //// تقسيم البيانات لعرض الصفحة المطلوبة فقط
-            //SavedEntries = allData
-            //    .Skip((CurrentPage - 1) * PageSize)
-            //    .Take(PageSize)
-            //    .ToList();
+        public AppSettings CompanySettings { get; set; }
+        private readonly SqliteDbService _sqliteService;
+        private readonly ConfigService _configService;
+        public ArrivageModel(SqliteDbService sqliteService, ConfigService configService) 
+        { 
+            _sqliteService = sqliteService;
+            _configService = configService; 
         }
 
-        public List<ArrivageEntry> LoadDataFromExcel()
+        public void OnGet() 
+        { 
+            _sqliteService.EnsurePersistentTables(); 
+            CompanySettings = _configService.GetAllSettings();
+        }
+
+        // 1. جلب البيانات للجدول
+        public IActionResult OnGetLoadData()
         {
-            var list = new List<ArrivageEntry>();
-            if (!System.IO.File.Exists(_filePath)) return list;
-
-            //if (!System.IO.File.Exists(_filePath)) return;
-
-            using (var workbook = new XLWorkbook(_filePath))
+            var list = new List<object>();
+            using (var conn = new SqliteConnection(_sqliteService.GetSqliteConnectionString()))
             {
-                var worksheet = workbook.Worksheet(1);
-                var rows = worksheet.RangeUsed().RowsUsed().Skip(1); // تخطي سطر العناوين
-
-                foreach (var row in rows)
+                conn.Open();
+                var cmd = new SqliteCommand("SELECT * FROM Arrivage_Journalier ORDER BY ID DESC", conn);
+                using var r = cmd.ExecuteReader();
+                int ord = 1;
+                while (r.Read())
                 {
-                    list.Add(new ArrivageEntry
+                    list.Add(new
                     {
-                        Ord = row.Cell(1).GetValue<int>(),
-                        Dates = row.Cell(2).Value.ToString(),
-
-                        //    SavedEntries.Add(new ArrivageEntry
-                        //{
-                        //    Ord = row.Cell(1).GetValue<int>(),
-                        //    // الحل هنا: نقرأ القيمة كـ string لنتجنب خطأ الـ Cast
-                        //    Dates = row.Cell(2).Value.ToString(), 
-                        REF = row.Cell(3).GetValue<string>(),
-                        DESIGNATION = row.Cell(4).GetValue<string>(),
-                        MACHINE = row.Cell(5).GetValue<string>(),
-                        QTE = row.Cell(6).GetValue<int>(),
-                        PRIX = row.Cell(7).GetValue<decimal>(),
-                        FOURNISSEUR = row.Cell(8).GetValue<string>(),
-                        FACT_N = row.Cell(9).GetValue<string>(),
-                        BC_N = row.Cell(10).GetValue<string>(),
-                        CASIER = row.Cell(11).GetValue<string>(),
-                        ACHETTEUR = row.Cell(12).GetValue<string>()
+                        ord = ord++,
+                        id = r["ID"],
+                        dates = r["DATES"],
+                        ref_art = r["REF"],
+                        designation = r["DESIGNATION"],
+                        machine = r["MACHINE"],
+                        qte = r["QTE"],
+                        prix = r["PRIX"],
+                        fournisseur = r["FOURNISSEUR"],
+                        fact_n = r["FACT_N"],
+                        bc_n = r["BC_N"],
+                        casier = r["CASIER"],
+                        acheteur = r["ACHETEUR"]
                     });
                 }
-                // ترتيب البيانات لتظهر الأحدث في الأعلى (خيار إضافي لجعلها خفيفة)
-                SavedEntries.Reverse();
             }
-
-            return list.OrderByDescending(x => x.Ord).ToList(); // الأحدث دائماً في الأعلى
-
+            return new JsonResult(list);
         }
 
-        public IActionResult OnPost()
+        // 2. البحث التلقائي عن السلع (Autocomplete)
+        public IActionResult OnGetArticleAutocomplete(string term)
         {
-            // ... (كود الحفظ السابق الذي كتبناه) ...
-            // بعد الحفظ بنجاح:
-            return RedirectToPage(); // سيعيد تحميل الصفحة وتظهر البيانات الجديدة فوراً
+            var results = new List<object>();
+            using (var conn = new SqliteConnection(_sqliteService.GetSqliteConnectionString()))
+            {
+                conn.Open();
+                var cmd = new SqliteCommand("SELECT REF, INTITULE, CASIER FROM ST_STOCK WHERE REF LIKE @t OR INTITULE LIKE @t LIMIT 15", conn);
+                cmd.Parameters.AddWithValue("@t", "%" + term + "%");
+                using var r = cmd.ExecuteReader();
+                while (r.Read())
+                {
+                    results.Add(new
+                    {
+                        id = r["REF"].ToString().Trim(),
+                        text = r["REF"].ToString().Trim() + " | " + r["INTITULE"].ToString().Trim(),
+                        intitule = r["INTITULE"].ToString().Trim(),
+                        casier = r["CASIER"]?.ToString().Trim() ?? ""
+                    });
+                }
+            }
+            return new JsonResult(new { results = results });
+        }
+
+        // 3. حفظ سطر جديد (POST)
+        public IActionResult OnPostSave([FromForm] ArrivageEntry f)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(f.Ref)) return new JsonResult(new { success = false, message = "Référence obligatoire" });
+
+                using var conn = new SqliteConnection(_sqliteService.GetSqliteConnectionString());
+                conn.Open();
+                string sql = @"INSERT INTO Arrivage_Journalier 
+                    (DATES, REF, DESIGNATION, MACHINE, QTE, PRIX, FOURNISSEUR, FACT_N, BC_N, CASIER, ACHETEUR) 
+                    VALUES (@d, @r, @des, @m, @q, @p, @four, @fact, @bc, @cas, @ach)";
+
+                var cmd = new SqliteCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@d", f.Dates ?? "");
+                cmd.Parameters.AddWithValue("@r", f.Ref.ToUpper());
+                cmd.Parameters.AddWithValue("@des", f.Designation?.ToUpper() ?? "");
+                cmd.Parameters.AddWithValue("@m", f.Machine?.ToUpper() ?? "");
+                cmd.Parameters.AddWithValue("@q", f.Qte);
+                cmd.Parameters.AddWithValue("@p", f.Prix);
+                cmd.Parameters.AddWithValue("@four", f.Fournisseur?.ToUpper() ?? "");
+                cmd.Parameters.AddWithValue("@fact", f.Fact_N?.ToUpper() ?? "");
+                cmd.Parameters.AddWithValue("@bc", f.Bc_N?.ToUpper() ?? "");
+                cmd.Parameters.AddWithValue("@cas", f.Casier?.ToUpper() ?? "");
+                cmd.Parameters.AddWithValue("@ach", f.Acheteur?.ToUpper() ?? "");
+                cmd.ExecuteNonQuery();
+                return new JsonResult(new { success = true });
+            }
+            catch (Exception ex) { return new JsonResult(new { success = false, message = ex.Message }); }
+        }
+
+        // 4. تحديث سطر (POST)
+        public IActionResult OnPostUpdate([FromForm] ArrivageEntry f, [FromForm] int Id)
+        {
+            try
+            {
+                using var conn = new SqliteConnection(_sqliteService.GetSqliteConnectionString());
+                conn.Open();
+                string sql = @"UPDATE Arrivage_Journalier SET 
+                    DATES=@d, DESIGNATION=@des, MACHINE=@m, QTE=@q, PRIX=@p, FOURNISSEUR=@four, FACT_N=@fact, BC_N=@bc, ACHETEUR=@ach 
+                    WHERE ID=@id";
+                var cmd = new SqliteCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@d", f.Dates ?? "");
+                cmd.Parameters.AddWithValue("@des", f.Designation?.ToUpper() ?? "");
+                cmd.Parameters.AddWithValue("@m", f.Machine?.ToUpper() ?? "");
+                cmd.Parameters.AddWithValue("@q", f.Qte);
+                cmd.Parameters.AddWithValue("@p", f.Prix);
+                cmd.Parameters.AddWithValue("@four", f.Fournisseur?.ToUpper() ?? "");
+                cmd.Parameters.AddWithValue("@fact", f.Fact_N?.ToUpper() ?? "");
+                cmd.Parameters.AddWithValue("@bc", f.Bc_N?.ToUpper() ?? "");
+                cmd.Parameters.AddWithValue("@ach", f.Acheteur?.ToUpper() ?? "");
+                cmd.Parameters.AddWithValue("@id", Id);
+                cmd.ExecuteNonQuery();
+                return new JsonResult(new { success = true });
+            }
+            catch (Exception ex) { return new JsonResult(new { success = false, message = ex.Message }); }
+        }
+
+        // 5. حذف سطر
+        public IActionResult OnPostDelete(int id)
+        {
+            using var conn = new SqliteConnection(_sqliteService.GetSqliteConnectionString());
+            conn.Open();
+            new SqliteCommand($"DELETE FROM Arrivage_Journalier WHERE ID={id}", conn).ExecuteNonQuery();
+            return new JsonResult(new { success = true });
         }
     }
 
     public class ArrivageEntry
     {
-        public int Ord { get; set; }
-        public string Dates { get; set; }  // تاريخ الإدخال الافتراضي هو الوقت الحالي 
-        public string REF { get; set; }
-        public string DESIGNATION { get; set; }
-        public string MACHINE { get; set; }
-        public int QTE { get; set; }
-        public decimal PRIX { get; set; }
-        public string FOURNISSEUR { get; set; }
-        public string FACT_N { get; set; }
-        public string BC_N { get; set; }
-        public string CASIER { get; set; }
-        public string ACHETTEUR { get; set; }
+        public string? Dates { get; set; }
+        public string? Ref { get; set; }
+        public string? Designation { get; set; }
+        public string? Machine { get; set; }
+        public double Qte { get; set; }
+        public double Prix { get; set; }
+        public string? Fournisseur { get; set; }
+        public string? Fact_N { get; set; }
+        public string? Bc_N { get; set; }
+        public string? Casier { get; set; }
+        public string? Acheteur { get; set; }
     }
 }

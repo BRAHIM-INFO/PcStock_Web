@@ -98,5 +98,35 @@ namespace PcStock_Web
             }
             catch { transaction.Rollback(); throw; }
         }
+
+        public void EnsurePersistentTables()
+        {
+            using var conn = new SqliteConnection(_sqliteConnString);
+            conn.Open();
+            var cmd = conn.CreateCommand();
+
+            // نقوم بحذف الجدول القديم لإنشائه من جديد بالتقسيم الصحيح (فقط في مرحلة التطوير)
+            // cmd.CommandText = "DROP TABLE IF EXISTS Arrivage_Journalier;"; 
+            // cmd.ExecuteNonQuery();
+
+            // إنشاء الجدول بالهيكلة الجديدة المطلوبة
+            cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS Arrivage_Journalier (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                DATES TEXT,
+                REF TEXT,
+                DESIGNATION TEXT,
+                MACHINE TEXT,
+                QTE REAL,
+                PRIX REAL,
+                FOURNISSEUR TEXT,
+                FACT_N TEXT,
+                BC_N TEXT,
+                CASIER TEXT,
+                ACHETEUR TEXT,
+                CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
+            );";
+                cmd.ExecuteNonQuery();
+        }
     }
 }

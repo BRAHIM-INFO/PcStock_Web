@@ -32,151 +32,224 @@
             bool isCarburantSection = currentUrl.StartsWith("/Carburant");
         }
 
-        <aside class="sidebar-cosider" id="sidebar">
+           
+        @{
+            var activePage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+        }  
 
-            <!-- 1. اللوجو واسم الشركة -->
-            <div class="brand-section d-flex align-items-center justify-content-between">
+        <aside class="sidebar-cosider" id="sidebar">
+          
+                <!-- قسم اللوجو مع زر الإغلاق -->
+            <div class="brand-section d-flex align-items-center justify-content-between px-3">
                 <div class="brand-text">
-                    <span class="brand-title">COSIDER TP</span>
-                    <span class="brand-subtitle">DCM MSILA | PC Stock-Web</span>
+                    <img src="/images/logo_entreprise.png" style="max-height: 40px;" alt="Logo">
                 </div>
-                <button type="button" id="sidebarToggle" class="btn text-white p-0 border-0">
-                    <i class="fas fa-bars" id="toggleIcon"></i>
-                </button>
+               @*  <button type="button" id="sidebarToggle" class="btn text-primary border-0 p-0">
+                    <i class="fas fa-bars fa-lg" id="toggleIcon"></i>
+                </button> *@
             </div>
 
             <nav class="nav-list">
-                <a asp-page="/Index" class="nav-item @(currentUrl == "/Index" ? "active" : "")">
-                    <i class="fas fa-th-large"></i>
+                <!-- TABLEAU DE BORD -->
+                <a asp-page="/Index" class="nav-item @(activePage == "/Index" ? "active" : "")">
+                    <i class="fas fa-tachometer-alt"></i>
                     <span class="menu-text">TABLEAU DE BORD</span>
                 </a>
 
-                @* STOCKS *@
+                <!-- Fichier Stocks -->
+                   @* STOCKS *@
                 <div class="nav-group">
-                    <div class="nav-item has-submenu @(isStockSection ? "parent-active" : "")" id="stockMenuToggle">
+                    <div class="nav-item-toggle">
                         <i class="fas fa-boxes"></i>
-                        <span class="menu-text">STOCKS</span>
-                        <i class="fas fa-chevron-down ms-auto arrow-icon @(isStockSection ? "rotate" : "")"></i>
+                        <span>Fichier Stocks</span>
+                        <i class="fas fa-chevron-down ms-auto arrow-icon"></i>
                     </div>
                     <ul class="submenu-list @(isStockSection ? "show" : "")" id="stockSubmenu">
                         <li><a asp-page="/Stocks/Articles" class="submenu-item @(currentUrl == "/Stocks/Articles" ? "active" : "")"><i class="fas fa-list-ul"></i><span class="menu-text">Liste des Articles</span></a></li>
                         <li><a asp-page="/Stocks/Mouvements" class="submenu-item @(currentUrl == "/Stocks/Mouvements" ? "active" : "")"><i class="fas fa-wave-square"></i><span class="menu-text">Mouvements Article</span></a></li>
                         <li><a asp-page="/Stocks/Arrivage" class="submenu-item @(currentUrl == "/Stocks/Arrivage" ? "active" : "")"><i class="fas fa-truck"></i><span class="menu-text">Arrivage Journalier</span></a></li>
+                        <li><a asp-page="/Repports/BilanGlobal" class="submenu-item @(currentUrl == "/Repports/BilanGlobal" ? "active" : "")"><i class="fas fa-truck"></i><span class="menu-text">BilanGlobal</span></a></li>
+                        <li><a asp-page="/Stocks/ListeStock" class="submenu-item @(currentUrl == "/Stocks/ListeStock" ? "active" : "")"><i class="fas fa-truck"></i><span class="menu-text">État d'Inventaire</span></a></li>
+ 
                     </ul>
                 </div>
+                 
 
-                @* ACHATS *@
-                <div class="nav-group mt-2">
-                    <div class="nav-item has-submenu @(isAchatSection ? "parent-active" : "")" id="achatMenuToggle">
+                <!-- Achats --> 
+                 <div class="nav-group mt-2">
+                     <div class="nav-item-toggle">
                         <i class="fas fa-shopping-cart"></i>
-                        <span class="menu-text">ACHATS</span>
-                        <i class="fas fa-chevron-down ms-auto arrow-icon @(isAchatSection ? "rotate" : "")"></i>
+                        <span>Achats</span>
+                        <i class="fas fa-chevron-down ms-auto arrow-icon"></i>
                     </div>
                     <ul class="submenu-list @(isAchatSection ? "show" : "")" id="achatSubmenu">
-                        <li><a asp-page="/Achats/NouvBonEntre" class="submenu-item @(currentUrl == "/Achats/NouvBonEntre" ? "active" : "")"><i class="far fa-file-alt"></i><span class="menu-text">NOUVEAU BON ENTREE</span></a></li>
-                        <li><a asp-page="/Achats/BEM" class="submenu-item @(currentUrl == "/Achats/BEM" ? "active" : "")"><i class="far fa-file-alt"></i><span class="menu-text">BONS ENTREE MAGASIN</span></a></li>
-                        <li><a asp-page="/Achats/Reste" class="submenu-item @(currentUrl == "/Achats/Reste" ? "active" : "")"><i class="fas fa-box-open"></i><span class="menu-text">RESTE EN STOCKS</span></a></li>
-                        <li><a asp-page="/Achats/ACHAT_PAR_BEM" class="submenu-item @(currentUrl == "/Achats/ACHAT_PAR_BEM" ? "active" : "")"><i class="fas fa-list-ol"></i><span class="menu-text">ACHATS PAR BEM</span></a></li>
-                        <li><a asp-page="/Achats/RECAP_DES_ACHAT" class="submenu-item @(currentUrl == "/Achats/RECAP_DES_ACHAT" ? "active" : "")"><i class="fas fa-poll"></i><span class="menu-text">RECAP DES ACHATS</span></a></li>
+                        <li><a asp-page="/Achats/NouvBonEntre" class="submenu-item @(currentUrl == "/Achats/NouvBonEntre" ? "active" : "")"><i class="far fa-file-alt"></i><span class="menu-text">Nouveau Bon Entrée</span></a></li>
+                        <li><a asp-page="/Achats/BEM" class="submenu-item @(currentUrl == "/Achats/BEM" ? "active" : "")"><i class="far fa-file-alt"></i><span class="menu-text"> Bon De Retour</span></a></li>
+                        <li><a asp-page="/Achats/BEM" class="submenu-item @(currentUrl == "/Achats/BEM" ? "active" : "")"><i class="fas fa-box-open"></i><span class="menu-text"> Liste des Achats</span></a></li>
+                        <li><a asp-page="/Achats/Reste" class="submenu-item @(currentUrl == "/Achats/Reste" ? "active" : "")"><i class="fas fa-list-ol"></i><span class="menu-text">  Reste En Stocks</span></a></li>
                     </ul>
-                </div>
+                </div> 
 
-                @* CESSION FOURNIE *@
-                <div class="nav-group mt-2">
-                    <div class="nav-item has-submenu @(isCFSection ? "parent-active" : "")" id="cessionFMenuToggle">
+                <!-- Cession Fournie -->
+                <div class="nav-group">
+                    <div class="nav-item-toggle">
                         <i class="fas fa-file-export"></i>
-                        <span class="menu-text">CESSION FOURNIE</span>
-                        <i class="fas fa-chevron-down ms-auto arrow-icon @(isCFSection ? "rotate" : "")"></i>
+                        <span>Cession Fournie</span>
+                        <i class="fas fa-chevron-down ms-auto arrow-icon"></i>
                     </div>
                     <ul class="submenu-list @(isCFSection ? "show" : "")" id="cessionFSubmenu">
-                        <li><a asp-page="/Cessions/Fournie/NouveauBSM" class="submenu-item @(currentUrl == "/Cessions/Fournie/NouveauBSM" ? "active" : "")"><i class="fas fa-plus-circle"></i><span class="menu-text">NOUVEAU BSM</span></a></li>
-                        <li><a asp-page="/Cessions/Fournie/Valeurisation" class="submenu-item @(currentUrl == "/Cessions/Fournie/Valeurisation" ? "active" : "")"><i class="fas fa-calculator"></i><span class="menu-text">VALEURISATION BSM</span></a></li>
-                        <li><a asp-page="/Cessions/Fournie/BonLivraison" class="submenu-item @(currentUrl == "/Cessions/Fournie/BonLivraison" ? "active" : "")"><i class="fas fa-truck"></i><span class="menu-text">BON DE LIVRAISON</span></a></li>
-                        <li><a asp-page="/Cessions/Fournie/BSM" class="submenu-item @(currentUrl == "/Cessions/Fournie/BSM" ? "active" : "")"><i class="fas fa-layer-group"></i><span class="menu-text">BON SORTIE MAGASIN</span></a></li>
-                        <li><a asp-page="/Cessions/Fournie/BSM_PAR_FAMILLE" class="submenu-item @(currentUrl == "/Cessions/Fournie/BSM_PAR_FAMILLE" ? "active" : "")"><i class="fas fa-layer-group"></i><span class="menu-text">BSM PAR FAMILLE</span></a></li>
-                        <li><a asp-page="/Cessions/Fournie/BSM_PAR_CHANTIER" class="submenu-item @(currentUrl == "/Cessions/Fournie/BSM_PAR_CHANTIER" ? "active" : "")"><i class="fas fa-building"></i><span class="menu-text">BSM PAR CHANTIER</span></a></li>
-                        <li><a asp-page="/Cessions/Fournie/RecapGeneral" class="submenu-item @(currentUrl == "/Cessions/Fournie/RecapGeneral" ? "active" : "")"><i class="fas fa-clipboard-list"></i><span class="menu-text">RECAP GENERAL</span></a></li>
-                    </ul>
+                        <li><a asp-page="/Cessions/Fournie/NouveauBSM" class="submenu-item @(currentUrl == "/Cessions/Fournie/NouveauBSM" ? "active" : "")"><i class="fas fa-plus-circle"></i><span class="menu-text">Nouveau Bon Sortie</span></a></li>
+                        <li><a asp-page="/Cessions/Fournie/Valeurisation" class="submenu-item @(currentUrl == "/Cessions/Fournie/Valeurisation" ? "active" : "")"><i class="fas fa-calculator"></i><span class="menu-text"> Bon De Retour</span></a></li>
+                        <li><a asp-page="/Cessions/Fournie/BSM" class="submenu-item @(currentUrl == "/Cessions/Fournie/BSM" ? "active" : "")"><i class="fas fa-truck"></i><span class="menu-text"> Liste Cessions Fournie</span></a></li>
+                        <li><a asp-page="/Cessions/Fournie/Valeurisation" class="submenu-item @(currentUrl == "/Cessions/Fournie/Valeurisation" ? "active" : "")"><i class="fas fa-layer-group"></i><span class="menu-text"> Valorisation de BSM</span></a></li>
+                        <li><a asp-page="/Cessions/Fournie/Valeurisation" class="submenu-item @(currentUrl == "/Cessions/Fournie/Valeurisation" ? "active" : "")"><i class="fas fa-layer-group"></i><span class="menu-text"> Bon De Livraison</span></a></li>
+                    </ul> 
                 </div>
 
-                @* CONSOMMATIONS *@
-                <div class="nav-group mt-2">
-                    <div class="nav-item has-submenu @(isConsomSection ? "parent-active" : "")" id="ConsomMenuToggle">
-                        <i class="fas fa-file-invoice"></i>
-                        <span class="menu-text">CONSOMMATIONS</span>
-                        <i class="fas fa-chevron-down ms-auto arrow-icon @(isConsomSection ? "rotate" : "")"></i>
-                    </div>
-                    <ul class="submenu-list @(isConsomSection ? "show" : "")" id="ConsomSubmenu">
-                        <li><a asp-page="/Repports/BilanGlobal" class="submenu-item @(currentUrl == "/Repports/BilanGlobal" ? "active" : "")"><i class="fas fa-plus-circle"></i><span class="menu-text">BilanGlobal</span></a></li>
-                        <li><a asp-page="/Consommations/BSM" class="submenu-item @(currentUrl == "/Consommations/BSM" ? "active" : "")"><i class="fas fa-layer-group"></i><span class="menu-text">BON SORTIE MAGASIN</span></a></li>
-                        <li><a asp-page="/Consommations/BSM_PAR_FAMILLE" class="submenu-item @(currentUrl == "/Consommations/BSM_PAR_FAMILLE" ? "active" : "")"><i class="fas fa-layer-group"></i><span class="menu-text">BSM PAR FAMILLE</span></a></li>
-                        <li><a asp-page="/Consommations/SYNTHESE_CONSOM" class="submenu-item @(currentUrl == "/Consommations/SYNTHESE_CONSOM" ? "active" : "")"><i class="fas fa-clipboard-list"></i><span class="menu-text">SYNTHESE_CONSOM</span></a></li>
-                        @* <li><a asp-page="/Consommations/RecapGeneral" class="submenu-item @(currentUrl == "/Consommations/RecapGeneral" ? "active" : "")"><i class="fas fa-clipboard-list"></i><span class="menu-text">RECAP GENERAL</span></a></li> *@
-                    </ul>
-                </div>
-
-                @* --- الأقسام الجديدة المضافة --- *@
-
-                @* CESSION REÇUE *@
-                <div class="nav-group mt-2">
-                    <div class="nav-item has-submenu @(isCRecueSection ? "parent-active" : "")" id="cessionRMenuToggle">
+                <!-- Cession Reçue -->
+                <div class="nav-group">
+                    <div class="nav-item-toggle">
                         <i class="fas fa-file-import"></i>
-                        <span class="menu-text">CESSION REÇUE</span>
-                        <i class="fas fa-chevron-down ms-auto arrow-icon @(isCRecueSection ? "rotate" : "")"></i>
+                        <span>Cession Reçue</span>
+                        <i class="fas fa-chevron-down ms-auto arrow-icon"></i>
                     </div>
                     <ul class="submenu-list @(isCRecueSection ? "show" : "")" id="cessionRSubmenu">
-                        <li><a asp-page="/Cessions/Recue/Nouveau" class="submenu-item @(currentUrl.Contains("/Cessions/Recue/Nouveau") ? "active" : "")"><i class="far fa-file-alt"></i><span class="menu-text">NOUVEAU BON ENTREE</span></a></li>
-                        <li><a asp-page="/Cessions/Recue/BEM" class="submenu-item @(currentUrl.Contains("/Cessions/Recue/BEM") ? "active" : "")"><i class="far fa-file-alt"></i><span class="menu-text">BONS ENTREE MAGASIN</span></a></li>
-                        <li><a asp-page="/Cessions/Recue/ReintegFamille" class="submenu-item @(currentUrl.Contains("/Cessions/Recue/ReintegFamille") ? "active" : "")"><i class="fas fa-layer-group"></i><span class="menu-text">Reintegration PAR Famille</span></a></li>
-                        <li><a asp-page="/Cessions/Recue/Recap" class="submenu-item @(currentUrl.Contains("/Cessions/Recue/Recap") ? "active" : "")"><i class="fas fa-poll"></i><span class="menu-text">RECAP DES ACHATS</span></a></li>
-                    </ul>
+                        <li><a asp-page="/Cessions/Recue/Nouveau" class="submenu-item @(currentUrl.Contains("/Cessions/Recue/Nouveau") ? "active" : "")"><i class="far fa-file-alt"></i><span class="menu-text">Nouveau Bon Entrée</span></a></li>
+                        <li><a asp-page="/Cessions/Recue/BEM" class="submenu-item @(currentUrl.Contains("/Cessions/Recue/BEM") ? "active" : "")"><i class="far fa-file-alt"></i><span class="menu-text"> Liste Cessions Recue</span></a></li>
+                    </ul> 
                 </div>
 
-                @* MOTEURS & BOITE *@
-                <div class="nav-group mt-2">
-                    <div class="nav-item has-submenu @(isMoteursSection ? "parent-active" : "")" id="moteursMenuToggle">
-                        <i class="fas fa-cogs"></i>
-                        <span class="menu-text">MOTEURS & BOITE</span>
-                        <i class="fas fa-chevron-down ms-auto arrow-icon @(isMoteursSection ? "rotate" : "")"></i>
-                    </div>
-                    <ul class="submenu-list @(isMoteursSection ? "show" : "")" id="moteursSubmenu">
-                        <li><a asp-page="/Moteurs/Ajouter" class="submenu-item @(currentUrl.Contains("/Moteurs/Ajouter") ? "active" : "")"><i class="fas fa-plus-circle"></i><span class="menu-text">Ajouter Moteur/Boite</span></a></li>
-                        <li><a asp-page="/Moteurs/Entrees" class="submenu-item @(currentUrl.Contains("/Moteurs/Entrees") ? "active" : "")"><i class="fas fa-sign-in-alt"></i><span class="menu-text">Liste des Entrees</span></a></li>
-                        <li><a asp-page="/Moteurs/Sorties" class="submenu-item @(currentUrl.Contains("/Moteurs/Sorties") ? "active" : "")"><i class="fas fa-sign-out-alt"></i><span class="menu-text">Liste des Sortie</span></a></li>
-                    </ul>
-                </div>
-
-                @* GESTION CARBURANT *@
-                <div class="nav-group mt-2">
-                    <div class="nav-item has-submenu @(isCarburantSection ? "parent-active" : "")" id="carburantMenuToggle">
+                <!-- Consommations -->
+                <div class="nav-group">
+                    <div class="nav-item-toggle">
                         <i class="fas fa-gas-pump"></i>
-                        <span class="menu-text">GESTION CARBURANT</span>
-                        <i class="fas fa-chevron-down ms-auto arrow-icon @(isCarburantSection ? "rotate" : "")"></i>
+                        <span>Consommations</span>
+                        <i class="fas fa-chevron-down ms-auto arrow-icon"></i>
                     </div>
-                    <ul class="submenu-list @(isCarburantSection ? "show" : "")" id="carburantSubmenu">
-                        <li><a asp-page="/Carburant/Ajouter" class="submenu-item @(currentUrl.Contains("/Carburant/Ajouter") ? "active" : "")"><i class="fas fa-plus-square"></i><span class="menu-text">Ajouter Bon GasOil</span></a></li>
+                    <ul class="submenu-list @(isConsomSection ? "show" : "")" id="ConsomSubmenu">
+                        <li><a asp-page="/Repports/BilanGlobal" class="submenu-item @(currentUrl == "/Repports/BilanGlobal" ? "active" : "")"><i class="fas fa-plus-circle"></i><span class="menu-text">Nouveau Bon Sortie</span></a></li>
+                        <li><a asp-page="/Consommations/BSM" class="submenu-item @(currentUrl == "/Consommations/BSM" ? "active" : "")"><i class="fas fa-layer-group"></i><span class="menu-text"> Bon De Retour</span></a></li>
+                        <li><a asp-page="/Consommations/BSM" class="submenu-item @(currentUrl == "/Consommations/BSM" ? "active" : "")"><i class="fas fa-layer-group"></i><span class="menu-text">Liste Consommations</span></a></li>
+                    </ul> 
+                </div>
+
+                <!-- REPPORTS -->
+                <div class="nav-group">
+                    <div class="nav-item-toggle">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>RAPPORTS</span>
+                        <i class="fas fa-chevron-down ms-auto arrow-icon"></i>
+                    </div>
+                    <ul class="submenu-list">
+                        <div class="report-label">Achats  </div>
+                        <li><a asp-page="/Reports/AchatBEM"   class="submenu-item"><i class="fas fa-circle-notch"></i> Achat Par BEM</a></li>
+                        <li><a asp-page="/Reports/RecapAchat" class="submenu-item"><i class="fas fa-circle-notch"></i>  Achat Par Fournisseur</a></li>
+                        <li><a asp-page="/Reports/RecapAchat" class="submenu-item"><i class="fas fa-circle-notch"></i>  Achat Par Famille</a></li>
+                        <li><a asp-page="/Reports/RecapAchat" class="submenu-item"><i class="fas fa-circle-notch"></i>  Synthèse des Achats </a></li>
+                        <li><a asp-page="/Reports/RecapAchat" class="submenu-item"><i class="fas fa-circle-notch"></i>  Récap des Achats</a></li>
+
+
+                        <div class="report-label">Cession Fournie</div>
+                        <li><a asp-page="/Reports/CF_Famille" class="submenu-item"><i class="fas fa-circle-notch"></i> Cession FR / BSM</a></li>
+                        <li><a asp-page="/Reports/CF_Famille" class="submenu-item"><i class="fas fa-circle-notch"></i> Cession FR / Projet</a></li>
+                        <li><a asp-page="/Reports/CF_Famille" class="submenu-item"><i class="fas fa-circle-notch"></i> Cession FR / Famille </a></li>
+                        <li><a asp-page="/Reports/CF_Famille" class="submenu-item"><i class="fas fa-circle-notch"></i> Synthèse des Cession FR </a></li>
+                        <li><a asp-page="/Reports/CF_Famille" class="submenu-item"><i class="fas fa-circle-notch"></i> Récap des Cession FR </a></li>
+
+
+                        <div class="report-label">Consommation</div>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Consommation / BSM</a></li>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Consommation  / Projet</a></li>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Consommation  / Famille</a></li>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Synthèse Consommation </a></li>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Récap Consommation </a></li>
+                 
+                        <div class="report-label">Cession Reçue</div>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Cession Reçue / BEM</a></li>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Cession Reçue / Projet</a></li>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Cession Reçue / Famille</a></li>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Synthèse Cession Reçue </a></li>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Récap Cession Reçue </a></li>
+
+                        <div class="report-label">Sortie Exceptions</div>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Sortie Exceptions / BEM</a></li>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Sortie Exceptions / Imputation</a></li>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Sortie Exceptions / Famille</a></li>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Synthèse Sortie Exceptions </a></li>
+                        <li><a asp-page="/Reports/SynthConso" class="submenu-item"><i class="fas fa-circle-notch"></i> Récap Sortie Exceptions </a></li>
+
+                        <div class="report-label">Rapport general des stocks</div>
+                        <li><a asp-page="/Reports/BilanGlobal" class="submenu-item @(currentUrl == "/Reports/BilanGlobal" ? "active" : "")"><i class="fas fa-layer-group"></i><span class="menu-text">Bilan Global de Stock</span></a></li>
+
+                        @* <li><a asp-page="/Reports/BilanGlobal" class="submenu-item"><i class="fas fa-circle-notch"></i> Bilan Global de Stock</a></li> *@
                     </ul>
                 </div>
 
-                @* CONFIGURATIONS *@
-                <a asp-page="/Settings/Settings"
-                   class="nav-link @(currentUrl.Contains("Settings") ? "active bg-white text-primary rounded" : "text-white") d-flex align-items-center py-3 px-4 mb-2">
-                    <i class="fas fa-cog me-3"></i>
-                    <span class="fw-semibold">CONFIGURATIONS</span>
+                <!-- Tableaux -->
+                @* Tableaux ------------------------------------------------------------- *@
+                <div class="nav-group mt-2">
+                    <div class="nav-item-toggle" data-target="tableSub">
+                        <i class="fas fa-table"></i>
+                        <span>Tableaux</span>
+                        <i class="fas fa-chevron-down ms-auto arrow-icon"></i>
+                    </div>
+                    <ul class="submenu-list" id="tableSub">
+                        @* الموردين *@
+                        <li>
+                            <a asp-page="/Tables/Fournisseurs" class="submenu-item @(activePage == "/Tables/Fournisseurs" ? "active" : "")">
+                                <i class="fas fa-user-tie"></i>
+                                <span class="menu-text">Fournisseurs</span>
+                            </a>
+                        </li>
+                        @* المشاريع *@
+                        <li>
+                            <a asp-page="/Tables/Projets" class="submenu-item @(activePage == "/Tables/Projets" ? "active" : "")">
+                                <i class="fas fa-project-diagram"></i>
+                                <span class="menu-text">Projets</span>
+                            </a>
+                        </li>
+                        @* الهياكل / الوحدات *@
+                        <li>
+                            <a asp-page="/Tables/Structures" class="submenu-item @(activePage == "/Tables/Structures" ? "active" : "")">
+                                <i class="fas fa-sitemap"></i>
+                                <span class="menu-text">Structures</span>
+                            </a>
+                        </li>
+                        @* مجموعات العوائل *@
+                        <li>
+                            <a asp-page="/Tables/GroupeFamille" class="submenu-item @(activePage == "/Tables/GroupeFamille" ? "active" : "")">
+                                <i class="fas fa-folder-tree"></i>
+                                <span class="menu-text">Groupe de Famille</span>
+                            </a>
+                        </li>
+                        @* عوائل المواد *@
+                        <li>
+                            <a asp-page="/Tables/FamilleArticle" class="submenu-item @(activePage == "/Tables/FamilleArticle" ? "active" : "")">
+                                <i class="fas fa-tags"></i>
+                                <span class="menu-text">Famille Article</span>
+                            </a>
+                        </li>
+                        @* جدول الاستثناءات *@
+                        <li>
+                            <a asp-page="/Tables/Exceptions" class="submenu-item @(activePage == "/Tables/Exceptions" ? "active" : "")">
+                                <i class="fas fa-file-shield"></i>
+                                <span class="menu-text">Table Exception</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+
+
+
+                <!-- CONFIGURATIONS -->
+                <a asp-page="/Settings/Settings" class="nav-item @(activePage.Contains("Settings") ? "active" : "")" style="background: rgba(0,0,0,0.15); margin-top: 10px;">
+                    <i class="fas fa-cog"></i>
+                    <span class="menu-text">CONFIGURATIONS</span>
                 </a>
             </nav>
-
-            <div class="sidebar-footer mt-auto">
-                <div class="user-box d-flex align-items-center">
-                    <div class="user-avatar">CT</div>
-                    <div class="user-info ms-2">
-                        <span class="u-name">Admin COSIDER</span>
-                        <span class="u-unit">Unité: DCM MSILA</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
+             
+        </aside> 
         <main class="main-content w-100">
             @RenderBody()
         </main>
@@ -185,67 +258,55 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            // وظيفة موحدة لتبديل القوائم وإغلاق الأخريات
-            function setupMenuToggle(toggleId, submenuId) {
-                $(`#${toggleId}`).on('click', function(e) {
-                    e.preventDefault();
+            // وظيفة التبديل (فتح وإغلاق القوائم)
+            $('.nav-item-toggle').on('click', function(e) {
+                e.preventDefault();
+                const $submenu = $(this).next('.submenu-list');
+                const $arrow = $(this).find('.arrow-icon');
 
-                    // إغلاق جميع القوائم الأخرى أولاً (اختياري، إذا كنت تفضل فتح قائمة واحدة فقط)
-                    //$('.submenu-list').not(`#${submenuId}`).removeClass('show');
-                    //$('.arrow-icon').not($(this).find('.arrow-icon')).removeClass('rotate');
+                // إغلاق القوائم الأخرى المفتوحة تلقائياً (Accordion Effect)
+                $('.submenu-list').not($submenu).slideUp(300);
+                $('.arrow-icon').not($arrow).removeClass('rotate');
 
-                    $(`#${submenuId}`).toggleClass('show');
-                    $(this).find('.arrow-icon').toggleClass('rotate');
-                });
-            }
-
-            // تفعيل جميع القوائم
-            setupMenuToggle('stockMenuToggle', 'stockSubmenu');
-            setupMenuToggle('achatMenuToggle', 'achatSubmenu');
-            setupMenuToggle('cessionFMenuToggle', 'cessionFSubmenu');
-            setupMenuToggle('ConsomMenuToggle', 'ConsomSubmenu');
-            setupMenuToggle('cessionRMenuToggle', 'cessionRSubmenu');
-            setupMenuToggle('moteursMenuToggle', 'moteursSubmenu');
-            setupMenuToggle('carburantMenuToggle', 'carburantSubmenu');
-
-            // التحكم في انهيار الشريط الجانبي بالكامل
-              $('#sidebarToggle').on('click', function () {
-            const sidebar = $('#sidebar');
-            const icon = $('#toggleIcon');
-
-            sidebar.toggleClass('collapsed');
-
-            // تغيير شكل الأيقونة من قضبان (bars) إلى سهم (chevron)
-            if (sidebar.hasClass('collapsed')) {
-                icon.removeClass('fa-bars').addClass('fa-chevron-right');
-            } else {
-                icon.removeClass('fa-chevron-right').addClass('fa-bars');
-            }
+                // تبديل حالة القائمة الحالية
+                $submenu.slideToggle(300);
+                $arrow.toggleClass('rotate');
             });
-            
-            // ملاحظة: إذا كان السايدبار مغلقاً، نمنع الضغط على المجموعات لفتح الساب منيو
-            $('.nav-item.has-submenu').on('click', function(e) {
-                if ($('#sidebar').hasClass('collapsed')) {
-                    e.preventDefault();
-                    $('#sidebar').removeClass('collapsed'); // يفتح السايدبار أولاً عند الضغط
-                    $('#toggleIcon').replaceClass('fa-chevron-right', 'fa-bars');
-                }
-            });
-            
-            // $('#sidebarToggle').on('click', function () {
-            //     $('#sidebar').toggleClass('collapsed');
-            //     const icon = $('#toggleIcon');
-            //     if ($('#sidebar').hasClass('collapsed')) {
-            //         icon.removeClass('fa-bars').addClass('fa-chevron-right');
-            //     } else {
-            //         icon.removeClass('fa-chevron-right').addClass('fa-bars');
-            //     }
-            // });
+
+            // إبقاء القائمة النشطة مفتوحة عند تحميل الصفحة
+            $('.submenu-item.active').closest('.submenu-list').show();
+            $('.submenu-item.active').closest('.nav-group').find('.arrow-icon').addClass('rotate');
         });
     </script>
+    <script>
+        $(document).ready(function() {
+            const $sidebar = $('#sidebar');
+            const $toggleIcon = $('#toggleIcon');
 
+            // زر التبديل الرئيسي
+            $('#sidebarToggle').on('click', function() {
+                $sidebar.toggleClass('collapsed');
+
+                if ($sidebar.hasClass('collapsed')) {
+                    $toggleIcon.removeClass('fa-bars').addClass('fa-chevron-right');
+                    $('.submenu-list').slideUp(0).removeClass('show'); // إغلاق القوائم المفتوحة
+                } else {
+                    $toggleIcon.removeClass('fa-chevron-right').addClass('fa-bars');
+                }
+            });
+
+            // إذا ضغط المستخدم على أيقونة والسايدبار مغلق، نقوم بفتحه أولاً
+            $('.nav-item, .nav-item-toggle').on('click', function() {
+                if ($sidebar.hasClass('collapsed')) {
+                    $sidebar.removeClass('collapsed');
+                    $toggleIcon.removeClass('fa-chevron-right').addClass('fa-bars');
+                }
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

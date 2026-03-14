@@ -1,181 +1,792 @@
 ﻿@page
 @model PcStock_Web.Pages.Stocks.ArrivageModel
-@{
-    ViewData["Title"] = "Arrivage Journalier";
-}
+@Html.AntiForgeryToken()
 
-<div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 shadow-sm">
-    <h4 class="fw-bold mb-0">Arrivage Journalier</h4>
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            <i class="fas fa-check-circle me-2"></i>
-            <strong>Félicitations!</strong> @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+<!-- الروابط -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+    /* التنسيقات العامة للمتصفح */
+    .page-header {
+        background: #1e40af;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 12px;
+        margin-bottom: 10px;
     }
 
-    <div>
-        <button class="btn btn-success me-2"><i class="fas fa-file-excel me-2"></i>Exporter Excel</button>
-        <button class="btn btn-dark"><i class="fas fa-print me-2"></i>Imprimer Liste</button>
+    .filter-section {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        padding: 12px 20px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .entry-section {
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 15px;
+    }
+
+    .label-xl {
+        font-size: 11px;
+        font-weight: 850;
+        color: #94a3b8;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .form-control-xl {
+        background: rgba(255,255,255,0.08) !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        color: white !important;
+        font-weight: 700;
+        height: 40px !important;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+    }
+
+    .btn-table {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 1px solid transparent;
+    }
+
+    .btn-edit-s {
+        background: #eff6ff;
+        color: #2563eb;
+        border-color: #dbeafe;
+    }
+
+    .btn-delete-s {
+        background: #fef2f2;
+        color: #ef4444;
+        border-color: #fee2e2;
+    }
+
+    /* --- تنسيقات الطباعة الاحترافية --- */
+    @@media print {
+        /* 1. إعدادات الصفحة الأساسية لإلغاء الهوامش البيضاء */
+        @@page {
+            size: A4 landscape; /* يفضل استخدام الوضع الأفقي لأن الأعمدة كثيرة */
+            margin: 10mm;
+        }
+        /* 2. إخفاء كل ما هو غير ضروري */
+        .sidebar, .top-toolbar, .filter-section, .entry-section,
+        .no-print, .dataTables_filter, .dataTables_info,
+        #sidebar, .btn, .dataTables_length {
+            display: none !important;
+        }
+        /* 3. إجبار الحاوية الرئيسية على التمدد */
+        body, .app-wrapper, .main-content, .container-fluid {
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: white !important;
+        }
+        /* 4. إظهار وتوسيع هيدر الطباعة */
+        #printHeader {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        .official-print-header {
+            width: 100% !important;
+            display: flex !important;
+            justify-content: space-between !important;
+        }
+        /* 5. أهم جزء: تمدد الجدول لملء الورقة */
+        .card {
+            border: none !important;
+        }
+
+        .dataTables_wrapper, .dataTables_scroll, .dataTables_scrollHead, .dataTables_scrollBody {
+            width: 100% !important;
+            overflow: visible !important;
+        }
+
+        table#mainTable {
+            width: 100% !important;
+            margin: 0 !important;
+            table-layout: auto !important; /* السماح للمتصفح بتوزيع العرض حسب المحتوى */
+            border-collapse: collapse !important;
+        }
+
+            table#mainTable th, table#mainTable td {
+                border: 1px solid #000 !important;
+                padding: 8px 4px !important;
+                font-size: 11px !important; /* تكبير الخط قليلاً للوضوح */
+                white-space: normal !important; /* السماح للنص بالنزول لسطر جديد إذا كان طويلاً */
+            }
+            /* تلوين الهيدر في الطباعة */
+            table#mainTable thead th {
+                background-color: #f1f5f9 !important;
+                -webkit-print-color-adjust: exact;
+            }
+    }
+   /*  @@media print {
+         .sidebar, .top-toolbar, .filter-section, .entry-section, .no-print, .dataTables_filter, .btn, #sidebar {
+            display: none !important;
+        }
+
+        body {
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .container-fluid {
+            padding: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+        }
+         #printHeader {
+            display: block !important;
+        }
+         .card {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            border: 1px solid #000 !important;
+        }
+
+        th {
+            background-color: #f1f5f9 !important;
+            color: black !important;
+            border: 1px solid #000 !important;
+            font-size: 10px !important;
+            padding: 8px !important;
+        }
+
+        td {
+            border: 1px solid #000 !important;
+            font-size: 9px !important;
+            padding: 6px !important;
+        }
+         * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+    } */
+
+    /* هيدر الطباعة (مخفي افتراضياً في المتصفح) */
+    #printHeader {
+        display: none;
+    }
+
+    .official-print-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .print-info-text {
+        text-align: center;
+        flex: 1;
+        padding-top: 10px;
+    }
+
+        .print-info-text h5 {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .print-info-text p {
+            font-size: 11px;
+            margin: 0;
+            font-weight: 600;
+        }
+
+    .print-logo img {
+        width: 180px;
+    }
+
+    .red-line {
+        border-top: 3px solid #ed1c24;
+        margin-top: 10px;
+        opacity: 1;
+    }
+</style>
+
+<div class="container-fluid p-4">
+
+    <!-- 1. هيدر الطباعة (يظهر فقط في الورقة) -->
+    <div id="printHeader">
+        <div class="official-print-header">
+            <div class="print-info-text">
+                <h5>@Model.CompanySettings.Direction</h5>
+                <p>@Model.CompanySettings.Departement</p>
+                <p>@Model.CompanySettings.Service</p>
+                <p>ADRESSE: @Model.CompanySettings.Adresse</p>
+                <p>E-Mail: @Model.CompanySettings.Email</p>
+            </div>
+            <div class="print-logo">
+                <img src="/images/logo_entreprise.png" alt="Logo">
+            </div>
+        </div>
+        <div class="red-line"></div>
+
+        <div class="text-center mt-4 mb-4">
+            <h2 style="font-size: 24px; font-weight: 900; text-decoration: underline; text-transform: uppercase;">
+                ARRIVAGE JOURNALIER AU MAGASIN PDR
+            </h2>
+            <p class="fw-bold mt-2" style="font-size: 16px;">
+                PERIODE DU : <span id="printDateDeb">--/--/----</span> AU : <span id="printDateFin">--/--/----</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- 2. واجهة التطبيق العادية -->
+    <div class="page-header d-flex justify-content-between align-items-center shadow no-print">
+        <h4 class="mb-0 fw-bold"><i class="fas fa-truck-loading me-2"></i> ARRIVAGE JOURNALIER</h4>
+        <div class="d-flex gap-2">
+            <button class="btn btn-success btn-sm fw-bold px-3" id="btnExcel"><i class="fas fa-file-excel me-1"></i> EXCEL</button>
+            <button class="btn btn-light btn-sm fw-bold text-primary px-3" onclick="handlePrint()"><i class="fas fa-print me-1"></i> IMPRIMER</button>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-section shadow-sm no-print">
+        <div class="d-flex align-items-center gap-2">
+            <span class="small fw-bold text-muted">DU:</span><input type="date" id="minDate" class="form-control form-control-sm">
+            <span class="small fw-bold text-muted">AU:</span><input type="date" id="maxDate" class="form-control form-control-sm">
+        </div>
+        <div class="ms-auto"><input type="text" id="tableSearch" class="form-control form-control-sm" placeholder="Rechercher..." style="width: 250px;"></div>
+    </div>
+
+    <!-- Entry Bar -->
+    <div class="entry-section shadow-lg no-print">
+        <form id="arrivageForm">
+            <div class="row g-2">
+                <div class="col-md-2"><label class="label-xl">Date</label><input type="date" name="Dates" id="f_date" class="form-control form-control-xl" value="@DateTime.Now.ToString("yyyy-MM-dd")" required></div>
+                <div class="col-md-2"><label class="label-xl">Référence</label><select name="Ref" id="f_ref" class="form-control" required></select></div>
+                <div class="col-md-5"><label class="label-xl">Désignation</label><input type="text" name="Designation" id="f_desig" class="form-control form-control-xl border-0" readonly tabindex="-1"></div>
+                <div class="col-md-1"><label class="label-xl">Qté</label><input type="number" name="Qte" id="f_qte" class="form-control form-control-xl text-center" step="0.01" required></div>
+                <div class="col-md-2"><label class="label-xl">Prix Unit.</label><input type="number" name="Prix" id="f_prix" class="form-control form-control-xl text-end" step="0.01"></div>
+
+                <div class="col-md-2 mt-2"><label class="label-xl">Machine / Engin</label><input type="text" name="Machine" id="f_mach" class="form-control form-control-xl"></div>
+                <div class="col-md-3 mt-2"><label class="label-xl">Fournisseur</label><input type="text" name="Fournisseur" id="f_fourn" class="form-control form-control-xl"></div>
+                <div class="col-md-2 mt-2"><label class="label-xl">Facture / Bon</label><input type="text" name="Fact_N" id="f_fact" class="form-control form-control-xl"></div>
+                <div class="col-md-2 mt-2"><label class="label-xl">BC</label><input type="text" name="Bc_N" id="f_bc" class="form-control form-control-xl"></div>
+                <div class="col-md-2 mt-2"><label class="label-xl">Acheteur</label><input type="text" name="Acheteur" id="f_acht" class="form-control form-control-xl"></div>
+                <div class="col-md-1 mt-2"><label class="label-xl">Casier</label><input type="text" name="Casier" id="f_cas" class="form-control form-control-xl text-center" readonly tabindex="-1"></div>
+                <div class="col-md-2 mt-2 d-flex align-items-end">
+                    <button type="submit" id="btnEnregistrer" class="btn btn-primary w-100 fw-bold h-100"><i class="fas fa-save me-2"></i> ENREGISTRER</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <table id="mainTable" class="table table-hover align-middle mb-0 w-100">
+            <thead class="bg-light">
+                <tr>
+                    <th>ORD</th>
+                    <th>DATE</th>
+                    <th>REF</th>
+                    <th>DESIGNATION</th>
+                    <th>MACHINE</th>
+                    <th>QTE</th>
+                    <th>PRIX</th>
+                    <th>FOURNISSEUR</th>
+                    <th>FACT</th>
+                    <th>BC</th>
+                    <th>ACHETEUR</th>
+                    <th>CASIER</th>
+                    <th class="no-print">ACTIONS</th>
+                </tr>
+            </thead>
+        </table>
     </div>
 </div>
 
-<div class="container-fluid">
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-white border-0 pt-3">
-            <h6 class="text-secondary fw-bold"><i class="fas fa-plus me-2"></i>NOUVELLE ENTRÉE</h6>
-        </div>
-        <div class="card-body">
-            <form method="post" class="row g-3">
-                <div class="col-md-3">
-                    <input type="text" class="form-control bg-light" placeholder="AUTO (Next: 1)" readonly>
+<!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+            <div class="modal-header bg-primary text-white"><h5 class="modal-title fw-bold">Modifier l'arrivage</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <form id="editForm">
+                <input type="hidden" name="Id" id="e_id">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-4"><label class="small fw-bold">Date</label><input type="date" name="Dates" id="e_date" class="form-control"></div>
+                        <div class="col-md-8"><label class="small fw-bold">Désignation</label><input type="text" name="Designation" id="e_desig" class="form-control"></div>
+                        <div class="col-md-4"><label class="small fw-bold">Machine</label><input type="text" name="Machine" id="e_mach" class="form-control"></div>
+                        <div class="col-md-2"><label class="small fw-bold">Qté</label><input type="number" name="Qte" id="e_qte" class="form-control" step="0.01"></div>
+                        <div class="col-md-2"><label class="small fw-bold">Prix</label><input type="number" name="Prix" id="e_prix" class="form-control" step="0.01"></div>
+                        <div class="col-md-4"><label class="small fw-bold">Fournisseur</label><input type="text" name="Fournisseur" id="e_fourn" class="form-control"></div>
+                        <div class="col-md-4"><label class="small fw-bold">Facture</label><input type="text" name="Fact_N" id="e_fact" class="form-control"></div>
+                        <div class="col-md-4"><label class="small fw-bold">Bon Com.</label><input type="text" name="Bc_N" id="e_bc" class="form-control"></div>
+                        <div class="col-md-4"><label class="small fw-bold">Acheteur</label><input type="text" name="Acheteur" id="e_acht" class="form-control"></div>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
-                </div>
-                <div class="col-md-3">
-                    <input asp-for="NewEntry.REF" type="text" class="form-control" placeholder="REF">
-                </div>
-                <div class="col-md-3">
-                    <input asp-for="NewEntry.DESIGNATION" type="text" class="form-control" placeholder="DESIGNATION">
-                </div>
-                <div class="col-md-3">
-                    <input asp-for="NewEntry.MACHINE" type="text" class="form-control" placeholder="MACHINE">
-                </div>
-                <div class="col-md-3">
-                    <input asp-for="NewEntry.QTE" type="number" class="form-control" placeholder="QTE">
-                </div>
-                <div class="col-md-3">
-                    <input asp-for="NewEntry.PRIX" type="number" class="form-control" placeholder="PRIX">
-                </div>
-                <div class="col-md-3">
-                    <input asp-for="NewEntry.FOURNISSEUR" type="text" class="form-control" placeholder="FOURNISSEUR">
-                </div>
-                <div class="col-md-3">
-                    <input asp-for="NewEntry.FACT_N" type="text" class="form-control" placeholder="FACT_N">
-                </div>
-                <div class="col-md-3">
-                    <input asp-for="NewEntry.BC_N" type="text" class="form-control" placeholder="BC_N">
-                </div>
-                <div class="col-md-3">
-                    <input asp-for="NewEntry.CASIER" type="text" class="form-control" placeholder="CASIER">
-                </div>
-                <div class="col-md-3">
-                    <input asp-for="NewEntry.ACHETTEUR" type="text" class="form-control" placeholder="ACHETTEUR">
-                </div>
-                <div class="col-12 text-end mt-4">
-                    <button type="submit" class="btn btn-primary px-5 shadow-sm">
-                        <i class="fas fa-save me-2"></i>Enregistrer
-                    </button>
-                </div>
+                <div class="modal-footer border-0"><button type="submit" class="btn btn-primary px-5 rounded-pill">Enregistrer les modifications</button></div>
             </form>
         </div>
     </div>
-
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <div class="d-flex justify-content-between mb-3">
-                <input type="text" class="form-control w-25" placeholder="Rechercher...">
-                <div class="d-flex align-items-center">
-                    <span class="me-2 small">DU:</span><input type="date" class="form-control form-control-sm me-3">
-                    <span class="me-2 small">AU:</span><input type="date" class="form-control form-control-sm">
-                </div>
-            </div>
-
-
-            <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded">
-            <div class="d-flex align-items-center">
-                <label class="me-2 small fw-bold">Afficher</label>
-                <select class="form-select form-select-sm w-auto" 
-                        onchange="location.href='?PageSize=' + this.value + '&CurrentPage=1'">
-                    <option value="10" selected="@(Model.PageSize == 10)">10</option>
-                    <option value="20" selected="@(Model.PageSize == 20)">20</option>
-                    <option value="50" selected="@(Model.PageSize == 50)">50</option>
-                    <option value="100" selected="@(Model.PageSize == 100)">100</option>
-                </select>
-                <label class="ms-2 small fw-bold">entrées</label>
-           </div>
-          </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle border-top">
-                    <thead class="bg-light small">
-                        <tr class="text-uppercase small fw-bold text-secondary">
-                            <th class="border-bottom-0">ORD <i class="fas fa-sort ms-1 opacity-50"></i></th>
-                            <th class="border-bottom-0">DATE <i class="fas fa-sort ms-1 opacity-50"></i></th>
-                            <th class="border-bottom-0">REF <i class="fas fa-sort ms-1 opacity-50"></i></th>
-                            <th class="border-bottom-0">DESIGNATION <i class="fas fa-sort ms-1 opacity-50"></i></th>
-                            <th class="border-bottom-0">MACHINE <i class="fas fa-sort ms-1 opacity-50"></i></th>
-                            <th class="border-bottom-0 text-center">QTE <i class="fas fa-sort ms-1 opacity-50"></i></th>
-                            <th class="border-bottom-0 text-end">PRIX <i class="fas fa-sort ms-1 opacity-50"></i></th>
-                            <th class="border-bottom-0">FOURNISSEUR <i class="fas fa-sort ms-1 opacity-50"></i></th>
-                            <th class="border-bottom-0">FACT N° <i class="fas fa-sort ms-1 opacity-50"></i></th>
-                            <th class="border-bottom-0">BC N° <i class="fas fa-sort ms-1 opacity-50"></i></th>
-                            <th class="border-bottom-0">CASIER <i class="fas fa-sort ms-1 opacity-50"></i></th>
-                            <th class="border-bottom-0">ACHETTEUR <i class="fas fa-sort ms-1 opacity-50"></i></th>
-                        </tr> 
-                    </thead>
-                    <tbody class="small">
-                        @if (Model.SavedEntries.Any())
-                        {
-                            foreach (var item in Model.SavedEntries)
-                            {
-                                <tr>
-                                    <td class="fw-bold text-primary">@item.Ord</td>
-                                    <td>@item.Dates</td>
-                                    <td>@item.REF</td>
-                                    <td>@item.DESIGNATION</td>
-                                    <td>@item.MACHINE</td>
-                                    <td class="text-center">@item.QTE</td>
-                                    <td class="text-end">@item.PRIX.ToString("N2") DA</td>
-                                    <td>@item.FOURNISSEUR</td>
-                                    <td>@item.FACT_N</td>
-                                    <td>@item.BC_N</td>
-                                    <td>@item.CASIER</td>
-                                    <td>@item.ACHETTEUR</td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="8" class="text-center py-4 text-muted">
-                                    <i class="fas fa-info-circle me-2"></i>Aucune donnée trouvée
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        
-            <div class="d-flex justify-content-between align-items-center mt-3 p-2 border-top">
-                <div class="small text-secondary">
-                    Affichage de @(((Model.CurrentPage - 1) * Model.PageSize) + 1) à
-                    @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalItems) sur @Model.TotalItems
-                </div>
-
-                <nav aria-label="Page navigation">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
-                            <a class="page-link shadow-none" asp-route-CurrentPage="@(Model.CurrentPage - 1)" asp-route-PageSize="@Model.PageSize">Précédent</a>
-                        </li>
-
-                        @for (int i = 1; i <= Model.TotalPages; i++)
-                        {
-                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                                <a class="page-link shadow-none" asp-route-CurrentPage="@i" asp-route-PageSize="@Model.PageSize">@i</a>
-                            </li>
-                        }
-
-                        <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
-                            <a class="page-link shadow-none" asp-route-CurrentPage="@(Model.CurrentPage + 1)" asp-route-PageSize="@Model.PageSize">Suivant</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        
-        </div>
-    </div> 
 </div>
- 
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // دالة الطباعة لمزامنة التواريخ
+        function handlePrint() {
+            var d1 = $('#minDate').val();
+            var d2 = $('#maxDate').val();
+            $('#printDateDeb').text(d1 ? new Date(d1).toLocaleDateString('fr-FR') : '--/--/----');
+            $('#printDateFin').text(d2 ? new Date(d2).toLocaleDateString('fr-FR') : '--/--/----');
+            window.print();
+        }
+
+        $(document).ready(function () {
+            // 1. فلتر التاريخ
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                var min = $('#minDate').val(); var max = $('#maxDate').val();
+                if (!min && !max) return true;
+                var rowDate = new Date(data[1].split('/').reverse().join('-'));
+                var dStart = min ? new Date(min) : null; var dEnd = max ? new Date(max) : null;
+                return (!dStart || rowDate >= dStart) && (!dEnd || rowDate <= dEnd);
+            });
+
+            const table = $('#mainTable').DataTable({
+                ajax: { url: "?handler=LoadData", dataSrc: "" },
+                paging: false, scrollY: "450px", scroller: true, dom: 'Brt',
+                buttons: [{ extend: 'excelHtml5', className: 'd-none', exportOptions: { columns: [0,1,2,3,4,5,6,7,8,9,10,11] } }],
+                columns: [
+                    { data: "ord" },
+                    { data: "dates", render: d => d ? new Date(d).toLocaleDateString('fr-FR') : '' },
+                    { data: "ref_art", className: "fw-bold text-primary" },
+                    { data: "designation" },
+                    { data: "machine" },
+                    { data: "qte", className: "text-center fw-bold text-success" },
+                    { data: "prix", render: d => parseFloat(d || 0).toLocaleString('fr-FR') },
+                    { data: "fournisseur" },
+                    { data: "fact_n" },
+                    { data: "bc_n" },
+                    { data: "acheteur" },
+                    { data: "casier", className: "text-warning fw-bold" },
+                    {
+                        data: null, className: "no-print", orderable: false,
+                        render: d => `<div class="action-buttons">
+                            <button class="btn-table btn-edit-s" onclick='openEdit(${JSON.stringify(d)})'><i class="fas fa-pen"></i></button>
+                            <button class="btn-table btn-delete-s" onclick="deleteRow(${d.id})"><i class="fas fa-trash"></i></button>
+                        </div>`
+                    }
+                ]
+            });
+
+            $('#tableSearch').on('keyup', function () { table.search(this.value).draw(); });
+            $('#minDate, #maxDate').on('change', () => table.draw());
+            $('#btnExcel').click(() => table.button('.buttons-excel').trigger());
+
+            $('#f_ref').select2({
+                ajax: { url: '?handler=ArticleAutocomplete', delay: 250, data: p => ({ term: p.term }), processResults: d => ({ results: d.results }) },
+                placeholder: "Saisir REF...", minimumInputLength: 1, width: '100%'
+            });
+
+            $('#f_ref').on('select2:select', function (e) {
+                $('#f_desig').val(e.params.data.intitule);
+                $('#f_cas').val(e.params.data.casier);
+                setTimeout(() => $('#f_qte').focus().select(), 100);
+            });
+
+            // زر الحفظ
+            $('#arrivageForm').on('submit', function (e) {
+                e.preventDefault();
+                const $btn = $('#btnEnregistrer');
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+                $.ajax({
+                    url: '?handler=Save',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                    success: function (r) {
+                        if (r.success) {
+                            table.ajax.reload();
+                            $('#f_ref').val(null).trigger('change');
+                            $('#arrivageForm')[0].reset();
+                            $('#f_date').val(new Date().toISOString().split('T')[0]);
+                        }
+                    },
+                    complete: () => $btn.prop('disabled', false).html('<i class="fas fa-save me-2"></i> ENREGISTRER')
+                });
+            });
+
+            // حفظ التعديل (UPDATE)
+            $('#editForm').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '?handler=Update',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                    success: function (r) {
+                        if (r.success) { $('#editModal').modal('hide'); table.ajax.reload(); }
+                    }
+                });
+            });
+        });
+
+        function openEdit(d) {
+            $('#e_id').val(d.id); $('#e_date').val(d.dates); $('#e_desig').val(d.designation);
+            $('#e_mach').val(d.machine); $('#e_qte').val(d.qte); $('#e_prix').val(d.prix);
+            $('#e_fourn').val(d.fournisseur); $('#e_fact').val(d.fact_n); $('#e_bc').val(d.bc_n);
+            $('#e_acht').val(d.acheteur); $('#editModal').modal('show');
+        }
+
+        function deleteRow(id) {
+            Swal.fire({ title: 'Supprimer ?', icon: 'warning', showCancelButton: true }).then((res) => {
+                if (res.isConfirmed) $.ajax({
+                    url: '?handler=Delete', type: 'POST', data: { id: id },
+                    headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                    success: () => table.ajax.reload()
+                });
+            });
+        }
+    </script>
+}
+@* @page
+@model PcStock_Web.Pages.Stocks.ArrivageModel
+@Html.AntiForgeryToken()
+
+<!-- الروابط -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+    .page-header {
+        background: #1e40af;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+    }
+
+    .filter-section {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        padding: 12px 20px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .entry-section {
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 15px;
+    }
+
+    .label-xl {
+        font-size: 11px;
+        font-weight: 850;
+        color: #94a3b8;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .form-control-xl {
+        background: rgba(255,255,255,0.08) !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        color: white !important;
+        font-weight: 700;
+        height: 40px !important;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+    }
+
+    .btn-table {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 1px solid transparent;
+    }
+
+    .btn-edit-s {
+        background: #eff6ff;
+        color: #2563eb;
+        border-color: #dbeafe;
+    }
+
+    .btn-delete-s {
+        background: #fef2f2;
+        color: #ef4444;
+        border-color: #fee2e2;
+    }
+
+    @@media print {
+        .sidebar, .entry-section, .filter-section, .no-print, .action-buttons {
+            display: none !important;
+        }
+
+        .container-fluid {
+            padding: 0 !important;
+        }
+    }
+</style>
+
+<div class="container-fluid p-4">
+    <div class="page-header d-flex justify-content-between align-items-center shadow">
+        <h4 class="mb-0 fw-bold"><i class="fas fa-truck-loading me-2"></i> ARRIVAGE JOURNALIER</h4>
+        <div class="d-flex gap-2">
+            <button class="btn btn-success btn-sm fw-bold px-3" id="btnExcel"><i class="fas fa-file-excel me-1"></i> EXCEL</button>
+            <button class="btn btn-light btn-sm fw-bold text-primary px-3" onclick="window.print()"><i class="fas fa-print me-1"></i> IMPRIMER</button>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-section shadow-sm no-print">
+        <div class="d-flex align-items-center gap-2">
+            <span class="small fw-bold text-muted">DU:</span><input type="date" id="minDate" class="form-control form-control-sm">
+            <span class="small fw-bold text-muted">AU:</span><input type="date" id="maxDate" class="form-control form-control-sm">
+        </div>
+        <div class="ms-auto"><input type="text" id="tableSearch" class="form-control form-control-sm" placeholder="Rechercher..." style="width: 250px;"></div>
+    </div>
+
+    <!-- Entry Bar -->
+    <div class="entry-section shadow-lg no-print">
+        <form id="arrivageForm">
+            <div class="row g-2">
+                <div class="col-md-2"><label class="label-xl">Date</label><input type="date" name="Dates" id="f_date" class="form-control form-control-xl" value="@DateTime.Now.ToString("yyyy-MM-dd")" required></div>
+                <div class="col-md-2"><label class="label-xl">Référence</label><select name="Ref" id="f_ref" class="form-control" required></select></div>
+                <div class="col-md-5"><label class="label-xl">Désignation</label><input type="text" name="Designation" id="f_desig" class="form-control form-control-xl border-0" readonly tabindex="-1"></div>
+                <div class="col-md-1"><label class="label-xl">Qté</label><input type="number" name="Qte" id="f_qte" class="form-control form-control-xl text-center" step="0.01" required></div>
+                <div class="col-md-2"><label class="label-xl">Prix Unit.</label><input type="number" name="Prix" id="f_prix" class="form-control form-control-xl text-end" step="0.01"></div>
+
+                <div class="col-md-2 mt-2"><label class="label-xl">Machine / Engin</label><input type="text" name="Machine" id="f_mach" class="form-control form-control-xl"></div>
+                <div class="col-md-3 mt-2"><label class="label-xl">Fournisseur</label><input type="text" name="Fournisseur" id="f_fourn" class="form-control form-control-xl"></div>
+                <div class="col-md-2 mt-2"><label class="label-xl">Facture / Bon</label><input type="text" name="Fact_N" id="f_fact" class="form-control form-control-xl"></div>
+                <div class="col-md-2 mt-2"><label class="label-xl">BC</label><input type="text" name="Bc_N" id="f_bc" class="form-control form-control-xl"></div>
+                <div class="col-md-2 mt-2"><label class="label-xl">Acheteur</label><input type="text" name="Acheteur" id="f_acht" class="form-control form-control-xl"></div>
+                <div class="col-md-1 mt-2"><label class="label-xl">Casier</label><input type="text" name="Casier" id="f_cas" class="form-control form-control-xl text-center" readonly tabindex="-1"></div>
+                <div class="col-md-2 mt-2 d-flex align-items-end">
+                    <button type="submit" id="btnEnregistrer" class="btn btn-primary w-100 fw-bold shadow h-100"><i class="fas fa-save me-2"></i> ENREGISTRER</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <table id="mainTable" class="table table-hover align-middle mb-0 w-100">
+            <thead class="bg-light">
+                <tr>
+                    <th>ORD</th>
+                    <th>DATE</th>
+                    <th>REF</th>
+                    <th>DESIGNATION</th>
+                    <th>MACHINE</th>
+                    <th>QTE</th>
+                    <th>PRIX</th>
+                    <th>FOURNISSEUR</th>
+                    <th>FACT</th>
+                    <th>BC</th>
+                    <th>ACHETEUR</th>
+                    <th>CASIER</th>
+                    <th class="no-print">ACTIONS</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+            <div class="modal-header bg-primary text-white"><h5 class="modal-title fw-bold">Modifier l'arrivage</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <form id="editForm">
+                <input type="hidden" name="Id" id="e_id">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-4"><label class="small fw-bold">Date</label><input type="date" name="Dates" id="e_date" class="form-control"></div>
+                        <div class="col-md-8"><label class="small fw-bold">Désignation</label><input type="text" name="Designation" id="e_desig" class="form-control"></div>
+                        <div class="col-md-4"><label class="small fw-bold">Machine</label><input type="text" name="Machine" id="e_mach" class="form-control"></div>
+                        <div class="col-md-2"><label class="small fw-bold">Qté</label><input type="number" name="Qte" id="e_qte" class="form-control" step="0.01"></div>
+                        <div class="col-md-2"><label class="small fw-bold">Prix</label><input type="number" name="Prix" id="e_prix" class="form-control" step="0.01"></div>
+                        <div class="col-md-4"><label class="small fw-bold">Fournisseur</label><input type="text" name="Fournisseur" id="e_fourn" class="form-control"></div>
+                        <div class="col-md-4"><label class="small fw-bold">Facture</label><input type="text" name="Fact_N" id="e_fact" class="form-control"></div>
+                        <div class="col-md-4"><label class="small fw-bold">Bon Com.</label><input type="text" name="Bc_N" id="e_bc" class="form-control"></div>
+                        <div class="col-md-4"><label class="small fw-bold">Acheteur</label><input type="text" name="Acheteur" id="e_acht" class="form-control"></div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0"><button type="submit" class="btn btn-primary px-5 rounded-pill">Enregistrer les modifications</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            // 1. فلتر التاريخ
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                var min = $('#minDate').val(); var max = $('#maxDate').val();
+                if (!min && !max) return true;
+                var rowDate = new Date(data[1].split('/').reverse().join('-'));
+                var dStart = min ? new Date(min) : null; var dEnd = max ? new Date(max) : null;
+                return (!dStart || rowDate >= dStart) && (!dEnd || rowDate <= dEnd);
+            });
+
+            const table = $('#mainTable').DataTable({
+                ajax: { url: "?handler=LoadData", dataSrc: "" },
+                paging: false, scrollY: "450px", scroller: true, dom: 'Brt',
+                buttons: [{ extend: 'excelHtml5', className: 'd-none', exportOptions: { columns: ':visible' } }],
+                columns: [
+                    { data: "ord" },
+                    { data: "dates", render: d => d ? new Date(d).toLocaleDateString('fr-FR') : '' },
+                    { data: "ref_art", className: "fw-bold text-primary" },
+                    { data: "designation" },
+                    { data: "machine" },
+                    { data: "qte", className: "text-center fw-bold text-success" },
+                    { data: "prix", render: d => parseFloat(d || 0).toLocaleString('fr-FR') },
+                    { data: "fournisseur" },
+                    { data: "fact_n" },
+                    { data: "bc_n" },
+                    { data: "acheteur" },
+                    { data: "casier", className: "text-warning fw-bold" },
+                    {
+                        data: null, className: "no-print",
+                        render: d => `<div class="action-buttons">
+                            <div class="btn-table btn-edit-s" onclick='openEdit(${JSON.stringify(d)})'><i class="fas fa-pen"></i></div>
+                            <div class="btn-table btn-delete-s" onclick="deleteRow(${d.id})"><i class="fas fa-trash"></i></div>
+                        </div>`
+                    }
+                ]
+            });
+
+            $('#tableSearch').on('keyup', function () { table.search(this.value).draw(); });
+            $('#minDate, #maxDate').on('change', () => table.draw());
+            $('#btnExcel').click(() => table.button('.buttons-excel').trigger());
+
+            $('#f_ref').select2({
+                ajax: { url: '?handler=ArticleAutocomplete', delay: 250, data: p => ({ term: p.term }), processResults: d => ({ results: d.results }) },
+                placeholder: "Saisir REF...", minimumInputLength: 1, width: '100%'
+            });
+
+            $('#f_ref').on('select2:select', function (e) {
+                $('#f_desig').val(e.params.data.intitule);
+                $('#f_cas').val(e.params.data.casier);
+                setTimeout(() => $('#f_qte').focus().select(), 100);
+            });
+
+            // زر الحفظ (AJOUTER/ENREGISTRER)
+            $('#arrivageForm').on('submit', function (e) {
+                e.preventDefault();
+                const $btn = $('#btnEnregistrer');
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+
+                $.ajax({
+                    url: '?handler=Save',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                    success: function (r) {
+                        if (r.success) {
+                            table.ajax.reload();
+                            $('#f_ref').val(null).trigger('change');
+                            $('#arrivageForm')[0].reset();
+                            $('#f_date').val(new Date().toISOString().split('T')[0]);
+                            const T = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+                            T.fire({ icon: 'success', title: 'Enregistré' });
+                        }
+                    },
+                    complete: () => $btn.prop('disabled', false).html('<i class="fas fa-save me-2"></i> ENREGISTRER')
+                });
+            });
+
+            // حفظ التعديل (UPDATE)
+            $('#editForm').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '?handler=Update',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                    success: function (r) {
+                        if (r.success) { $('#editModal').modal('hide'); table.ajax.reload(); Swal.fire('Succès', 'Mis à jour !', 'success'); }
+                    }
+                });
+            });
+        });
+
+        function openEdit(d) {
+            $('#e_id').val(d.id);
+            $('#e_date').val(d.dates);
+            $('#e_desig').val(d.designation);
+            $('#e_mach').val(d.machine);
+            $('#e_qte').val(d.qte);
+            $('#e_prix').val(d.prix);
+            $('#e_fourn').val(d.fournisseur);
+            $('#e_fact').val(d.fact_n);
+            $('#e_bc').val(d.bc_n);
+            $('#e_acht').val(d.acheteur);
+            $('#editModal').modal('show');
+        }
+
+        function deleteRow(id) {
+            Swal.fire({ title: 'Supprimer ?', icon: 'warning', showCancelButton: true }).then((res) => {
+                if (res.isConfirmed) $.ajax({
+                    url: '?handler=Delete', type: 'POST', data: { id: id },
+                    headers: { "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val() },
+                    success: () => table.ajax.reload()
+                });
+            });
+        }
+    </script>
+} *@
